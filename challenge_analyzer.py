@@ -57,7 +57,10 @@ class ChallengeAnalyzer:
                 entry.get("rank") or entry.get("rankNumber") or entry.get("ranking")
                 or entry.get("userRanking") or len(parsed) + 1
             )
-            distance = entry.get("value", entry.get("distance", entry.get("totalDistance", entry.get("progress", 0))))
+            distance = entry.get(
+                "value",
+                entry.get("distance", entry.get("totalDistance", entry.get("totalNumber", entry.get("progress", 0)))),
+            )
             current_user_id = raw.get(
                 "_currentUserProfileId", raw.get("currentUserId", raw.get("userProfileId", raw.get("userId")))
             )
