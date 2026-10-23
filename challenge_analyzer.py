@@ -3,6 +3,7 @@
 from datetime import date, datetime
 import re
 from typing import Any
+from uuid import UUID
 from zoneinfo import ZoneInfo
 
 from models import ChallengeAnalysisResult, ParticipantProgress
@@ -34,6 +35,33 @@ def _parse_date(value: Any) -> date:
         raise ChallengeDataError(f"Unrecognized challenge end date: {value!r}") from exc
 
 
+def _is_uuid(value: Any) -> bool:
+    """Return whether a candidate display name is actually a UUID identifier."""
+    try:
+        UUID(str(value).strip())
+        return True
+    except (ValueError, TypeError, AttributeError):
+        return False
+
+
+def _display_name(entry: dict[str, Any], rank: int) -> str:
+    """Prefer a human-readable profile name over Garmin's UUID-like displayName."""
+    profiles = [
+        entry.get("userProfile"),
+        entry.get("participant"),
+        entry.get("userInfo"),
+    ]
+    candidates: list[Any] = []
+    for profile in profiles:
+        if isinstance(profile, dict):
+            candidates.extend(profile.get(field) for field in ("displayName", "userName", "fullName", "name"))
+    candidates.extend(entry.get(field) for field in ("displayName", "userName", "fullName", "name"))
+    for candidate in candidates:
+        if isinstance(candidate, str) and candidate.strip() and not _is_uuid(candidate):
+            return candidate.strip()
+    return f"참가자 {rank}"
+
+
 class ChallengeAnalyzer:
     """Extract participant standings and compute rank gap targets."""
 
@@ -63,14 +91,11 @@ class ChallengeAnalyzer:
         for entry in people:
             if not isinstance(entry, dict):
                 continue
-            profile = entry.get("userProfile") or entry.get("participant") or entry.get("userInfo") or {}
-            if not isinstance(profile, dict):
-                profile = {}
-            name_value = entry.get("displayName") or profile.get("displayName") or profile.get("userName") or "Participant"
             rank_value = (
                 entry.get("rank") or entry.get("rankNumber") or entry.get("ranking")
                 or entry.get("userRanking") or len(parsed) + 1
             )
+            name_value = _display_name(entry, int(rank_value))
             distance = entry.get(
                 "value",
                 entry.get("distance", entry.get("totalDistance", entry.get("totalNumber", entry.get("progress", 0)))),
