@@ -15,6 +15,8 @@ class Config:
     token_store_path: Path
     slack_webhook_url: str | None
     challenge_target_distance_km: float | None
+    gemini_api_key: str
+    gemini_model: str
 
     @classmethod
     def from_env(cls) -> "Config":
@@ -30,6 +32,9 @@ class Config:
             raise ValueError("GARMIN_CHALLENGE_TARGET_KM must be a positive number") from exc
         if target_distance is not None and target_distance <= 0:
             raise ValueError("GARMIN_CHALLENGE_TARGET_KM must be a positive number")
+        gemini_api_key = os.getenv("GEMINI_API_KEY")
+        if not gemini_api_key:
+            raise ValueError("Missing required environment variable: GEMINI_API_KEY")
         return cls(
             garmin_email=os.environ["GARMIN_EMAIL"],
             garmin_password=os.environ["GARMIN_PASSWORD"],
@@ -37,4 +42,6 @@ class Config:
             token_store_path=Path(os.getenv("TOKEN_STORE_PATH", "~/.garminconnect")).expanduser(),
             slack_webhook_url=os.getenv("SLACK_WEBHOOK_URL") or None,
             challenge_target_distance_km=target_distance,
+            gemini_api_key=gemini_api_key,
+            gemini_model=os.getenv("GEMINI_MODEL") or "gemini-3.8-flash",
         )

@@ -4,8 +4,9 @@ import logging
 
 from challenge_analyzer import ChallengeAnalyzer
 from config import Config
+from courier import ConsoleCourier, Courier, SlackCourier
 from garmin_client import GarminSessionManager
-from notifier import ConsoleNotifier, Notifier, SlackNotifier
+from gemini_coach import GeminiCoach
 from prompt_builder import PromptBuilder
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -18,8 +19,9 @@ def main() -> None:
     raw = client.get_challenge_detail(config.garmin_challenge_uuid)
     result = ChallengeAnalyzer().analyze(raw, target_distance_km=config.challenge_target_distance_km)
     prompt = PromptBuilder().build(result)
-    notifier: Notifier = SlackNotifier(config.slack_webhook_url) if config.slack_webhook_url else ConsoleNotifier()
-    notifier.send(result, prompt)
+    report = GeminiCoach(config.gemini_api_key, config.gemini_model).generate(prompt)
+    courier: Courier = SlackCourier(config.slack_webhook_url) if config.slack_webhook_url else ConsoleCourier()
+    courier.send(result, report)
 
 
 if __name__ == "__main__":
