@@ -29,3 +29,4 @@ class ChallengeAnalysisResult(BaseModel):
     gap_to_target_km: float
     daily_req_for_leader: float
     daily_req_for_target: float
+    participants: list[ParticipantProgress]

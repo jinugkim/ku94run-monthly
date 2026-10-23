@@ -2,6 +2,7 @@
 
 from datetime import datetime
 from html import escape
+import json
 import os
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -28,6 +29,17 @@ def write_report_page(result: ChallengeAnalysisResult, report: str, output_dir: 
     """Write a self-contained static HTML report for the current challenge run."""
     output_dir.mkdir(parents=True, exist_ok=True)
     challenge_name = escape(result.challenge_name)
+    participant_data = json.dumps(
+        [
+            {
+                "name": participant.display_name,
+                "rank": participant.rank,
+                "distance": round(participant.distance_km, 2),
+            }
+            for participant in result.participants
+        ],
+        ensure_ascii=False,
+    ).replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026")
     report_html = markdown.markdown(report, extensions=["extra", "sane_lists"])
     report_html = bleach.clean(
         report_html,
@@ -75,6 +87,12 @@ def write_report_page(result: ChallengeAnalysisResult, report: str, output_dir: 
     article pre {{ padding: 14px; overflow-x: auto; border-radius: 8px; background: #f0f3ef; }}
     article pre code {{ padding: 0; }}
     article a {{ color: #126a4a; }}
+    .search-box {{ margin: 12px 0 16px; }}
+    .search-box input {{ box-sizing: border-box; width: 100%; padding: 13px 14px; border: 1px solid #cbd5ce; border-radius: 10px; font: inherit; }}
+    .participant-result {{ margin-top: 10px; padding: 16px; border: 1px solid #e0e5df; border-radius: 12px; background: white; }}
+    .participant-result h3 {{ margin: 0 0 8px; }}
+    .participant-result p {{ margin: 4px 0; }}
+    .muted {{ color: #64736c; }}
     footer {{ margin-top: 18px; color: #64736c; font-size: .82rem; }}
     @media (max-width: 480px) {{ .stats {{ grid-template-columns: 1fr 1fr; }} .stat {{ padding: 12px; }} .value {{ font-size: 1.1rem; }} }}
   </style>
@@ -93,8 +111,45 @@ def write_report_page(result: ChallengeAnalysisResult, report: str, output_dir: 
     </header>
     <h2>오늘의 코칭</h2>
     <article>{report_html}</article>
+    <h2>참가자 검색</h2>
+    <p class="muted">이름을 입력하면 해당 참가자의 챌린지 거리 현황을 볼 수 있습니다.</p>
+    <label class="search-box"><span class="muted">참가자 이름</span><input id="participant-search" type="search" autocomplete="off" placeholder="이름 일부를 입력하세요"></label>
+    <div id="participant-results" aria-live="polite" class="muted">검색어를 입력하세요.</div>
     <footer>생성 시각: {generated_at}. 거리 목표가 우선이며 페이스는 사용자가 직접 관리합니다.</footer>
   </main>
+  <script id="participant-data" type="application/json">{participant_data}</script>
+  <script>
+    const participants = JSON.parse(document.getElementById("participant-data").textContent);
+    const searchInput = document.getElementById("participant-search");
+    const results = document.getElementById("participant-results");
+    const targetKm = {result.target_distance_km};
+    const remainingDays = {result.remaining_days};
+    function addText(parent, tag, text, className) {{
+      const node = document.createElement(tag);
+      node.textContent = text;
+      if (className) node.className = className;
+      parent.appendChild(node);
+    }}
+    searchInput.addEventListener("input", () => {{
+      const query = searchInput.value.trim().toLocaleLowerCase("ko-KR");
+      results.replaceChildren();
+      if (!query) {{ results.textContent = "검색어를 입력하세요."; return; }}
+      const matches = participants.filter((person) => person.name.toLocaleLowerCase("ko-KR").includes(query));
+      if (!matches.length) {{ results.textContent = "일치하는 참가자가 없습니다."; return; }}
+      matches.slice(0, 30).forEach((person) => {{
+        const card = document.createElement("section");
+        card.className = "participant-result";
+        const remaining = Math.max(0, targetKm - person.distance);
+        addText(card, "h3", person.name);
+        addText(card, "p", `순위 ${{person.rank}}위 · 누적 ${{person.distance.toFixed(2)}} / ${{targetKm.toFixed(2)}} km`);
+        addText(card, "p", remaining > 0
+          ? `목표까지 ${{remaining.toFixed(2)}} km · 남은 기간 하루 평균 ${{(remaining / remainingDays).toFixed(2)}} km 필요`
+          : "목표 거리를 달성했습니다.");
+        results.appendChild(card);
+      }});
+      if (matches.length > 30) addText(results, "p", `검색 결과가 ${{matches.length}}명입니다. 이름을 더 입력해 범위를 좁혀 주세요.`, "muted");
+    }});
+  </script>
 </body>
 </html>
 """
