@@ -1,0 +1,400 @@
+{
+  "schema_version": 1,
+  "challenges": {
+    "0b42abfaa911d79b": {
+      "challenge_name": "KU94RUN 10월챌린지: 거북이(pace 10이하), 토끼(pace 9이하, 거리 200km)",
+      "target_distance_km": 200.0,
+      "snapshots": [
+        {
+          "date": "2026-10-24",
+          "participants": [
+            {
+              "name": "84ab7f44-211f-4e22-b42b-847c73b92c28",
+              "rank": 1,
+              "distance_km": 248.21,
+              "is_self": false
+            },
+            {
+              "name": "18415e06-23a9-4be4-814b-8a200f050df7",
+              "rank": 2,
+              "distance_km": 231.92,
+              "is_self": false
+            },
+            {
+              "name": "176a48fa-dc67-47d7-9bb9-b3cacd05db4c",
+              "rank": 3,
+              "distance_km": 225.23,
+              "is_self": false
+            },
+            {
+              "name": "3cf63069-ffdf-41dc-b92a-7543cb528add",
+              "rank": 4,
+              "distance_km": 223.34,
+              "is_self": false
+            },
+            {
+              "name": "f9c1b5f1-a99f-437a-a7e7-b7e4866fcdbc",
+              "rank": 5,
+              "distance_km": 218.21,
+              "is_self": false
+            },
+            {
+              "name": "33238a95-6a66-4970-86f6-74737e5651cc",
+              "rank": 6,
+              "distance_km": 190.35,
+              "is_self": false
+            },
+            {
+              "name": "447c6914-797c-4c7c-80db-f45458ef6f10",
+              "rank": 7,
+              "distance_km": 179.22,
+              "is_self": false
+            },
+            {
+              "name": "0ead1a16-bf29-47ca-842e-a5c7e899668b",
+              "rank": 8,
+              "distance_km": 165.3,
+              "is_self": false
+            },
+            {
+              "name": "8b0b4942-e432-4fda-92da-a5fbc77757bb",
+              "rank": 9,
+              "distance_km": 134.75,
+              "is_self": false
+            },
+            {
+              "name": "26916ee5-8f3b-4d18-b118-80f8ab643d0e",
+              "rank": 10,
+              "distance_km": 122.15,
+              "is_self": false
+            },
+            {
+              "name": "98d1af5e-03ba-4acc-a320-8fc9181fa233",
+              "rank": 11,
+              "distance_km": 120.51,
+              "is_self": false
+            },
+            {
+              "name": "eb212a5a-2678-4233-956c-9de1c2beb02b",
+              "rank": 12,
+              "distance_km": 104.72,
+              "is_self": false
+            },
+            {
+              "name": "5072a719-cd3e-46d6-9add-694262aac141",
+              "rank": 13,
+              "distance_km": 96.03,
+              "is_self": false
+            },
+            {
+              "name": "090d5278-d4db-4b65-beb9-fe0ff1dc30a9",
+              "rank": 14,
+              "distance_km": 91.64,
+              "is_self": false
+            },
+            {
+              "name": "0035ad15-42a9-4470-8e26-560fadfd8bd1",
+              "rank": 15,
+              "distance_km": 83.06,
+              "is_self": false
+            },
+            {
+              "name": "58bd18b0-df7c-4be4-bb7c-9639a71f00a1",
+              "rank": 16,
+              "distance_km": 81.92,
+              "is_self": false
+            },
+            {
+              "name": "6d49c075-0a6b-4dba-99d2-d81f03986b31",
+              "rank": 17,
+              "distance_km": 79.15,
+              "is_self": false
+            },
+            {
+              "name": "38d83228-37a7-433c-af32-e396d21f805d",
+              "rank": 18,
+              "distance_km": 73.74,
+              "is_self": false
+            },
+            {
+              "name": "2dcc67e3-c8a6-48cb-a4d5-dbc892b8d974",
+              "rank": 19,
+              "distance_km": 69.19,
+              "is_self": true
+            },
+            {
+              "name": "2d08b023-2fe8-47b5-a8d5-5916cbc45403",
+              "rank": 20,
+              "distance_km": 61.49,
+              "is_self": false
+            },
+            {
+              "name": "a9bc3c58-f9f4-4835-89f4-b9412213d5cf",
+              "rank": 21,
+              "distance_km": 55.2,
+              "is_self": false
+            },
+            {
+              "name": "cec831d8-5134-4784-baa1-d6666c644780",
+              "rank": 22,
+              "distance_km": 53.12,
+              "is_self": false
+            },
+            {
+              "name": "11c7c828-ec73-47d3-9f0e-d9931661b2a9",
+              "rank": 23,
+              "distance_km": 47.56,
+              "is_self": false
+            },
+            {
+              "name": "03f9681f-9e43-4a43-85bf-1a1021512a10",
+              "rank": 24,
+              "distance_km": 44.24,
+              "is_self": false
+            },
+            {
+              "name": "c6134c19-f09a-4c5d-ac05-ee779be72030",
+              "rank": 25,
+              "distance_km": 43.56,
+              "is_self": false
+            },
+            {
+              "name": "d19dacea-7a0d-450e-afe5-5e03b94be04b",
+              "rank": 26,
+              "distance_km": 40.52,
+              "is_self": false
+            },
+            {
+              "name": "55131b62-7dda-4700-95f7-68c492de27ce",
+              "rank": 27,
+              "distance_km": 35.49,
+              "is_self": false
+            },
+            {
+              "name": "fcdce74f-5461-40d7-b5df-d5fe4476fb8d",
+              "rank": 28,
+              "distance_km": 32.61,
+              "is_self": false
+            },
+            {
+              "name": "faba600d-aa40-4d42-a191-66fce250e215",
+              "rank": 29,
+              "distance_km": 29.79,
+              "is_self": false
+            },
+            {
+              "name": "245ee96d-b842-435c-b248-bf082f449370",
+              "rank": 30,
+              "distance_km": 25.33,
+              "is_self": false
+            },
+            {
+              "name": "baa2ef31-0232-4c4e-b201-dc0fe311d76c",
+              "rank": 31,
+              "distance_km": 6.05,
+              "is_self": false
+            },
+            {
+              "name": "faa454b9-0d3c-4802-b06d-61b3089c1151",
+              "rank": 32,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "ccac4f33-29c6-4379-ba0d-57e86f6712ae",
+              "rank": 32,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "ffb6ef6b-7e20-4737-b3e8-349dec570e5b",
+              "rank": 34,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "ad24ce7e-e77d-4812-ae5d-ec5e98caf335",
+              "rank": 35,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "b20a9648-c8ed-4420-8fea-d04d3debf51c",
+              "rank": 36,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "e8a6f033-238f-4058-a654-96a89577218e",
+              "rank": 37,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "ea6df6a8-ca2d-41e9-b8d7-a025593f1f4f",
+              "rank": 38,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "72fc9c2c-ed0a-47b4-90bf-c4e1fc3f97ac",
+              "rank": 39,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "7b2fcfba-ba92-4c03-aacb-5dfc0e9be875",
+              "rank": 40,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "fed48074-3c87-49d3-b944-b2ccc322de46",
+              "rank": 41,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "58317f3a-48b4-411b-82e3-6dc32909dc08",
+              "rank": 42,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "b9ed2db5-d00a-45ba-a50f-9ee8082a215c",
+              "rank": 43,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "8ed966bc-a862-448e-ba76-b6abb97080a1",
+              "rank": 44,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "6c55e456-21c4-4c7b-bb37-0e87ee0f8915",
+              "rank": 45,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "393eb034-f06c-416b-9959-a06591cdda32",
+              "rank": 46,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "9ffcabc7-ddf1-478b-b675-93ade100ded1",
+              "rank": 47,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "0b7bdbad-f89f-4317-a5cb-6dbd3861ef6a",
+              "rank": 48,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "b89e82e0-bcf1-4b98-bd11-a62684c7e37d",
+              "rank": 49,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "d72d2a35-d3d6-49ce-aaa8-7c6be2a60d28",
+              "rank": 50,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "45ecb23d-4a06-4f14-b49c-87ead49d6aa7",
+              "rank": 51,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "fe06d7eb-0b35-4726-a981-60b599370967",
+              "rank": 52,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "d73ec146-cc48-4cb2-adbd-9c7f6a35276d",
+              "rank": 53,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "3a17c859-abff-4205-8d28-ae5a814c30c2",
+              "rank": 54,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "75d033b2-8063-4b14-9b67-7a556b095a31",
+              "rank": 55,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "1be80bf3-1cec-4a3f-96a2-6202cc1d23be",
+              "rank": 56,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "1ea98961-e712-44d4-825b-147f60226ba5",
+              "rank": 57,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "f38fbe8f-15e9-4468-a7bf-357aea8fc6b1",
+              "rank": 58,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "d906b28f-2cb2-4bd5-a557-ccec6cbf80cf",
+              "rank": 59,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "9a5b21cb-d7b5-444e-b1c1-e9b31f394629",
+              "rank": 60,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "e7b1582b-00fd-4a30-8c53-3fb71dab48b8",
+              "rank": 61,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "286a2f8e-63b4-45e0-b74d-c9734e5f0cc8",
+              "rank": 62,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "e8a16679-7b8d-4d4b-87d2-60698ddae53c",
+              "rank": 63,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "64b4a7d8-b272-4b1a-9cf5-d1c940bb9eb7",
+              "rank": 64,
+              "distance_km": 0.0,
+              "is_self": false
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
