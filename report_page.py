@@ -24,10 +24,137 @@ def report_page_url() -> str | None:
     return f"https://{owner.lower()}.github.io/{name.lower()}/"
 
 
-def write_report_page(result: ChallengeAnalysisResult, report: str, output_dir: Path = Path("site")) -> Path:
+def _rank_history_html(result: ChallengeAnalysisResult, history: dict) -> str:
+    """Create a responsive SVG rank trend for the leaders and current user."""
+    snapshots = history.get("snapshots", [])[-14:]
+    if not snapshots:
+        return '<p class="muted">순위 기록이 아직 없습니다.</p>'
+
+    latest = snapshots[-1].get("participants", [])
+    selected = sorted(latest, key=lambda person: person.get("rank", 10**9))[:6]
+    self_person = next((person for person in latest if person.get("is_self")), None)
+    if self_person and all(person["name"] != self_person["name"] for person in selected):
+        selected.append(self_person)
+    if not selected:
+        return '<p class="muted">순위 기록이 아직 없습니다.</p>'
+
+    colors = ["#147d64", "#e36b45", "#4376c5", "#b48600", "#8b5cb7", "#278da3", "#c04f78"]
+    width, height, left, right, top, bottom = 760, 330, 54, 22, 24, 46
+    plot_width, plot_height = width - left - right, height - top - bottom
+    selected_names = {person["name"] for person in selected}
+    max_rank = max(
+        1,
+        max(
+            int(person.get("rank", 1))
+            for snapshot in snapshots
+            for person in snapshot.get("participants", [])
+            if person.get("name") in selected_names
+        ),
+    )
+
+    def point(index: int, rank: int) -> tuple[float, float]:
+        x = left + (plot_width / max(1, len(snapshots) - 1)) * index
+        y = top + ((rank - 1) / max(1, max_rank - 1)) * plot_height
+        return x, y
+
+    parts = [f'<svg class="rank-chart" viewBox="0 0 {width} {height}" role="img" aria-label="최근 참가자 순위 변화 그래프">']
+    for rank in sorted({1, max_rank} if max_rank > 1 else {1}):
+        y = point(0, rank)[1]
+        parts.append(f'<line x1="{left}" y1="{y:.1f}" x2="{width-right}" y2="{y:.1f}" class="grid-line"/>')
+        parts.append(f'<text x="{left-12}" y="{y+4:.1f}" text-anchor="end" class="axis-label">{rank}위</text>')
+    for index, snapshot in enumerate(snapshots):
+        if len(snapshots) <= 7 or index in {0, len(snapshots) - 1}:
+            x, _ = point(index, 1)
+            parts.append(f'<text x="{x:.1f}" y="{height-12}" text-anchor="middle" class="axis-label">{escape(snapshot["date"][5:])}</text>')
+
+    legend = []
+    for index, current in enumerate(selected):
+        name = current["name"]
+        color = colors[index % len(colors)]
+        coords: list[tuple[float, float]] = []
+        for snap_index, snapshot in enumerate(snapshots):
+            match = next((p for p in snapshot.get("participants", []) if p.get("name") == name), None)
+            if match:
+                coords.append(point(snap_index, int(match.get("rank", max_rank))))
+        if coords:
+            path = " ".join(f"{x:.1f},{y:.1f}" for x, y in coords)
+            parts.append(f'<polyline points="{path}" fill="none" stroke="{color}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>')
+            parts.extend(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="4" fill="{color}"/>' for x, y in coords)
+            legend.append(f'<span><i style="background:{color}"></i>{escape(name)} {int(current["rank"])}위</span>')
+    parts.append("</svg>")
+    return f'<div class="chart-wrap">{"".join(parts)}</div><div class="chart-legend">{"".join(legend)}</div>'
+
+
+def _running_board_html(result: ChallengeAnalysisResult, history: dict) -> str:
+    """Build a daily group board and top-ten table from the latest snapshots."""
+    snapshots = history.get("snapshots", [])
+    latest = snapshots[-1].get("participants", []) if snapshots else []
+    if not latest:
+        latest = [
+            {"name": p.display_name, "rank": p.rank, "distance_km": p.distance_km, "is_self": p.is_self}
+            for p in result.participants
+        ]
+    previous = snapshots[-2].get("participants", []) if len(snapshots) > 1 else []
+    previous_distances = {p["name"]: float(p.get("distance_km", 0)) for p in previous}
+    increases = [
+        (p, max(0.0, float(p.get("distance_km", 0)) - previous_distances[p["name"]]))
+        for p in latest if p["name"] in previous_distances
+    ]
+    active_count = sum(delta >= 0.01 for _, delta in increases)
+    biggest = max(increases, key=lambda row: row[1], default=None)
+    total_distance = sum(float(p.get("distance_km", 0)) for p in latest)
+    finishers = sum(float(p.get("distance_km", 0)) >= result.target_distance_km for p in latest)
+    biggest_label = f"{biggest[0]['name']} +{biggest[1]:.2f} km" if biggest and biggest[1] >= 0.01 else "기록 대기 중"
+    stats = (
+        ("함께 쌓은 거리", f"{total_distance:.1f} km"),
+        ("목표 달성", f"{finishers}명"),
+        ("직전 기록 대비 증가", f"{active_count}명" if previous else "첫 기록"),
+        ("가장 많이 늘어난 거리", biggest_label),
+    )
+    stat_cards = "".join(
+        f'<div class="board-stat"><span>{escape(label)}</span><strong>{escape(value)}</strong></div>'
+        for label, value in stats
+    )
+    rows = []
+    for person in sorted(latest, key=lambda row: int(row.get("rank", 10**9)))[:10]:
+        distance = float(person.get("distance_km", 0))
+        remaining = max(0.0, result.target_distance_km - distance)
+        goal_text = "목표 달성 🎉" if remaining <= 0 else f"{remaining:.2f} km 남음"
+        rows.append(
+            f'<tr><td>{int(person.get("rank", 0))}</td><td>{escape(person["name"])}</td>'
+            f'<td>{distance:.2f} km</td><td>{goal_text}</td></tr>'
+        )
+    table = (
+        '<div class="table-wrap"><table><thead><tr><th>순위</th><th>러너</th><th>누적</th><th>목표까지</th></tr></thead>'
+        f'<tbody>{"".join(rows)}</tbody></table></div>'
+    )
+    chart = _rank_history_html(result, history)
+    note = "첫 기록을 저장했어요. 다음 일일 실행부터 순위 변화가 이어집니다." if len(snapshots) < 2 else "최근 14회 기록 · 상위 6명과 내 순위를 표시합니다."
+    return (
+        f'<div class="board-stats">{stat_cards}</div>{table}'
+        f'<p class="muted">거리 변화는 직전 일일 기록과 비교합니다.</p>'
+        f'<h3 class="chart-heading">순위 변동</h3><p class="muted">{note}</p>{chart}'
+    )
+
+
+def write_report_page(
+    result: ChallengeAnalysisResult,
+    report: str,
+    output_dir: Path = Path("site"),
+    history: dict | None = None,
+) -> Path:
     """Write a self-contained static HTML report for the current challenge run."""
     output_dir.mkdir(parents=True, exist_ok=True)
     challenge_name = escape(result.challenge_name)
+    history = history or {
+        "snapshots": [{
+            "date": datetime.now(ZoneInfo("Asia/Seoul")).date().isoformat(),
+            "participants": [
+                {"name": p.display_name, "rank": p.rank, "distance_km": p.distance_km, "is_self": p.is_self}
+                for p in result.participants
+            ],
+        }]
+    }
     report_html = markdown.markdown(report, extensions=["extra", "sane_lists"])
     report_html = bleach.clean(
         report_html,
@@ -75,6 +202,22 @@ def write_report_page(result: ChallengeAnalysisResult, report: str, output_dir: 
     article pre {{ padding: 14px; overflow-x: auto; border-radius: 8px; background: #f0f3ef; }}
     article pre code {{ padding: 0; }}
     article a {{ color: #126a4a; }}
+    .board-stats {{ display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 14px 0 20px; }}
+    .board-stat {{ display: flex; flex-direction: column; gap: 8px; padding: 16px; border-radius: 14px; background: white; border: 1px solid #e0e5df; }}
+    .board-stat span, .muted {{ color: #64736c; font-size: .9rem; }}
+    .board-stat strong {{ font-size: 1.2rem; overflow-wrap: anywhere; }}
+    .table-wrap {{ overflow-x: auto; border-radius: 12px; background: white; }}
+    table {{ width: 100%; border-collapse: collapse; min-width: 440px; }}
+    th, td {{ padding: 11px 12px; border-bottom: 1px solid #e8ece8; text-align: left; }}
+    th {{ color: #52635a; font-size: .86rem; }}
+    .chart-heading {{ margin-top: 30px; }}
+    .chart-wrap {{ overflow-x: auto; border: 1px solid #e0e5df; border-radius: 14px; background: white; }}
+    .rank-chart {{ display: block; width: 100%; min-width: 520px; height: auto; }}
+    .grid-line {{ stroke: #e7ece8; stroke-width: 1; }}
+    .axis-label {{ fill: #64736c; font-size: 12px; }}
+    .chart-legend {{ display: flex; flex-wrap: wrap; gap: 10px 16px; margin: 12px 2px; color: #52635a; font-size: .88rem; }}
+    .chart-legend span {{ display: inline-flex; align-items: center; gap: 6px; }}
+    .chart-legend i {{ width: 10px; height: 10px; border-radius: 50%; }}
     footer {{ margin-top: 18px; color: #64736c; font-size: .82rem; }}
     @media (max-width: 480px) {{ .stats {{ grid-template-columns: 1fr 1fr; }} .stat {{ padding: 12px; }} .value {{ font-size: 1.1rem; }} }}
   </style>
@@ -93,6 +236,9 @@ def write_report_page(result: ChallengeAnalysisResult, report: str, output_dir: 
     </header>
     <h2>오늘의 코칭</h2>
     <article>{report_html}</article>
+    <h2>오늘의 러닝 보드</h2>
+    <p class="muted">친구들과 함께 쌓은 챌린지 진행 상황</p>
+    {_running_board_html(result, history)}
     <footer>생성 시각: {generated_at}. 거리 목표가 우선이며 페이스는 사용자가 직접 관리합니다.</footer>
   </main>
 </body>

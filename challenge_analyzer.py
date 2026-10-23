@@ -3,6 +3,7 @@
 from datetime import date, datetime
 import re
 from typing import Any
+from zoneinfo import ZoneInfo
 
 from models import ChallengeAnalysisResult, ParticipantProgress
 
@@ -43,7 +44,7 @@ class ChallengeAnalyzer:
         target_distance_km: float | None = None,
     ) -> ChallengeAnalysisResult:
         """Analyze challenge standings and the distance goal using configured or titled target."""
-        today = today or date.today()
+        today = today or datetime.now(ZoneInfo("Asia/Seoul")).date()
         name = str(raw.get("challengeName") or raw.get("adHocChallengeName") or raw.get("name") or "Garmin Challenge")
         goal_match = re.search(r"(\d+(?:[.,]\d+)?)\s*km\b", name, re.IGNORECASE)
         if target_distance_km is None and goal_match:
@@ -115,4 +116,5 @@ class ChallengeAnalyzer:
             target_rank_distance_km=target.distance_km, gap_to_leader_km=gap_leader,
             gap_to_target_km=gap_target, daily_req_for_leader=gap_leader / remaining_days,
             daily_req_for_target=gap_target / remaining_days,
+            participants=parsed,
         )

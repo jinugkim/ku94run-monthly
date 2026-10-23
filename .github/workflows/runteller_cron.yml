@@ -8,9 +8,15 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: runteller-daily-pages
+  cancel-in-progress: false
+
 jobs:
   run-runteller:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -39,6 +45,17 @@ jobs:
           GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: python main.py
+      - name: Save standings history
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/standings.json
+          if git diff --cached --quiet; then
+            echo "No standings history changes to commit"
+          else
+            git commit -m "Update daily standings history"
+            git push
+          fi
       - name: Upload report page
         uses: actions/upload-pages-artifact@v3
         with:
