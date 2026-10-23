@@ -115,5 +115,4 @@ class ChallengeAnalyzer:
             target_rank_distance_km=target.distance_km, gap_to_leader_km=gap_leader,
             gap_to_target_km=gap_target, daily_req_for_leader=gap_leader / remaining_days,
             daily_req_for_target=gap_target / remaining_days,
-            participants=parsed,
         )

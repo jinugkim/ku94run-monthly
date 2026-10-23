@@ -18,4 +18,4 @@ Gemini가 코칭 리포트를 생성하고, `Courier` 모듈이 결과를 전송
 
 GitHub Actions 사용 시 `GEMINI_API_KEY`를 저장소 Actions secret으로 등록하세요. Gemini API 키는 Google AI Studio에서 만들 수 있습니다. `GEMINI_MODEL`은 필요하면 Repository variable로 지정할 수 있습니다.
 
-Pages를 처음 사용할 때 저장소의 **Settings → Pages → Build and deployment → Source**를 **GitHub Actions**로 설정하세요. Pages는 공개로 배포됩니다. 최신 리포트에서 참가자 이름 일부를 검색해 순위, 누적 거리, 목표까지 남은 거리와 남은 기간의 일일 필요 거리를 볼 수 있습니다. 참가자 검색 데이터도 페이지 파일에 포함되므로 누구나 열람할 수 있습니다. 새 실행마다 같은 페이지 주소의 최신 리포트가 갱신됩니다.
+Pages를 처음 사용할 때 저장소의 **Settings → Pages → Build and deployment → Source**를 **GitHub Actions**로 설정하세요. Pages는 공개로 배포되며, 페이지에는 본인 목표 거리와 코칭 내용만 포함됩니다. 새 실행마다 같은 페이지 주소의 최신 리포트가 갱신됩니다.
