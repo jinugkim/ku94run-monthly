@@ -69,7 +69,14 @@ class ChallengeAnalyzer:
                 or (current_user_id is not None and participant_id is not None and str(participant_id) == str(current_user_id))
                 or (own_rank is not None and int(rank_value) == int(own_rank))
             )
-            parsed.append(ParticipantProgress(str(name_value), int(rank_value), _number(distance) / 1000, is_self))
+            parsed.append(
+                ParticipantProgress(
+                    display_name=str(name_value),
+                    rank=int(rank_value),
+                    distance_km=_number(distance) / 1000,
+                    is_self=is_self,
+                )
+            )
         if not parsed:
             raise ChallengeDataError("Challenge standings could not be parsed")
         parsed.sort(key=lambda participant: (participant.rank, -participant.distance_km))
