@@ -6,6 +6,9 @@ import os
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+import bleach
+import markdown
+
 from models import ChallengeAnalysisResult
 
 
@@ -25,7 +28,18 @@ def write_report_page(result: ChallengeAnalysisResult, report: str, output_dir: 
     """Write a self-contained static HTML report for the current challenge run."""
     output_dir.mkdir(parents=True, exist_ok=True)
     challenge_name = escape(result.challenge_name)
-    report_text = escape(report)
+    report_html = markdown.markdown(report, extensions=["extra", "sane_lists"])
+    report_html = bleach.clean(
+        report_html,
+        tags={
+            "a", "blockquote", "br", "code", "del", "em", "h1", "h2", "h3", "h4",
+            "hr", "li", "ol", "p", "pre", "strong", "table", "tbody", "td",
+            "th", "thead", "tr", "ul",
+        },
+        attributes={"a": ["href", "title"]},
+        protocols={"http", "https", "mailto"},
+        strip=True,
+    )
     generated_at = datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M KST")
     html = f"""<!doctype html>
 <html lang="ko">
@@ -46,8 +60,21 @@ def write_report_page(result: ChallengeAnalysisResult, report: str, output_dir: 
     .stat {{ padding: 16px; border-radius: 14px; background: #1c3730; }}
     .label {{ display: block; margin-bottom: 7px; color: #c3d1c8; font-size: .85rem; }}
     .value {{ font-size: 1.35rem; font-weight: 700; }}
-    article {{ padding: 22px; border: 1px solid #e0e5df; border-radius: 16px; background: white; }}
-    pre {{ margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; line-height: 1.75; }}
+    article {{ padding: 22px; border: 1px solid #e0e5df; border-radius: 16px; background: white; line-height: 1.75; overflow-wrap: anywhere; }}
+    article > :first-child {{ margin-top: 0; }}
+    article > :last-child {{ margin-bottom: 0; }}
+    article h1, article h2, article h3, article h4 {{ line-height: 1.4; }}
+    article h1 {{ font-size: 1.45rem; }}
+    article h2 {{ margin: 1.5em 0 .6em; font-size: 1.25rem; }}
+    article h3, article h4 {{ margin: 1.25em 0 .5em; font-size: 1.08rem; }}
+    article ul, article ol {{ padding-left: 1.5em; }}
+    article blockquote {{ margin: 1em 0; padding: .2em 1em; border-left: 3px solid #9aada2; color: #52635a; }}
+    article table {{ width: 100%; border-collapse: collapse; }}
+    article th, article td {{ padding: .5em; border: 1px solid #e0e5df; text-align: left; }}
+    article code {{ padding: .12em .3em; border-radius: 4px; background: #f0f3ef; }}
+    article pre {{ padding: 14px; overflow-x: auto; border-radius: 8px; background: #f0f3ef; }}
+    article pre code {{ padding: 0; }}
+    article a {{ color: #126a4a; }}
     footer {{ margin-top: 18px; color: #64736c; font-size: .82rem; }}
     @media (max-width: 480px) {{ .stats {{ grid-template-columns: 1fr 1fr; }} .stat {{ padding: 12px; }} .value {{ font-size: 1.1rem; }} }}
   </style>
@@ -65,7 +92,7 @@ def write_report_page(result: ChallengeAnalysisResult, report: str, output_dir: 
       </section>
     </header>
     <h2>오늘의 코칭</h2>
-    <article><pre>{report_text}</pre></article>
+    <article>{report_html}</article>
     <footer>생성 시각: {generated_at}. 거리 목표가 우선이며 페이스는 사용자가 직접 관리합니다.</footer>
   </main>
 </body>
