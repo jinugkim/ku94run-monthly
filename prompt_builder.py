@@ -9,7 +9,7 @@ class PromptBuilder:
     def build(self, result: ChallengeAnalysisResult) -> str:
         """Render challenge metrics and coaching guidance as plain text."""
         target_label = "1위" if result.my_rank == 1 else "바로 앞 순위"
-        target_daily = result.daily_req_for_leader if result.my_rank != 1 else 0.0
+        target_daily = result.daily_req_for_target
         return (
             "[역할]\n당신은 가민 커스텀 챌린지 전략 AI 코치 Run-teller입니다. "
             "사용자는 가민 워치 없이 앱/계정을 사용하므로 심박수, 바디 배터리 등 생체 데이터를 추정하지 마세요.\n\n"
