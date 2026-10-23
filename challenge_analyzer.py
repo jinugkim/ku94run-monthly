@@ -1,6 +1,7 @@
 """Parse Garmin challenge payloads and calculate distance strategy metrics."""
 
 from datetime import date, datetime
+import re
 from typing import Any
 
 from models import ChallengeAnalysisResult, ParticipantProgress
@@ -35,10 +36,22 @@ def _parse_date(value: Any) -> date:
 class ChallengeAnalyzer:
     """Extract participant standings and compute rank gap targets."""
 
-    def analyze(self, raw: dict[str, Any], today: date | None = None) -> ChallengeAnalysisResult:
-        """Analyze Garmin challenge JSON using the current date unless supplied."""
+    def analyze(
+        self,
+        raw: dict[str, Any],
+        today: date | None = None,
+        target_distance_km: float | None = None,
+    ) -> ChallengeAnalysisResult:
+        """Analyze challenge standings and the distance goal using configured or titled target."""
         today = today or date.today()
         name = str(raw.get("challengeName") or raw.get("adHocChallengeName") or raw.get("name") or "Garmin Challenge")
+        goal_match = re.search(r"(\d+(?:[.,]\d+)?)\s*km\b", name, re.IGNORECASE)
+        if target_distance_km is None and goal_match:
+            target_distance_km = float(goal_match.group(1).replace(",", "."))
+        if target_distance_km is None or target_distance_km <= 0:
+            raise ChallengeDataError(
+                "Challenge target distance is unknown; set GARMIN_CHALLENGE_TARGET_KM (for example, 200)"
+            )
         end_date_value = raw.get("endDate") or raw.get("endDateLocal")
         remaining_days = max(1, (_parse_date(end_date_value) - today).days)
         people = raw.get("participants") or raw.get("participantProgress") or raw.get("leaderboard") or raw.get("players")
@@ -87,13 +100,17 @@ class ChallengeAnalyzer:
         if len(self_rows) != 1:
             raise ChallengeDataError("Could not uniquely identify the current user in challenge standings")
         me = self_rows[0]
+        remaining_distance = max(0.0, target_distance_km - me.distance_km)
+        daily_req_for_goal = remaining_distance / remaining_days
         above = [participant for participant in parsed if participant.rank < me.rank]
         leader = parsed[0]
         target = max(above, key=lambda p: p.rank) if above else me
         gap_leader = max(0.0, leader.distance_km - me.distance_km)
         gap_target = max(0.0, target.distance_km - me.distance_km)
         return ChallengeAnalysisResult(
-            challenge_name=name, remaining_days=remaining_days, total_participants=len(parsed), my_rank=me.rank,
+            challenge_name=name, remaining_days=remaining_days, target_distance_km=target_distance_km,
+            remaining_distance_km=remaining_distance, daily_req_for_goal=daily_req_for_goal,
+            total_participants=len(parsed), my_rank=me.rank,
             my_distance_km=me.distance_km, leader_distance_km=leader.distance_km,
             target_rank_distance_km=target.distance_km, gap_to_leader_km=gap_leader,
             gap_to_target_km=gap_target, daily_req_for_leader=gap_leader / remaining_days,

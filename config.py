@@ -14,6 +14,7 @@ class Config:
     garmin_challenge_uuid: str
     token_store_path: Path
     slack_webhook_url: str | None
+    challenge_target_distance_km: float | None
 
     @classmethod
     def from_env(cls) -> "Config":
@@ -22,10 +23,18 @@ class Config:
         missing = [name for name in required if not os.getenv(name)]
         if missing:
             raise ValueError(f"Missing required environment variables: {', '.join(missing)}")
+        target_value = os.getenv("GARMIN_CHALLENGE_TARGET_KM")
+        try:
+            target_distance = float(target_value) if target_value else None
+        except ValueError as exc:
+            raise ValueError("GARMIN_CHALLENGE_TARGET_KM must be a positive number") from exc
+        if target_distance is not None and target_distance <= 0:
+            raise ValueError("GARMIN_CHALLENGE_TARGET_KM must be a positive number")
         return cls(
             garmin_email=os.environ["GARMIN_EMAIL"],
             garmin_password=os.environ["GARMIN_PASSWORD"],
             garmin_challenge_uuid=os.environ["GARMIN_CHALLENGE_UUID"],
             token_store_path=Path(os.getenv("TOKEN_STORE_PATH", "~/.garminconnect")).expanduser(),
             slack_webhook_url=os.getenv("SLACK_WEBHOOK_URL") or None,
+            challenge_target_distance_km=target_distance,
         )

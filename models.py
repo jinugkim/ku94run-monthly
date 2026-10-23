@@ -17,6 +17,9 @@ class ChallengeAnalysisResult(BaseModel):
 
     challenge_name: str
     remaining_days: int
+    target_distance_km: float
+    remaining_distance_km: float
+    daily_req_for_goal: float
     total_participants: int
     my_rank: int
     my_distance_km: float

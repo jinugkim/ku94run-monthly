@@ -16,7 +16,7 @@ def main() -> None:
     config = Config.from_env()
     client = GarminSessionManager(config.garmin_email, config.garmin_password, str(config.token_store_path))
     raw = client.get_challenge_detail(config.garmin_challenge_uuid)
-    result = ChallengeAnalyzer().analyze(raw)
+    result = ChallengeAnalyzer().analyze(raw, target_distance_km=config.challenge_target_distance_km)
     prompt = PromptBuilder().build(result)
     notifier: Notifier = SlackNotifier(config.slack_webhook_url) if config.slack_webhook_url else ConsoleNotifier()
     notifier.send(result, prompt)
