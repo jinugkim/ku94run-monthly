@@ -38,10 +38,10 @@ class ChallengeAnalyzer:
     def analyze(self, raw: dict[str, Any], today: date | None = None) -> ChallengeAnalysisResult:
         """Analyze Garmin challenge JSON using the current date unless supplied."""
         today = today or date.today()
-        name = str(raw.get("challengeName") or raw.get("name") or "Garmin Challenge")
+        name = str(raw.get("challengeName") or raw.get("adHocChallengeName") or raw.get("name") or "Garmin Challenge")
         end_date_value = raw.get("endDate") or raw.get("endDateLocal")
         remaining_days = max(1, (_parse_date(end_date_value) - today).days)
-        people = raw.get("participants") or raw.get("participantProgress") or raw.get("leaderboard")
+        people = raw.get("participants") or raw.get("participantProgress") or raw.get("leaderboard") or raw.get("players")
         if not isinstance(people, list) or not people:
             raise ChallengeDataError("Challenge payload contains no participant standings")
 
@@ -49,17 +49,25 @@ class ChallengeAnalyzer:
         for entry in people:
             if not isinstance(entry, dict):
                 continue
-            profile = entry.get("userProfile") or entry.get("participant") or {}
+            profile = entry.get("userProfile") or entry.get("participant") or entry.get("userInfo") or {}
             if not isinstance(profile, dict):
                 profile = {}
             name_value = entry.get("displayName") or profile.get("displayName") or profile.get("userName") or "Participant"
-            rank_value = entry.get("rank") or entry.get("rankNumber") or len(parsed) + 1
-            distance = entry.get("value", entry.get("distance", entry.get("totalDistance", 0)))
-            current_user_id = raw.get("currentUserId", raw.get("userId"))
+            rank_value = (
+                entry.get("rank") or entry.get("rankNumber") or entry.get("ranking")
+                or entry.get("userRanking") or len(parsed) + 1
+            )
+            distance = entry.get("value", entry.get("distance", entry.get("totalDistance", entry.get("progress", 0))))
+            current_user_id = raw.get(
+                "_currentUserProfileId", raw.get("currentUserId", raw.get("userProfileId", raw.get("userId")))
+            )
+            participant_id = entry.get("userProfileId", entry.get("userProfilePk", entry.get("userId")))
+            own_rank = raw.get("userRanking")
             is_self = bool(
                 entry.get("isSelf")
                 or entry.get("isCurrentUser")
-                or (current_user_id is not None and entry.get("userId") == current_user_id)
+                or (current_user_id is not None and participant_id is not None and str(participant_id) == str(current_user_id))
+                or (own_rank is not None and int(rank_value) == int(own_rank))
             )
             parsed.append(ParticipantProgress(str(name_value), int(rank_value), _number(distance) / 1000, is_self))
         if not parsed:

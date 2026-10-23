@@ -48,23 +48,33 @@ class GarminSessionManager:
             raise GarminClientError("Garmin authentication failed; verify credentials and token configuration") from exc
 
     def get_challenge_detail(self, challenge_uuid: str) -> dict[str, Any]:
-        """Fetch one Garmin challenge, supporting known garminconnect method variants."""
+        """Fetch one Garmin ad-hoc challenge through the authenticated API client."""
         if self.client is None:
             self.login()
         assert self.client is not None
         try:
-            for method_name in ("get_challenge_detail", "get_challenge"):
+            for method_name in ("get_adhoc_challenge", "get_challenge_detail", "get_challenge"):
                 method = getattr(self.client, method_name, None)
                 if callable(method):
                     result = method(challenge_uuid)
                     if isinstance(result, dict):
+                        profile_id = getattr(self.client, "profile_id", None)
+                        if profile_id is not None:
+                            result["_currentUserProfileId"] = profile_id
                         return result
-            garth = getattr(self.client, "garth", None)
-            if garth is not None and hasattr(garth, "connectapi"):
-                result = garth.connectapi(f"/adhoc-challenge-service/challenge/{challenge_uuid}")
+            connectapi = getattr(self.client, "connectapi", None)
+            if callable(connectapi):
+                result = connectapi(f"/adhocchallenge-service/adHocChallenge/{challenge_uuid}")
                 if isinstance(result, dict):
+                    # Garmin's profile id identifies the signed-in participant in
+                    # challenge payloads that do not include an explicit self flag.
+                    profile_id = getattr(self.client, "profile_id", None)
+                    if profile_id is not None:
+                        result["_currentUserProfileId"] = profile_id
                     return result
-            raise GarminClientError("Installed garminconnect version does not expose challenge detail retrieval")
+            raise GarminClientError(
+                "Installed garminconnect client does not expose connectapi; upgrade garminconnect"
+            )
         except GarminClientError:
             raise
         except requests.exceptions.RequestException as exc:
