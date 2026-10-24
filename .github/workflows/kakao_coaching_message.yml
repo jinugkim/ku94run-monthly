@@ -1,0 +1,54 @@
+name: Run-teller Kakao Coaching Message
+
+on:
+  schedule:
+    - cron: '10 19 * * *' # KST 04:10
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  send-kakao-message:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Download latest report message payload
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          repository_lower="$(printf '%s' "$GITHUB_REPOSITORY" | tr '[:upper:]' '[:lower:]')"
+          pages_base="https://$(printf '%s' "$repository_lower" | sed 's#/#.github.io/#')"
+          curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 10 \
+            -H 'Cache-Control: no-cache' \
+            "$pages_base/kakao_delivery.json?cachebust=$(date +%s)" \
+            --output "$RUNNER_TEMP/kakao_delivery.json"
+          jq -e '.text and .report_url and .date' "$RUNNER_TEMP/kakao_delivery.json" >/dev/null
+      - name: Load Kakao member tokens
+        env:
+          KAKAO_SYNC_URL: ${{ vars.KAKAO_SYNC_URL }}
+          KAKAO_SYNC_TOKEN: ${{ secrets.KAKAO_SYNC_TOKEN }}
+        run: |
+          curl --fail --silent --show-error \
+            -H "Authorization: Bearer $KAKAO_SYNC_TOKEN" \
+            "$KAKAO_SYNC_URL/internal/tokens" \
+            --output "$RUNNER_TEMP/kakao-tokens.json"
+          jq -e 'type == "object" and length > 0' "$RUNNER_TEMP/kakao-tokens.json" >/dev/null
+          tokens_json="$(jq -c . "$RUNNER_TEMP/kakao-tokens.json")"
+          echo "::add-mask::$tokens_json"
+          printf 'KAKAO_REFRESH_TOKENS_JSON=%s\n' "$tokens_json" >> "$GITHUB_ENV"
+      - name: Send Kakao coaching summary
+        env:
+          KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
+          KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
+          KAKAO_SYNC_URL: ${{ vars.KAKAO_SYNC_URL }}
+          KAKAO_SYNC_TOKEN: ${{ secrets.KAKAO_SYNC_TOKEN }}
+        run: python send_kakao_message.py "$RUNNER_TEMP/kakao_delivery.json"

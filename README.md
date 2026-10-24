@@ -12,7 +12,7 @@ Python 3.12 이상에서 의존성을 설치하고 환경 변수를 설정한 �
 
 목표 거리는 기본적으로 챌린지명에서 `200km`처럼 추출합니다. 이름에 목표 거리가 없거나 추출값을 덮어쓰려면 `GARMIN_CHALLENGE_TARGET_KM`에 목표 거리(km)를 지정하세요.
 
-GitHub Actions는 `.github/workflows/runteller_cron.yml`에서 매일 KST 07:00에 실행되도록 구성되어 있습니다. 저장소의 Actions secrets에 필수 Garmin 값과 선택 Slack 웹훅을 등록하세요. Garmin 토큰 캐시는 해당 저장소의 Actions 캐시에 저장되므로 저장소 접근 권한을 제한하세요.
+GitHub Actions는 `.github/workflows/runteller_cron.yml`에서 매일 KST 02:10에 리포트 페이지를 갱신하고, `.github/workflows/kakao_coaching_message.yml`에서 KST 04:10에 카카오 코칭 메시지를 발송합니다. 두 워크플로는 UTC 기준으로 각각 17:10, 19:10에 예약되어 있습니다. GitHub Actions 스케줄은 시스템 부하에 따라 지연될 수 있습니다. 저장소의 Actions secrets에 필수 Garmin 값과 선택 Slack 웹훅을 등록하세요. Garmin 토큰 캐시는 해당 저장소의 Actions 캐시에 저장되므로 저장소 접근 권한을 제한하세요.
 
 Gemini가 코칭 리포트를 생성하고, `Courier` 모듈이 결과를 전송합니다. 현재 Slack 및 콘솔을 지원하며, 카카오톡이나 앱 연동은 같은 인터페이스를 구현하는 courier로 추가할 수 있습니다. GitHub Actions는 최신 코칭 리포트와 오늘의 러닝 보드를 GitHub Pages에 배포하고, 날짜별 참가자 거리·순위 스냅샷을 `data/standings.json`에 저장합니다. 스냅샷은 180일간 유지됩니다.
 
@@ -28,7 +28,9 @@ GitHub Actions 사용 시 `GEMINI_API_KEY`를 저장소 Actions secret으로 등
 
 ### GitHub Actions에서 팀원별 나에게 메시지 자동 발송
 
-GitHub Actions는 매일 리포트를 만든 뒤, Cloudflare D1에 보관된 각 사용자의 갱신 토큰으로 본인의 카카오톡 나와의 채팅방에 코치 요약을 보냅니다. 팀원은 초대 링크를 열고 카카오 로그인 및 `talk_message` 동의만 하면 됩니다. 로컬 Python 실행이나 토큰 파일 전달은 필요하지 않습니다. 한 사람의 토큰으로 다른 팀원의 채팅방에 보낼 수는 없습니다.
+매일 02:10에 생성한 리포트에서 요약 메시지 자료를 공개 Pages에 함께 배포하고, 04:10에 별도 GitHub Actions 워크플로가 이를 읽어 Cloudflare D1에 보관된 각 사용자의 갱신 토큰으로 본인의 카카오톡 나와의 채팅방에 보냅니다. 팀원은 초대 링크를 열고 카카오 로그인 및 `talk_message` 동의만 하면 됩니다. 로컬 Python 실행이나 토큰 파일 전달은 필요하지 않습니다. 한 사람의 토큰으로 다른 팀원의 채팅방에 보낼 수는 없습니다.
+
+수동으로 실행할 때는 페이지 갱신에 **Run-teller Daily Challenge Strategy Cron**, 카카오 발송에 **Run-teller Kakao Coaching Message** 워크플로를 각각 실행하세요. 카카오 발송은 해당 날짜의 리포트 자료가 없으면 이전 날짜 메시지를 보내지 않고 실패 처리합니다.
 
 #### Cloudflare Worker 최초 설정
 

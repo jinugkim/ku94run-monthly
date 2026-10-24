@@ -153,6 +153,22 @@ def coach_summary_text(result: ChallengeAnalysisResult, report: str) -> str:
     return summary[:200]
 
 
+def write_kakao_delivery_payload(
+    result: ChallengeAnalysisResult,
+    report: str,
+    output_path: Path = Path("site/kakao_delivery.json"),
+) -> Path:
+    """Publish the compact Kakao message payload alongside the daily report."""
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "text": coach_summary_text(result, report),
+        "report_url": report_page_url() or "https://jinugkim.github.io/run-teller/",
+        "date": datetime.now(ZoneInfo("Asia/Seoul")).date().isoformat(),
+    }
+    output_path.write_text(json.dumps(payload, ensure_ascii=False) + "\n", encoding="utf-8")
+    return output_path
+
+
 def write_report_page(
     result: ChallengeAnalysisResult,
     report: str,

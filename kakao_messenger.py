@@ -35,6 +35,10 @@ class KakaoMemoSender:
 
     def send(self, result: ChallengeAnalysisResult, report: str) -> None:
         """Send to every configured member; log per-user errors without exposing tokens."""
+        self.send_text(coach_summary_text(result, report), report_page_url())
+
+    def send_text(self, text: str, link_url: str | None = None) -> None:
+        """Send a prepared summary to every configured member."""
         if not self.refresh_tokens:
             logger.info("Kakao delivery skipped: no member refresh tokens are configured")
             return
@@ -44,9 +48,9 @@ class KakaoMemoSender:
 
         message = {
             "object_type": "text",
-            "text": coach_summary_text(result, report),
-            "link": {"web_url": report_page_url() or "https://jinugkim.github.io/run-teller/",
-                     "mobile_web_url": report_page_url() or "https://jinugkim.github.io/run-teller/"},
+            "text": text,
+            "link": {"web_url": link_url or "https://jinugkim.github.io/run-teller/",
+                     "mobile_web_url": link_url or "https://jinugkim.github.io/run-teller/"},
         }
         rotated = False
         sent = 0
