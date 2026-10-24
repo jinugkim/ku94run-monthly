@@ -8,4 +8,4 @@ database_name = "run-teller-kakao"
 database_id = "56238f76-67a8-484e-815b-2ae9f8873f72"
 
 [vars]
-PUBLIC_BASE_URL = "https://REPLACE_WITH_WORKER_SUBDOMAIN.workers.dev"
+PUBLIC_BASE_URL = "https://run-teller-kakao-auth.jinug-kim.workers.dev"
