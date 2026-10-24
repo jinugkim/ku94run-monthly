@@ -17,7 +17,7 @@
             {
               "name": "승학",
               "rank": 2,
-              "distance_km": 231.92,
+              "distance_km": 240.65,
               "is_self": false
             },
             {
@@ -39,21 +39,21 @@
               "is_self": false
             },
             {
-              "name": "김성은",
+              "name": "Cool Cucumber",
               "rank": 6,
+              "distance_km": 193.97,
+              "is_self": false
+            },
+            {
+              "name": "김성은",
+              "rank": 7,
               "distance_km": 190.35,
               "is_self": false
             },
             {
               "name": "정지은",
-              "rank": 7,
-              "distance_km": 179.22,
-              "is_self": false
-            },
-            {
-              "name": "Cool Cucumber",
               "rank": 8,
-              "distance_km": 165.3,
+              "distance_km": 179.22,
               "is_self": false
             },
             {
@@ -129,27 +129,27 @@
               "is_self": false
             },
             {
-              "name": "이경순",
+              "name": "이재상",
               "rank": 21,
+              "distance_km": 56.25,
+              "is_self": false
+            },
+            {
+              "name": "이경순",
+              "rank": 22,
               "distance_km": 55.2,
               "is_self": false
             },
             {
               "name": "권동철",
-              "rank": 22,
+              "rank": 23,
               "distance_km": 53.12,
               "is_self": false
             },
             {
               "name": "김민정",
-              "rank": 23,
-              "distance_km": 47.56,
-              "is_self": false
-            },
-            {
-              "name": "이재상",
               "rank": 24,
-              "distance_km": 44.24,
+              "distance_km": 47.56,
               "is_self": false
             },
             {
