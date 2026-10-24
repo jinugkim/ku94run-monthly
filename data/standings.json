@@ -29,7 +29,7 @@
             {
               "name": "Hong, Yong-Jin",
               "rank": 4,
-              "distance_km": 223.34,
+              "distance_km": 234.45,
               "is_self": false
             },
             {
@@ -93,21 +93,21 @@
               "is_self": false
             },
             {
-              "name": "문주영",
+              "name": "박혜연",
               "rank": 15,
+              "distance_km": 89.14,
+              "is_self": false
+            },
+            {
+              "name": "문주영",
+              "rank": 16,
               "distance_km": 83.06,
               "is_self": false
             },
             {
               "name": "JR Oh",
-              "rank": 16,
-              "distance_km": 81.92,
-              "is_self": false
-            },
-            {
-              "name": "박혜연",
               "rank": 17,
-              "distance_km": 79.15,
+              "distance_km": 81.92,
               "is_self": false
             },
             {
