@@ -9,6 +9,7 @@ import webbrowser
 from getpass import getpass
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
+from typing import Dict, Optional
 from urllib.parse import parse_qs, urlencode, urlparse
 
 import requests
@@ -21,7 +22,7 @@ TOKEN_FILE = Path("kakao_refresh_tokens.json")
 
 class CallbackHandler(BaseHTTPRequestHandler):
     state: str
-    result: dict[str, str] | None = None
+    result: Optional[Dict[str, str]] = None
     received = threading.Event()
 
     def do_GET(self) -> None:
@@ -86,7 +87,7 @@ def main() -> None:
         if not refresh_token:
             raise SystemExit("카카오 응답에 refresh_token이 없습니다. talk_message 동의 설정을 확인해 주세요.")
 
-        token_map: dict[str, str] = {}
+        token_map: Dict[str, str] = {}
         if TOKEN_FILE.exists():
             token_map = json.loads(TOKEN_FILE.read_text(encoding="utf-8"))
         token_map[member] = refresh_token
