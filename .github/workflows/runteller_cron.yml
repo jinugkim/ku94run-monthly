@@ -36,6 +36,26 @@ jobs:
           key: garmin-tokens-${{ runner.os }}-${{ github.run_id }}
           restore-keys: |
             garmin-tokens-${{ runner.os }}-
+      - name: Check Kakao delivery configuration
+        id: kakao-config
+        env:
+          KAKAO_REFRESH_TOKENS_JSON: ${{ secrets.KAKAO_REFRESH_TOKENS_JSON }}
+        run: |
+          if [ -n "$KAKAO_REFRESH_TOKENS_JSON" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Create GitHub App token for secret rotation
+        if: steps.kakao-config.outputs.enabled == 'true'
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ secrets.GH_APP_ID }}
+          private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: run-teller
+          permission-secrets: write
       - name: Execute Run-teller Engine
         env:
           GARMIN_EMAIL: ${{ secrets.GARMIN_EMAIL }}
@@ -43,6 +63,10 @@ jobs:
           GARMIN_CHALLENGE_UUID: ${{ secrets.GARMIN_CHALLENGE_UUID }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           KAKAO_JS_KEY: ${{ secrets.KAKAO_JS_KEY }}
+          KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
+          KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
+          KAKAO_REFRESH_TOKENS_JSON: ${{ secrets.KAKAO_REFRESH_TOKENS_JSON }}
+          GH_APP_TOKEN: ${{ steps.app-token.outputs.token }}
           GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: python main.py

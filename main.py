@@ -8,6 +8,7 @@ from courier import ConsoleCourier, Courier, SlackCourier
 from garmin_client import GarminSessionManager
 from gemini_coach import GeminiCoach
 from history_store import record_snapshot
+from kakao_messenger import KakaoMemoSender
 from prompt_builder import PromptBuilder
 from report_page import report_page_url, write_report_page
 
@@ -27,6 +28,7 @@ def main() -> None:
     page_url = report_page_url()
     courier: Courier = SlackCourier(config.slack_webhook_url) if config.slack_webhook_url else ConsoleCourier()
     courier.send(result, report, page_url)
+    KakaoMemoSender().send(result, report)
 
 
 if __name__ == "__main__":

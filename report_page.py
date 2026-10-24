@@ -139,6 +139,20 @@ def _running_board_html(result: ChallengeAnalysisResult, history: dict) -> str:
     )
 
 
+def coach_summary_text(result: ChallengeAnalysisResult, report: str) -> str:
+    """Build a compact message that fits Kakao's 200-character text template."""
+    coach_summary = re.sub(r"(?m)^\s{0,3}#{1,6}\s*|[*_`>\[\]]", "", report)
+    coach_summary = " ".join(coach_summary.split()) or "오늘도 무리하지 말고 목표 페이스를 지켜요."
+    coach_summary = coach_summary[:90].rstrip()
+    summary = (
+        f"{result.challenge_name}\n"
+        f"누적 {result.my_distance_km:.1f}/{result.target_distance_km:.1f}km · "
+        f"남은 {result.remaining_distance_km:.1f}km · {result.remaining_days}일\n"
+        f"코칭: {coach_summary}"
+    )
+    return summary[:200]
+
+
 def write_report_page(
     result: ChallengeAnalysisResult,
     report: str,
@@ -171,16 +185,7 @@ def write_report_page(
     )
     generated_at = datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M KST")
     kakao_javascript_key = json.dumps(os.getenv("KAKAO_JS_KEY", ""))
-    coach_summary = re.sub(r"(?m)^\s{0,3}#{1,6}\s*|[*_`>\[\]]", "", report)
-    coach_summary = " ".join(coach_summary.split()) or "오늘도 무리하지 말고 목표 페이스를 지켜요."
-    coach_summary = coach_summary[:90].rstrip()
-    share_text = (
-        f"{result.challenge_name}\n"
-        f"누적 {result.my_distance_km:.1f}/{result.target_distance_km:.1f}km · "
-        f"남은 {result.remaining_distance_km:.1f}km · {result.remaining_days}일\n"
-        f"코칭: {coach_summary}"
-    )[:200]
-    kakao_share_text = json.dumps(share_text, ensure_ascii=False).replace("<", "\\u003c")
+    kakao_share_text = json.dumps(coach_summary_text(result, report), ensure_ascii=False).replace("<", "\\u003c")
     html = f"""<!doctype html>
 <html lang="ko">
 <head>

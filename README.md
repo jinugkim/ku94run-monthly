@@ -26,4 +26,24 @@ GitHub Actions 사용 시 `GEMINI_API_KEY`를 저장소 Actions secret으로 등
 
 정적 호스팅에서 SDK v2 로그인은 리다이렉트 후 인가 코드를 서버에서 토큰으로 교환해야 합니다. 따라서 서버 없이 로그인한 사용자의 나와의 채팅방에 직접 보내는 메시지 API를 구현할 수 없습니다. 현재 페이지는 로그인 없이 쓸 수 있는 SDK v2 카카오톡 공유를 사용합니다. 카카오 안내: [JavaScript SDK 로그인](https://developers.kakao.com/docs/ko/kakaologin/js), [JavaScript SDK 카카오톡 공유](https://developers.kakao.com/docs/ko/kakaotalk-share/js-link).
 
+### GitHub Actions에서 팀원별 나에게 메시지 자동 발송
+
+GitHub Actions는 매일 리포트를 만든 뒤, `KAKAO_REFRESH_TOKENS_JSON`에 등록된 각 사용자의 토큰으로 본인의 나와의 채팅방에 러닝 코치 요약을 보냅니다. 각 팀원은 카카오 로그인을 통해 `talk_message` 권한에 동의해야 합니다. 한 사람의 토큰으로 다른 팀원의 나와의 채팅방에 보낼 수는 없습니다.
+
+1. 카카오 디벨로퍼스에서 카카오 로그인을 켜고 `talk_message` 동의 항목을 설정합니다. REST API 키의 로그인 리다이렉트 URI에 아래 주소를 정확히 등록합니다.
+
+   `http://localhost:8765/oauth/callback`
+
+2. 서비스 관리자가 신뢰할 수 있는 로컬 환경에서 `python kakao_oauth_setup.py`를 실행하고, 안내에 따라 재발급한 REST API 키와 카카오 로그인 클라이언트 시크릿을 입력합니다. 브라우저에서 각 팀원이 자기 카카오 계정으로 로그인하고 동의해야 합니다. 스크립트가 받은 갱신 토큰을 로컬 `kakao_refresh_tokens.json`에 저장합니다. 팀원별로 한 번씩 진행하세요.
+
+   이 파일은 `.gitignore`에 포함되어 있으므로 저장소에 커밋하지 마세요.
+
+3. `KAKAO_REST_API_KEY`, `KAKAO_CLIENT_SECRET`, `KAKAO_REFRESH_TOKENS_JSON`을 저장소 Actions secrets로 등록합니다. 로컬 파일은 GitHub CLI로 직접 올릴 수 있습니다.
+
+   `gh secret set KAKAO_REFRESH_TOKENS_JSON --repo jinugkim/run-teller < kakao_refresh_tokens.json`
+
+4. `run-teller-kakao-token-rotator` GitHub App이 `run-teller` 저장소에 설치되어 있고, `GH_APP_ID`, `GH_APP_PRIVATE_KEY` secrets가 등록돼 있어야 합니다. 워크플로가 앱 토큰을 만들어 Kakao 갱신 토큰이 교체되면 GitHub secret도 자동 갱신합니다.
+
+5. Actions 탭에서 **Run-teller Daily Challenge Strategy Cron**을 수동 실행해 확인합니다. 성공하면 각 동의 사용자 본인의 카카오톡 나와의 채팅방으로 요약이 도착합니다.
+
 Pages를 처음 사용할 때 저장소의 **Settings → Pages → Build and deployment → Source**를 **GitHub Actions**로 설정하세요. Actions 설정에서 워크플로의 저장소 쓰기를 막고 있다면 **Settings → Actions → General → Workflow permissions**에서 쓰기를 허용해야 날짜별 기록을 저장할 수 있습니다. Pages와 공개 저장소의 날짜별 기록은 누구나 볼 수 있으므로 참가자 이름·거리·순위도 공개됩니다. 보드는 누적 거리, 목표 달성 인원, 직전 기록 대비 거리 증가, 상위 순위표를 보여줍니다. 순위 그래프는 상위 6명과 본인의 최근 14회 기록을 표시하며, 첫 기록 다음부터 추이를 볼 수 있습니다.
