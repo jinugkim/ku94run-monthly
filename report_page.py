@@ -2,6 +2,7 @@
 
 from datetime import datetime
 from html import escape
+import json
 import os
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -168,6 +169,7 @@ def write_report_page(
         strip=True,
     )
     generated_at = datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M KST")
+    kakao_javascript_key = json.dumps(os.getenv("KAKAO_JS_KEY", ""))
     html = f"""<!doctype html>
 <html lang="ko">
 <head>
@@ -218,6 +220,9 @@ def write_report_page(
     .chart-legend {{ display: flex; flex-wrap: wrap; gap: 10px 16px; margin: 12px 2px; color: #52635a; font-size: .88rem; }}
     .chart-legend span {{ display: inline-flex; align-items: center; gap: 6px; }}
     .chart-legend i {{ width: 10px; height: 10px; border-radius: 50%; }}
+    .kakao-action {{ margin-top: 28px; padding: 20px; border: 1px solid #e0e5df; border-radius: 16px; background: white; }}
+    .kakao-button {{ padding: 12px 18px; border: 0; border-radius: 10px; background: #fee500; color: #191919; font: inherit; font-weight: 700; cursor: pointer; }}
+    .kakao-button:disabled {{ cursor: wait; opacity: .65; }}
     footer {{ margin-top: 18px; color: #64736c; font-size: .82rem; }}
     @media (max-width: 480px) {{ .stats {{ grid-template-columns: 1fr 1fr; }} .stat {{ padding: 12px; }} .value {{ font-size: 1.1rem; }} }}
   </style>
@@ -239,8 +244,43 @@ def write_report_page(
     <h2>오늘의 러닝 보드</h2>
     <p class="muted">친구들과 함께 쌓은 챌린지 진행 상황</p>
     {_running_board_html(result, history)}
+    <section class="kakao-action" aria-labelledby="kakao-heading">
+      <h2 id="kakao-heading">오늘의 리포트를 카카오톡으로 공유</h2>
+      <p class="muted">공유할 친구나 채팅방을 선택할 수 있습니다.</p>
+      <button class="kakao-button" id="kakao-send" type="button">카카오톡으로 리포트 공유</button>
+    </section>
     <footer>생성 시각: {generated_at}. 거리 목표가 우선이며 페이스는 사용자가 직접 관리합니다.</footer>
   </main>
+  <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.8.4/kakao.min.js" integrity="sha384-BGX7Wb16GmRFagri4bLJV2DgipVZaU2AI812GZtHtHzzDQJnfHasDXN5houxv45w" crossorigin="anonymous"></script>
+  <script>
+    (() => {{
+      const JAVASCRIPT_KEY = {kakao_javascript_key};
+      if (!window.Kakao) {{
+        alert('카카오 SDK를 불러오지 못했습니다. 네트워크 연결을 확인해 주세요.');
+        return;
+      }}
+      if (!JAVASCRIPT_KEY) {{
+        alert('카카오 JavaScript 키가 설정되지 않았습니다. GitHub Actions secret KAKAO_JS_KEY를 확인해 주세요.');
+        return;
+      }}
+      if (!Kakao.isInitialized()) Kakao.init(JAVASCRIPT_KEY);
+
+      const button = document.getElementById('kakao-send');
+      button.addEventListener('click', () => {{
+        const reportUrl = window.location.href.split('#')[0];
+        try {{
+          Kakao.Share.sendDefault({{
+            objectType: 'text',
+            text: 'Run-teller 오늘의 러닝 리포트를 확인해 보세요.',
+            link: {{ webUrl: reportUrl, mobileWebUrl: reportUrl }}
+          }});
+        }} catch (error) {{
+          console.error('Kakao share error:', error);
+          alert('카카오톡 공유를 시작하지 못했습니다. 앱 키와 도메인 설정을 확인해 주세요.');
+        }}
+      }});
+    }})();
+  </script>
 </body>
 </html>
 """
