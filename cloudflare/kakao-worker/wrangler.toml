@@ -5,7 +5,7 @@ compatibility_date = "2026-10-24"
 [[d1_databases]]
 binding = "TOKENS_DB"
 database_name = "run-teller-kakao"
-database_id = "REPLACE_WITH_D1_DATABASE_ID"
+database_id = "56238f76-67a8-484e-815b-2ae9f8873f72"
 
 [vars]
 PUBLIC_BASE_URL = "https://REPLACE_WITH_WORKER_SUBDOMAIN.workers.dev"
