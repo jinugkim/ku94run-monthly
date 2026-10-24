@@ -23,7 +23,7 @@
             {
               "name": "제진아",
               "rank": 3,
-              "distance_km": 225.23,
+              "distance_km": 234.72,
               "is_self": false
             },
             {
@@ -117,16 +117,16 @@
               "is_self": false
             },
             {
-              "name": "김진욱",
+              "name": "윤영곤 & 윤희상",
               "rank": 19,
-              "distance_km": 69.19,
-              "is_self": true
+              "distance_km": 70.94,
+              "is_self": false
             },
             {
-              "name": "윤영곤 & 윤희상",
+              "name": "김진욱",
               "rank": 20,
-              "distance_km": 61.49,
-              "is_self": false
+              "distance_km": 69.19,
+              "is_self": true
             },
             {
               "name": "이재상",
