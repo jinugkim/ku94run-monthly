@@ -30,11 +30,31 @@ GitHub Actions 사용 시 `GEMINI_API_KEY`를 저장소 Actions secret으로 등
 
 매일 02:10에 생성한 리포트에서 요약 메시지 자료를 공개 Pages에 함께 배포하고, 04:10에 별도 GitHub Actions 워크플로가 이를 읽어 Cloudflare D1에 보관된 각 사용자의 갱신 토큰으로 본인의 카카오톡 나와의 채팅방에 보냅니다. 팀원은 초대 링크를 열고 카카오 로그인 및 `talk_message` 동의만 하면 됩니다. 로컬 Python 실행이나 토큰 파일 전달은 필요하지 않습니다. 한 사람의 토큰으로 다른 팀원의 채팅방에 보낼 수는 없습니다.
 
+#### 운영 체크리스트
+
+- 저장소 Actions secrets: `GARMIN_EMAIL`, `GARMIN_PASSWORD`, `GARMIN_CHALLENGE_UUID`, `GEMINI_API_KEY`, `KAKAO_REST_API_KEY`, `KAKAO_CLIENT_SECRET`, `KAKAO_SYNC_TOKEN`, `KAKAO_JS_KEY`
+- 저장소 Actions variable: `KAKAO_SYNC_URL` (Cloudflare Worker의 `workers.dev` 주소)
+- Cloudflare Worker secrets: `KAKAO_REST_API_KEY`, `KAKAO_CLIENT_SECRET`, `ADMIN_TOKEN`, `SYNC_TOKEN`. `SYNC_TOKEN`은 GitHub의 `KAKAO_SYNC_TOKEN`과 같은 값이어야 합니다.
+- 토큰 원본은 Cloudflare D1입니다. `KAKAO_REFRESH_TOKENS_JSON` secret은 이전 로컬/환경변수 방식의 잔여 항목으로, 현재 Actions 발송 워크플로에서는 사용하지 않습니다.
+
+최근 수동 발송 확인: GitHub Actions run `40069548791`이 성공했습니다. 이는 워크플로가 오류 없이 끝났다는 뜻입니다. 팀원별 전송 결과는 run 로그의 `Send Kakao coaching summary` 단계에서 `Kakao summary sent` 및 완료 건수를 확인하고, 실제 수신 여부는 수신자에게 확인하세요.
+
+정기 운영은 별도 조치 없이 예약 실행을 사용합니다. 수동 점검은 먼저 **Run-teller Daily Challenge Strategy Cron**을 실행해 오늘 리포트를 Pages에 배포한 뒤, **Run-teller Kakao Coaching Message**를 실행합니다. 발송은 저장된 모든 팀원을 대상으로 하므로, 시험 실행도 전체 대상에게 메시지를 보냅니다. 최근 실행 확인 명령은 다음과 같습니다.
+
+```sh
+gh run list --repo jinugkim/run-teller \
+  --workflow "Run-teller Kakao Coaching Message" --limit 5
+gh run watch <실행_ID> --repo jinugkim/run-teller
+gh run view <실행_ID> --repo jinugkim/run-teller --log
+```
+
 발송 워크플로는 팀원별 발송 오류나 갱신 토큰 동기화 오류가 있으면 마지막에 실패 상태로 끝나도록 되어 있습니다. Actions 실행 로그에서 해당 멤버와 오류를 확인하고, 토큰 만료·동의 철회라면 새 초대 링크를 발급해 다시 동의받으세요. 메시지는 전송됐지만 갱신 토큰 저장이 실패한 경우에도 워크플로가 실패할 수 있으며, 재실행하면 이미 받은 사람에게 중복 메시지가 갈 수 있습니다. 재실행 전 실패 지점과 수신 여부를 확인하세요.
 
 OAuth 동의 도중 닫거나 실패한 초대는 10분 뒤 다시 열 수 있습니다. 초대 링크는 7일간 유효하며 한 번 동의가 완료되면 다시 사용할 수 없습니다. 새 초대를 만들 때 만료된 초대와 OAuth 상태 기록을 정리합니다.
 
-수동으로 실행할 때는 페이지 갱신에 **Run-teller Daily Challenge Strategy Cron**, 카카오 발송에 **Run-teller Kakao Coaching Message** 워크플로를 각각 실행하세요. 카카오 발송은 해당 날짜의 리포트 자료가 없으면 이전 날짜 메시지를 보내지 않고 실패 처리합니다.
+카카오 발송은 해당 날짜의 리포트 자료가 없으면 이전 날짜 메시지를 보내지 않고 실패 처리합니다. 이 경우 먼저 Daily 워크플로의 성공 여부와 Pages 배포를 확인한 후 Kakao 워크플로를 다시 실행하세요.
+
+코드를 수정해 Worker 동작을 바꾼 경우에는 저장소에 반영한 뒤 Worker 디렉터리에서 `npx wrangler deploy`도 실행해야 변경 사항이 실제 서비스에 적용됩니다. Python 발송 코드와 워크플로 변경은 GitHub 저장소의 `main`에 반영되어야 다음 Actions 실행에 사용됩니다.
 
 #### Cloudflare Worker 최초 설정
 
