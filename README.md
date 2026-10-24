@@ -83,7 +83,7 @@ GitHub Actions는 매일 리포트를 만든 뒤, Cloudflare D1에 보관된 각
 curl --fail --silent --show-error -X POST "$PUBLIC_BASE_URL/admin/import" \
   -H "Authorization: Bearer $ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
-  --data-binary @kakao_refresh_tokens.json
+  --data-binary @../../kakao_refresh_tokens.json
 ```
 
 팀원별 초대 링크는 아래 요청으로 만듭니다. 응답으로 받은 `invite_url`을 해당 팀원에게 개인적으로 전달하세요. 링크는 7일간 유효하고 한 번만 사용할 수 있습니다.
