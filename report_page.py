@@ -5,6 +5,7 @@ from html import escape
 import json
 import os
 from pathlib import Path
+import re
 from zoneinfo import ZoneInfo
 
 import bleach
@@ -170,6 +171,16 @@ def write_report_page(
     )
     generated_at = datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M KST")
     kakao_javascript_key = json.dumps(os.getenv("KAKAO_JS_KEY", ""))
+    coach_summary = re.sub(r"(?m)^\s{0,3}#{1,6}\s*|[*_`>\[\]]", "", report)
+    coach_summary = " ".join(coach_summary.split()) or "오늘도 무리하지 말고 목표 페이스를 지켜요."
+    coach_summary = coach_summary[:90].rstrip()
+    share_text = (
+        f"{result.challenge_name}\n"
+        f"누적 {result.my_distance_km:.1f}/{result.target_distance_km:.1f}km · "
+        f"남은 {result.remaining_distance_km:.1f}km · {result.remaining_days}일\n"
+        f"코칭: {coach_summary}"
+    )[:200]
+    kakao_share_text = json.dumps(share_text, ensure_ascii=False).replace("<", "\\u003c")
     html = f"""<!doctype html>
 <html lang="ko">
 <head>
@@ -245,9 +256,9 @@ def write_report_page(
     <p class="muted">친구들과 함께 쌓은 챌린지 진행 상황</p>
     {_running_board_html(result, history)}
     <section class="kakao-action" aria-labelledby="kakao-heading">
-      <h2 id="kakao-heading">오늘의 리포트를 카카오톡으로 공유</h2>
-      <p class="muted">공유할 친구나 채팅방을 선택할 수 있습니다.</p>
-      <button class="kakao-button" id="kakao-send" type="button">카카오톡으로 리포트 공유</button>
+      <h2 id="kakao-heading">러닝 코치 요약 공유</h2>
+      <p class="muted">누적 거리와 남은 목표, 코칭 한 줄을 카카오톡에 공유합니다.</p>
+      <button class="kakao-button" id="kakao-send" type="button">코치 요약 공유하기</button>
     </section>
     <footer>생성 시각: {generated_at}. 거리 목표가 우선이며 페이스는 사용자가 직접 관리합니다.</footer>
   </main>
@@ -271,7 +282,7 @@ def write_report_page(
         try {{
           Kakao.Share.sendDefault({{
             objectType: 'text',
-            text: 'Run-teller 오늘의 러닝 리포트를 확인해 보세요.',
+            text: {kakao_share_text},
             link: {{ webUrl: reportUrl, mobileWebUrl: reportUrl }}
           }});
         }} catch (error) {{

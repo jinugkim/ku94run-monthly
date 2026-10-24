@@ -20,7 +20,7 @@ GitHub Actions 사용 시 `GEMINI_API_KEY`를 저장소 Actions secret으로 등
 
 ### 카카오톡으로 리포트 공유
 
-리포트 하단 버튼은 카카오 JavaScript SDK v2의 공유 기능으로 현재 리포트 링크를 공유합니다. GitHub Actions secret `KAKAO_JS_KEY`에 카카오 디벨로퍼스의 **JavaScript 키**를 등록하세요. 워크플로가 페이지를 만들 때 키를 전달합니다. 브라우저 SDK가 사용하는 키이므로 배포된 `site/index.html`에서는 공개됩니다. REST API 키는 사용하지 마세요.
+리포트 하단의 **코치 요약 공유하기** 버튼은 카카오 JavaScript SDK v2로 챌린지명, 누적 거리, 남은 목표 거리·기간, 오늘 코칭의 앞부분을 200자 이내로 요약해 공유합니다. GitHub Actions secret `KAKAO_JS_KEY`에 카카오 디벨로퍼스의 **JavaScript 키**를 등록하세요. 워크플로가 페이지를 만들 때 키를 전달합니다. 브라우저 SDK가 사용하는 키이므로 배포된 `site/index.html`에서는 공개됩니다. REST API 키는 사용하지 마세요.
 
 카카오 디벨로퍼스의 **JavaScript SDK 도메인**에 `https://jinugkim.github.io`를, **제품 링크 관리**의 웹 도메인에 `https://jinugkim.github.io`를 등록해야 합니다. 버튼을 누르면 카카오톡 공유 대상 선택 화면이 열리고 사용자가 친구나 채팅방을 선택합니다.
 
