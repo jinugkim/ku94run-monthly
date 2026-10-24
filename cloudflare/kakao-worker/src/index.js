@@ -35,13 +35,19 @@ function authorized(request, token) {
 
 async function makeInvite(request, env) {
   if (!authorized(request, env.ADMIN_TOKEN)) return json({ error: "unauthorized" }, 401);
+  const now = Math.floor(Date.now() / 1000);
+  // Expired authorization state and invitations are no longer usable.
+  await env.TOKENS_DB.batch([
+    env.TOKENS_DB.prepare("DELETE FROM oauth_states WHERE expires_at <= ?").bind(now),
+    env.TOKENS_DB.prepare("DELETE FROM invitations WHERE expires_at <= ?").bind(now),
+  ]);
   let body;
   try { body = await request.json(); } catch { return json({ error: "invalid_json" }, 400); }
   const member = typeof body.member === "string" ? body.member.trim() : "";
   if (!member || member.length > 64 || /[\r\n]/.test(member)) return json({ error: "invalid_member" }, 400);
 
   const token = randomToken();
-  const expiresAt = Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60;
+  const expiresAt = now + 7 * 24 * 60 * 60;
   await env.TOKENS_DB.prepare(
     "INSERT INTO invitations (token_hash, member, expires_at) VALUES (?, ?, ?)",
   ).bind(await sha256(token), member, expiresAt).run();
@@ -51,13 +57,14 @@ async function makeInvite(request, env) {
 async function startOAuth(request, env, token) {
   const inviteHash = await sha256(token);
   const now = Math.floor(Date.now() / 1000);
+  const reservationCutoff = now - 10 * 60;
   const invite = await env.TOKENS_DB.prepare(
-    "SELECT member FROM invitations WHERE token_hash = ? AND reserved_at IS NULL AND used_at IS NULL AND expires_at > ?",
-  ).bind(inviteHash, now).first();
+    "SELECT member FROM invitations WHERE token_hash = ? AND (reserved_at IS NULL OR reserved_at <= ?) AND used_at IS NULL AND expires_at > ?",
+  ).bind(inviteHash, reservationCutoff, now).first();
   if (!invite) return page("초대 링크를 사용할 수 없습니다", "링크가 만료됐거나 이미 사용되었습니다. 초대한 사람에게 새 링크를 요청하세요.", 410);
   const reservation = await env.TOKENS_DB.prepare(
-    "UPDATE invitations SET reserved_at = ? WHERE token_hash = ? AND reserved_at IS NULL AND used_at IS NULL AND expires_at > ?",
-  ).bind(now, inviteHash, now).run();
+    "UPDATE invitations SET reserved_at = ? WHERE token_hash = ? AND (reserved_at IS NULL OR reserved_at <= ?) AND used_at IS NULL AND expires_at > ?",
+  ).bind(now, inviteHash, reservationCutoff, now).run();
   if (!reservation.meta.changes) return page("초대 링크를 사용할 수 없습니다", "이미 사용 중이거나 만료된 링크입니다.", 410);
 
   const state = randomToken();

@@ -30,6 +30,10 @@ GitHub Actions 사용 시 `GEMINI_API_KEY`를 저장소 Actions secret으로 등
 
 매일 02:10에 생성한 리포트에서 요약 메시지 자료를 공개 Pages에 함께 배포하고, 04:10에 별도 GitHub Actions 워크플로가 이를 읽어 Cloudflare D1에 보관된 각 사용자의 갱신 토큰으로 본인의 카카오톡 나와의 채팅방에 보냅니다. 팀원은 초대 링크를 열고 카카오 로그인 및 `talk_message` 동의만 하면 됩니다. 로컬 Python 실행이나 토큰 파일 전달은 필요하지 않습니다. 한 사람의 토큰으로 다른 팀원의 채팅방에 보낼 수는 없습니다.
 
+발송 워크플로는 팀원별 발송 오류나 갱신 토큰 동기화 오류가 있으면 마지막에 실패 상태로 끝나도록 되어 있습니다. Actions 실행 로그에서 해당 멤버와 오류를 확인하고, 토큰 만료·동의 철회라면 새 초대 링크를 발급해 다시 동의받으세요. 메시지는 전송됐지만 갱신 토큰 저장이 실패한 경우에도 워크플로가 실패할 수 있으며, 재실행하면 이미 받은 사람에게 중복 메시지가 갈 수 있습니다. 재실행 전 실패 지점과 수신 여부를 확인하세요.
+
+OAuth 동의 도중 닫거나 실패한 초대는 10분 뒤 다시 열 수 있습니다. 초대 링크는 7일간 유효하며 한 번 동의가 완료되면 다시 사용할 수 없습니다. 새 초대를 만들 때 만료된 초대와 OAuth 상태 기록을 정리합니다.
+
 수동으로 실행할 때는 페이지 갱신에 **Run-teller Daily Challenge Strategy Cron**, 카카오 발송에 **Run-teller Kakao Coaching Message** 워크플로를 각각 실행하세요. 카카오 발송은 해당 날짜의 리포트 자료가 없으면 이전 날짜 메시지를 보내지 않고 실패 처리합니다.
 
 #### Cloudflare Worker 최초 설정
@@ -99,4 +103,4 @@ curl --fail --silent --show-error -X POST "$PUBLIC_BASE_URL/admin/invites" \
 
 팀원이 링크에서 로그인과 동의를 마치면 토큰이 Cloudflare에 저장됩니다. 다음 Actions 실행에서 각자 본인의 나와의 채팅방으로 메시지가 발송됩니다. Actions 탭에서 **Run-teller Daily Challenge Strategy Cron**을 수동 실행해 확인할 수 있습니다. 기존 로컬 방식이 더 편하면 `python3 kakao_oauth_setup.py`도 계속 사용할 수 있으며, 생성한 JSON은 위 `/admin/import` 요청으로 가져오면 됩니다.
 
-Pages를 처음 사용할 때 저장소의 **Settings → Pages → Build and deployment → Source**를 **GitHub Actions**로 설정하세요. Actions 설정에서 워크플로의 저장소 쓰기를 막고 있다면 **Settings → Actions → General → Workflow permissions**에서 쓰기를 허용해야 날짜별 기록을 저장할 수 있습니다. Pages와 공개 저장소의 날짜별 기록은 누구나 볼 수 있으므로 참가자 이름·거리·순위도 공개됩니다. 보드는 누적 거리, 목표 달성 인원, 직전 기록 대비 거리 증가, 상위 순위표를 보여줍니다. 순위 그래프는 상위 6명과 본인의 최근 14회 기록을 표시하며, 첫 기록 다음부터 추이를 볼 수 있습니다.
+Pages를 처음 사용할 때 저장소의 **Settings → Pages → Build and deployment → Source**를 **GitHub Actions**로 설정하세요. Actions 설정에서 워크플로의 저장소 쓰기를 막고 있다면 **Settings → Actions → General → Workflow permissions**에서 쓰기를 허용해야 날짜별 기록을 저장할 수 있습니다. Pages와 공개 저장소의 날짜별 기록은 누구나 볼 수 있으므로 참가자 이름·거리·순위도 공개됩니다. 참가자 동의를 받고 공개 범위를 확인하세요. 공개가 적절하지 않다면 이름을 익명화하거나 보드 및 기록 저장을 비활성화해야 합니다. 보드는 누적 거리, 목표 달성 인원, 직전 기록 대비 거리 증가, 상위 순위표를 보여줍니다. 순위 그래프는 상위 6명과 본인의 최근 14회 기록을 표시하며, 첫 기록 다음부터 추이를 볼 수 있습니다.

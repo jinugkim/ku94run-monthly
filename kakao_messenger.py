@@ -54,6 +54,7 @@ class KakaoMemoSender:
         }
         rotated = False
         sent = 0
+        failures: list[str] = []
         for member, old_refresh_token in self.refresh_tokens.items():
             try:
                 access_token, new_refresh_token = self._refresh(old_refresh_token)
@@ -65,10 +66,17 @@ class KakaoMemoSender:
                 logger.info("Kakao summary sent to member %s", member)
             except (requests.RequestException, ValueError) as exc:
                 logger.error("Kakao delivery failed for member %s: %s", member, exc)
+                failures.append(member)
 
         if rotated:
-            self._save_rotated_tokens()
+            try:
+                self._save_rotated_tokens()
+            except (requests.RequestException, ValueError) as exc:
+                logger.error("Failed to persist rotated Kakao refresh tokens: %s", exc)
+                failures.append("Cloudflare token sync")
         logger.info("Kakao summary delivery complete: %d/%d sent", sent, len(self.refresh_tokens))
+        if failures:
+            raise RuntimeError("Kakao delivery or token sync failed for: " + ", ".join(failures))
 
     def _refresh(self, refresh_token: str) -> tuple[str, str | None]:
         response = requests.post(
@@ -117,5 +125,8 @@ class KakaoMemoSender:
                 json={"member": member, "refresh_token": refresh_token},
                 timeout=30,
             )
-            response.raise_for_status()
+            try:
+                response.raise_for_status()
+            except requests.RequestException as exc:
+                raise ValueError(f"Cloudflare rejected rotated token for member {member}") from exc
         logger.info("Rotated Kakao refresh tokens saved to Cloudflare")
