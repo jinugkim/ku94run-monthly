@@ -1,0 +1,11 @@
+name = "run-teller-kakao-auth"
+main = "src/index.js"
+compatibility_date = "2026-10-24"
+
+[[d1_databases]]
+binding = "TOKENS_DB"
+database_name = "run-teller-kakao"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+
+[vars]
+PUBLIC_BASE_URL = "https://REPLACE_WITH_WORKER_SUBDOMAIN.workers.dev"

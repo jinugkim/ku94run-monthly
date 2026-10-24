@@ -1,12 +1,10 @@
 """Send each opted-in teammate's running summary to their Kakao My Chatroom."""
 
-import base64
 import json
 import logging
 import os
 
 import requests
-from nacl.public import PublicKey, SealedBox
 
 from models import ChallengeAnalysisResult
 from report_page import coach_summary_text, report_page_url
@@ -23,9 +21,8 @@ class KakaoMemoSender:
     def __init__(self) -> None:
         self.rest_api_key = os.getenv("KAKAO_REST_API_KEY", "")
         self.client_secret = os.getenv("KAKAO_CLIENT_SECRET", "")
-        self.tokens_secret_name = os.getenv("KAKAO_REFRESH_TOKENS_SECRET_NAME", "KAKAO_REFRESH_TOKENS_JSON")
-        self.github_token = os.getenv("GH_APP_TOKEN", "")
-        self.repository = os.getenv("GITHUB_REPOSITORY", "")
+        self.sync_url = os.getenv("KAKAO_SYNC_URL", "").rstrip("/")
+        self.sync_token = os.getenv("KAKAO_SYNC_TOKEN", "")
         try:
             self.refresh_tokens: dict[str, str] = json.loads(os.getenv("KAKAO_REFRESH_TOKENS_JSON", "{}"))
         except json.JSONDecodeError as exc:
@@ -107,31 +104,14 @@ class KakaoMemoSender:
             raise ValueError(f"Kakao message request rejected ({detail})")
 
     def _save_rotated_tokens(self) -> None:
-        if not self.github_token or "/" not in self.repository:
-            raise ValueError("Rotated Kakao tokens cannot be saved: GitHub App token/repository is unavailable")
-        public_key_response = requests.get(
-            f"https://api.github.com/repos/{self.repository}/actions/secrets/public-key",
-            headers=self._github_headers(),
-            timeout=30,
-        )
-        public_key_response.raise_for_status()
-        public_key = public_key_response.json()
-        box = SealedBox(PublicKey(base64.b64decode(public_key["key"])))
-        encrypted_value = base64.b64encode(
-            box.encrypt(json.dumps(self.refresh_tokens, separators=(",", ":")).encode("utf-8"))
-        ).decode("ascii")
-        response = requests.put(
-            f"https://api.github.com/repos/{self.repository}/actions/secrets/{self.tokens_secret_name}",
-            headers=self._github_headers(),
-            json={"encrypted_value": encrypted_value, "key_id": public_key["key_id"]},
-            timeout=30,
-        )
-        response.raise_for_status()
-        logger.info("Rotated Kakao refresh tokens saved to GitHub Actions secret %s", self.tokens_secret_name)
-
-    def _github_headers(self) -> dict[str, str]:
-        return {
-            "Accept": "application/vnd.github+json",
-            "Authorization": f"Bearer {self.github_token}",
-            "X-GitHub-Api-Version": "2022-11-28",
-        }
+        if not self.sync_url or not self.sync_token:
+            raise ValueError("Rotated Kakao tokens cannot be saved: Cloudflare sync URL/token is unavailable")
+        for member, refresh_token in self.refresh_tokens.items():
+            response = requests.put(
+                f"{self.sync_url}/internal/tokens",
+                headers={"Authorization": f"Bearer {self.sync_token}"},
+                json={"member": member, "refresh_token": refresh_token},
+                timeout=30,
+            )
+            response.raise_for_status()
+        logger.info("Rotated Kakao refresh tokens saved to Cloudflare")

@@ -39,23 +39,28 @@ jobs:
       - name: Check Kakao delivery configuration
         id: kakao-config
         env:
-          KAKAO_REFRESH_TOKENS_JSON: ${{ secrets.KAKAO_REFRESH_TOKENS_JSON }}
+          KAKAO_SYNC_URL: ${{ vars.KAKAO_SYNC_URL }}
+          KAKAO_SYNC_TOKEN: ${{ secrets.KAKAO_SYNC_TOKEN }}
         run: |
-          if [ -n "$KAKAO_REFRESH_TOKENS_JSON" ]; then
+          if [ -n "$KAKAO_SYNC_URL" ] && [ -n "$KAKAO_SYNC_TOKEN" ]; then
             echo "enabled=true" >> "$GITHUB_OUTPUT"
           else
             echo "enabled=false" >> "$GITHUB_OUTPUT"
           fi
-      - name: Create GitHub App token for secret rotation
+      - name: Load Kakao member tokens
         if: steps.kakao-config.outputs.enabled == 'true'
-        id: app-token
-        uses: actions/create-github-app-token@v3
-        with:
-          app-id: ${{ secrets.GH_APP_ID }}
-          private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
-          repositories: run-teller
-          permission-secrets: write
+        env:
+          KAKAO_SYNC_URL: ${{ vars.KAKAO_SYNC_URL }}
+          KAKAO_SYNC_TOKEN: ${{ secrets.KAKAO_SYNC_TOKEN }}
+        run: |
+          curl --fail --silent --show-error \
+            -H "Authorization: Bearer $KAKAO_SYNC_TOKEN" \
+            "$KAKAO_SYNC_URL/internal/tokens" \
+            --output "$RUNNER_TEMP/kakao-tokens.json"
+          jq -e 'type == "object"' "$RUNNER_TEMP/kakao-tokens.json" >/dev/null
+          tokens_json="$(jq -c . "$RUNNER_TEMP/kakao-tokens.json")"
+          echo "::add-mask::$tokens_json"
+          printf 'KAKAO_REFRESH_TOKENS_JSON=%s\n' "$tokens_json" >> "$GITHUB_ENV"
       - name: Execute Run-teller Engine
         env:
           GARMIN_EMAIL: ${{ secrets.GARMIN_EMAIL }}
@@ -65,8 +70,8 @@ jobs:
           KAKAO_JS_KEY: ${{ secrets.KAKAO_JS_KEY }}
           KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
           KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
-          KAKAO_REFRESH_TOKENS_JSON: ${{ secrets.KAKAO_REFRESH_TOKENS_JSON }}
-          GH_APP_TOKEN: ${{ steps.app-token.outputs.token }}
+          KAKAO_SYNC_URL: ${{ vars.KAKAO_SYNC_URL }}
+          KAKAO_SYNC_TOKEN: ${{ secrets.KAKAO_SYNC_TOKEN }}
           GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: python main.py

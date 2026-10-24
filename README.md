@@ -28,22 +28,73 @@ GitHub Actions 사용 시 `GEMINI_API_KEY`를 저장소 Actions secret으로 등
 
 ### GitHub Actions에서 팀원별 나에게 메시지 자동 발송
 
-GitHub Actions는 매일 리포트를 만든 뒤, `KAKAO_REFRESH_TOKENS_JSON`에 등록된 각 사용자의 토큰으로 본인의 나와의 채팅방에 러닝 코치 요약을 보냅니다. 각 팀원은 카카오 로그인을 통해 `talk_message` 권한에 동의해야 합니다. 한 사람의 토큰으로 다른 팀원의 나와의 채팅방에 보낼 수는 없습니다.
+GitHub Actions는 매일 리포트를 만든 뒤, Cloudflare D1에 보관된 각 사용자의 갱신 토큰으로 본인의 카카오톡 나와의 채팅방에 코치 요약을 보냅니다. 팀원은 초대 링크를 열고 카카오 로그인 및 `talk_message` 동의만 하면 됩니다. 로컬 Python 실행이나 토큰 파일 전달은 필요하지 않습니다. 한 사람의 토큰으로 다른 팀원의 채팅방에 보낼 수는 없습니다.
 
-1. 카카오 디벨로퍼스에서 카카오 로그인을 켜고 `talk_message` 동의 항목을 설정합니다. REST API 키의 로그인 리다이렉트 URI에 아래 주소를 정확히 등록합니다.
+#### Cloudflare Worker 최초 설정
 
-   `http://localhost:8765/oauth/callback`
+1. Node.js가 설치된 컴퓨터에서 저장소를 받고 Worker 디렉터리로 이동합니다.
 
-2. 서비스 관리자가 신뢰할 수 있는 로컬 환경에서 `python kakao_oauth_setup.py`를 실행하고, 안내에 따라 재발급한 REST API 키와 카카오 로그인 클라이언트 시크릿을 입력합니다. 브라우저에서 각 팀원이 자기 카카오 계정으로 로그인하고 동의해야 합니다. 스크립트가 받은 갱신 토큰을 로컬 `kakao_refresh_tokens.json`에 저장합니다. 팀원별로 한 번씩 진행하세요.
+   ```sh
+   cd cloudflare/kakao-worker
+   npx wrangler login
+   npx wrangler d1 create run-teller-kakao
+   ```
 
-   이 파일은 `.gitignore`에 포함되어 있으므로 저장소에 커밋하지 마세요.
+2. `d1 create` 출력의 ID를 `wrangler.toml`의 `database_id`에 넣습니다. Cloudflare 대시보드에서 `workers.dev` 주소를 확인하고 `PUBLIC_BASE_URL`을 그 주소로 바꾼 뒤 배포합니다.
 
-3. `KAKAO_REST_API_KEY`, `KAKAO_CLIENT_SECRET`, `KAKAO_REFRESH_TOKENS_JSON`을 저장소 Actions secrets로 등록합니다. 로컬 파일은 GitHub CLI로 직접 올릴 수 있습니다.
+   ```sh
+   npx wrangler deploy
+   npx wrangler d1 execute run-teller-kakao --remote --file=schema.sql
+   ```
 
-   `gh secret set KAKAO_REFRESH_TOKENS_JSON --repo jinugkim/run-teller < kakao_refresh_tokens.json`
+   예를 들어 Worker 주소가 `https://run-teller-kakao-auth.example.workers.dev`라면 카카오 디벨로퍼스 REST API 키의 로그인 리다이렉트 URI에 `https://run-teller-kakao-auth.example.workers.dev/oauth/callback`을 등록합니다. `talk_message` 동의 항목도 사용 설정합니다. `PUBLIC_BASE_URL`을 바꾼 뒤 Worker를 다시 배포하세요.
 
-4. `run-teller-kakao-token-rotator` GitHub App이 `run-teller` 저장소에 설치되어 있고, `GH_APP_ID`, `GH_APP_PRIVATE_KEY` secrets가 등록돼 있어야 합니다. 워크플로가 앱 토큰을 만들어 Kakao 갱신 토큰이 교체되면 GitHub secret도 자동 갱신합니다.
+3. REST API 키와 **카카오 로그인 클라이언트 시크릿**을 Worker secret으로 등록합니다.
 
-5. Actions 탭에서 **Run-teller Daily Challenge Strategy Cron**을 수동 실행해 확인합니다. 성공하면 각 동의 사용자 본인의 카카오톡 나와의 채팅방으로 요약이 도착합니다.
+   ```sh
+   npx wrangler secret put KAKAO_REST_API_KEY
+   npx wrangler secret put KAKAO_CLIENT_SECRET
+   ```
+
+   초대 관리용 `ADMIN_TOKEN`도 생성해 Worker secret으로 등록합니다. 아래에서 발급된 초대 링크를 만들거나 기존 토큰을 가져올 때 사용합니다.
+
+   ```sh
+   export PUBLIC_BASE_URL="https://<worker-name>.<account-subdomain>.workers.dev"
+   export ADMIN_TOKEN="$(openssl rand -hex 32)"
+   printf '%s' "$ADMIN_TOKEN" | npx wrangler secret put ADMIN_TOKEN
+   ```
+
+4. Actions와 Worker 사이 인증 토큰을 만듭니다. 같은 값을 Wrangler와 GitHub Actions secret에 등록하고 Worker 주소는 Actions variable로 등록합니다.
+
+   ```sh
+   export KAKAO_SYNC_TOKEN="$(openssl rand -hex 32)"
+   printf '%s' "$KAKAO_SYNC_TOKEN" | npx wrangler secret put SYNC_TOKEN
+   printf '%s' "$KAKAO_SYNC_TOKEN" | gh secret set KAKAO_SYNC_TOKEN --repo jinugkim/run-teller
+   gh variable set KAKAO_SYNC_URL --body "$PUBLIC_BASE_URL" --repo jinugkim/run-teller
+   ```
+
+   `PUBLIC_BASE_URL`은 앞 단계에서 설정한 Worker 주소로 지정합니다. 저장소 Actions secrets에는 기존 `KAKAO_REST_API_KEY`, `KAKAO_CLIENT_SECRET`도 필요합니다. Actions가 메시지 발송 시 토큰을 갱신하는 데 사용합니다.
+
+#### 기존 토큰 가져오기 및 팀원 초대
+
+현재 `kakao_refresh_tokens.json`이 있다면 Cloudflare에 한 번 가져옵니다. `ADMIN_TOKEN`과 `PUBLIC_BASE_URL`이 현재 터미널 환경에 설정되어 있어야 합니다.
+
+```sh
+curl --fail --silent --show-error -X POST "$PUBLIC_BASE_URL/admin/import" \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  --data-binary @kakao_refresh_tokens.json
+```
+
+팀원별 초대 링크는 아래 요청으로 만듭니다. 응답으로 받은 `invite_url`을 해당 팀원에게 개인적으로 전달하세요. 링크는 7일간 유효하고 한 번만 사용할 수 있습니다.
+
+```sh
+curl --fail --silent --show-error -X POST "$PUBLIC_BASE_URL/admin/invites" \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"member":"팀원식별자"}'
+```
+
+팀원이 링크에서 로그인과 동의를 마치면 토큰이 Cloudflare에 저장됩니다. 다음 Actions 실행에서 각자 본인의 나와의 채팅방으로 메시지가 발송됩니다. Actions 탭에서 **Run-teller Daily Challenge Strategy Cron**을 수동 실행해 확인할 수 있습니다. 기존 로컬 방식이 더 편하면 `python3 kakao_oauth_setup.py`도 계속 사용할 수 있으며, 생성한 JSON은 위 `/admin/import` 요청으로 가져오면 됩니다.
 
 Pages를 처음 사용할 때 저장소의 **Settings → Pages → Build and deployment → Source**를 **GitHub Actions**로 설정하세요. Actions 설정에서 워크플로의 저장소 쓰기를 막고 있다면 **Settings → Actions → General → Workflow permissions**에서 쓰기를 허용해야 날짜별 기록을 저장할 수 있습니다. Pages와 공개 저장소의 날짜별 기록은 누구나 볼 수 있으므로 참가자 이름·거리·순위도 공개됩니다. 보드는 누적 거리, 목표 달성 인원, 직전 기록 대비 거리 증가, 상위 순위표를 보여줍니다. 순위 그래프는 상위 6명과 본인의 최근 14회 기록을 표시하며, 첫 기록 다음부터 추이를 볼 수 있습니다.
