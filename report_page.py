@@ -174,11 +174,12 @@ def write_report_page(
     report: str,
     output_dir: Path = Path("site"),
     history: dict | None = None,
+    public_board_enabled: bool = True,
 ) -> Path:
     """Write a self-contained static HTML report for the current challenge run."""
     output_dir.mkdir(parents=True, exist_ok=True)
     challenge_name = escape(result.challenge_name)
-    history = history or {
+    history = history or ({
         "snapshots": [{
             "date": datetime.now(ZoneInfo("Asia/Seoul")).date().isoformat(),
             "participants": [
@@ -186,7 +187,7 @@ def write_report_page(
                 for p in result.participants
             ],
         }]
-    }
+    } if public_board_enabled else {"snapshots": []})
     report_html = markdown.markdown(report, extensions=["extra", "sane_lists"])
     report_html = bleach.clean(
         report_html,
@@ -200,6 +201,12 @@ def write_report_page(
         strip=True,
     )
     generated_at = datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M KST")
+    board_html = (
+        '<h2>오늘의 러닝 보드</h2><p class="muted">친구들과 함께 쌓은 챌린지 진행 상황</p>'
+        + _running_board_html(result, history)
+        if public_board_enabled
+        else '<section class="private-note"><h2>러닝 보드 비공개</h2><p class="muted">참가자 기록은 공개하지 않습니다.</p></section>'
+    )
     kakao_javascript_key = json.dumps(os.getenv("KAKAO_JS_KEY", ""))
     kakao_share_text = json.dumps(coach_summary_text(result, report), ensure_ascii=False).replace("<", "\\u003c")
     html = f"""<!doctype html>
@@ -273,9 +280,7 @@ def write_report_page(
     </header>
     <h2>오늘의 코칭</h2>
     <article>{report_html}</article>
-    <h2>오늘의 러닝 보드</h2>
-    <p class="muted">친구들과 함께 쌓은 챌린지 진행 상황</p>
-    {_running_board_html(result, history)}
+    {board_html}
     <section class="kakao-action" aria-labelledby="kakao-heading">
       <h2 id="kakao-heading">러닝 코치 요약 공유</h2>
       <p class="muted">누적 거리와 남은 목표, 코칭 한 줄을 카카오톡에 공유합니다.</p>

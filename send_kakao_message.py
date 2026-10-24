@@ -21,7 +21,7 @@ def main() -> None:
         raise SystemExit("Kakao payload must contain non-empty text and report_url fields")
     if payload_date != today:
         raise SystemExit("Today's report payload is missing or stale; Kakao message was not sent")
-    KakaoMemoSender().send_text(text, report_url)
+    KakaoMemoSender().send_text(text, report_url, delivery_date=payload_date)
 
 
 if __name__ == "__main__":

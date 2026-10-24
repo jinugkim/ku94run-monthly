@@ -8,7 +8,7 @@ from config import Config
 from courier import ConsoleCourier, Courier, SlackCourier
 from garmin_client import GarminSessionManager
 from gemini_coach import GeminiCoach
-from history_store import record_snapshot
+from history_store import public_board_enabled, record_snapshot
 from kakao_messenger import KakaoMemoSender
 from prompt_builder import PromptBuilder
 from report_page import report_page_url, write_kakao_delivery_payload, write_report_page
@@ -24,8 +24,9 @@ def main() -> None:
     result = ChallengeAnalyzer().analyze(raw, target_distance_km=config.challenge_target_distance_km)
     prompt = PromptBuilder().build(result)
     report = GeminiCoach(config.gemini_api_key, config.gemini_model).generate(prompt)
-    history = record_snapshot(result)
-    write_report_page(result, report, history=history)
+    board_enabled = public_board_enabled()
+    history = record_snapshot(result) if board_enabled else None
+    write_report_page(result, report, history=history, public_board_enabled=board_enabled)
     write_kakao_delivery_payload(result, report)
     page_url = report_page_url()
     courier: Courier = SlackCourier(config.slack_webhook_url) if config.slack_webhook_url else ConsoleCourier()

@@ -3,6 +3,8 @@
 import json
 import logging
 import os
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 import requests
 
@@ -37,7 +39,7 @@ class KakaoMemoSender:
         """Send to every configured member; log per-user errors without exposing tokens."""
         self.send_text(coach_summary_text(result, report), report_page_url())
 
-    def send_text(self, text: str, link_url: str | None = None) -> None:
+    def send_text(self, text: str, link_url: str | None = None, delivery_date: str | None = None) -> None:
         """Send a prepared summary to every configured member."""
         if not self.refresh_tokens:
             logger.info("Kakao delivery skipped: no member refresh tokens are configured")
@@ -52,31 +54,92 @@ class KakaoMemoSender:
             "link": {"web_url": link_url or "https://jinugkim.github.io/run-teller/",
                      "mobile_web_url": link_url or "https://jinugkim.github.io/run-teller/"},
         }
-        rotated = False
+        delivery_date = delivery_date or datetime.now(ZoneInfo("Asia/Seoul")).date().isoformat()
         sent = 0
+        skipped = 0
         failures: list[str] = []
         for member, old_refresh_token in self.refresh_tokens.items():
+            try:
+                claim = self._claim_delivery(delivery_date, member)
+            except (requests.RequestException, ValueError) as exc:
+                logger.error("Could not claim Kakao delivery for member %s: %s", member, exc)
+                failures.append(member)
+                continue
+            if not claim["claimed"]:
+                skipped += 1
+                logger.info("Kakao delivery skipped for member %s: date status is %s", member, claim["status"])
+                continue
+
             try:
                 access_token, new_refresh_token = self._refresh(old_refresh_token)
                 if new_refresh_token and new_refresh_token != old_refresh_token:
                     self.refresh_tokens[member] = new_refresh_token
-                    rotated = True
-                self._send_message(access_token, message)
-                sent += 1
-                logger.info("Kakao summary sent to member %s", member)
+                    self._save_rotated_token(member, new_refresh_token)
             except (requests.RequestException, ValueError) as exc:
+                if not self._record_delivery(delivery_date, member, "failed", str(exc)):
+                    failures.append(f"{member} delivery history")
+                logger.error("Kakao token refresh or persistence failed for member %s: %s", member, exc)
+                failures.append(member)
+                continue
+
+            try:
+                self._send_message(access_token, message)
+            except requests.RequestException as exc:
+                if not self._record_delivery(delivery_date, member, "uncertain", "Kakao request outcome is unknown"):
+                    failures.append(f"{member} delivery history")
+                logger.error("Kakao delivery outcome is uncertain for member %s: %s", member, exc)
+                failures.append(member)
+                continue
+            except ValueError as exc:
+                if not self._record_delivery(delivery_date, member, "failed", str(exc)):
+                    failures.append(f"{member} delivery history")
                 logger.error("Kakao delivery failed for member %s: %s", member, exc)
                 failures.append(member)
+                continue
 
-        if rotated:
-            try:
-                self._save_rotated_tokens()
-            except (requests.RequestException, ValueError) as exc:
-                logger.error("Failed to persist rotated Kakao refresh tokens: %s", exc)
-                failures.append("Cloudflare token sync")
-        logger.info("Kakao summary delivery complete: %d/%d sent", sent, len(self.refresh_tokens))
+            if self._record_delivery(delivery_date, member, "sent"):
+                sent += 1
+                logger.info("Kakao summary sent to member %s", member)
+            else:
+                logger.error("Kakao message sent but delivery history update failed for member %s", member)
+                failures.append(member)
+
+        logger.info("Kakao delivery for %s: %d sent, %d already claimed, %d failed", delivery_date, sent, skipped, len(failures))
         if failures:
             raise RuntimeError("Kakao delivery or token sync failed for: " + ", ".join(failures))
+
+    def _claim_delivery(self, delivery_date: str, member: str) -> dict:
+        response = requests.post(
+            f"{self.sync_url}/internal/deliveries",
+            headers={"Authorization": f"Bearer {self.sync_token}"},
+            json={"date": delivery_date, "member": member},
+            timeout=30,
+        )
+        response.raise_for_status()
+        payload = response.json()
+        if not isinstance(payload, dict) or "claimed" not in payload:
+            raise ValueError("Cloudflare returned an invalid delivery claim")
+        return payload
+
+    def _finish_delivery(self, delivery_date: str, member: str, status: str, error: str | None = None) -> None:
+        response = requests.put(
+            f"{self.sync_url}/internal/deliveries",
+            headers={"Authorization": f"Bearer {self.sync_token}"},
+            json={"date": delivery_date, "member": member, "status": status, "error": error},
+            timeout=30,
+        )
+        response.raise_for_status()
+        payload = response.json()
+        if not isinstance(payload, dict) or not payload.get("updated"):
+            raise ValueError(f"Cloudflare could not update delivery status for member {member}")
+
+    def _record_delivery(self, delivery_date: str, member: str, status: str, error: str | None = None) -> bool:
+        try:
+            self._finish_delivery(delivery_date, member, status, error)
+            return True
+        except (requests.RequestException, ValueError) as exc:
+            logger.error("Could not record delivery status %s for member %s: %s", status, member, exc)
+            return False
 
     def _refresh(self, refresh_token: str) -> tuple[str, str | None]:
         response = requests.post(
@@ -115,18 +178,17 @@ class KakaoMemoSender:
                 detail = f"HTTP {response.status_code}"
             raise ValueError(f"Kakao message request rejected ({detail})")
 
-    def _save_rotated_tokens(self) -> None:
+    def _save_rotated_token(self, member: str, refresh_token: str) -> None:
         if not self.sync_url or not self.sync_token:
             raise ValueError("Rotated Kakao tokens cannot be saved: Cloudflare sync URL/token is unavailable")
-        for member, refresh_token in self.refresh_tokens.items():
-            response = requests.put(
-                f"{self.sync_url}/internal/tokens",
-                headers={"Authorization": f"Bearer {self.sync_token}"},
-                json={"member": member, "refresh_token": refresh_token},
-                timeout=30,
-            )
-            try:
-                response.raise_for_status()
-            except requests.RequestException as exc:
-                raise ValueError(f"Cloudflare rejected rotated token for member {member}") from exc
-        logger.info("Rotated Kakao refresh tokens saved to Cloudflare")
+        response = requests.put(
+            f"{self.sync_url}/internal/tokens",
+            headers={"Authorization": f"Bearer {self.sync_token}"},
+            json={"member": member, "refresh_token": refresh_token},
+            timeout=30,
+        )
+        try:
+            response.raise_for_status()
+        except requests.RequestException as exc:
+            raise ValueError(f"Cloudflare rejected rotated token for member {member}") from exc
+        logger.info("Rotated Kakao refresh token saved for member %s", member)

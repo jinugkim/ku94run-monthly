@@ -22,6 +22,7 @@ jobs:
       - name: Install dependencies
         run: python -m pip install -r requirements.txt
       - name: Download latest report message payload
+        id: get-payload
         env:
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: |
@@ -32,6 +33,7 @@ jobs:
             "$pages_base/kakao_delivery.json?cachebust=$(date +%s)" \
             --output "$RUNNER_TEMP/kakao_delivery.json"
           jq -e '.text and .report_url and .date' "$RUNNER_TEMP/kakao_delivery.json" >/dev/null
+          printf 'date=%s\n' "$(jq -r '.date' "$RUNNER_TEMP/kakao_delivery.json")" >> "$GITHUB_OUTPUT"
       - name: Load Kakao member tokens
         env:
           KAKAO_SYNC_URL: ${{ vars.KAKAO_SYNC_URL }}
@@ -52,3 +54,15 @@ jobs:
           KAKAO_SYNC_URL: ${{ vars.KAKAO_SYNC_URL }}
           KAKAO_SYNC_TOKEN: ${{ secrets.KAKAO_SYNC_TOKEN }}
         run: python send_kakao_message.py "$RUNNER_TEMP/kakao_delivery.json"
+      - name: Report Kakao delivery history
+        if: always() && steps.get-payload.outputs.date != ''
+        continue-on-error: true
+        env:
+          KAKAO_SYNC_URL: ${{ vars.KAKAO_SYNC_URL }}
+          KAKAO_SYNC_TOKEN: ${{ secrets.KAKAO_SYNC_TOKEN }}
+          DELIVERY_DATE: ${{ steps.get-payload.outputs.date }}
+        run: |
+          curl --fail --silent --show-error \
+            -H "Authorization: Bearer $KAKAO_SYNC_TOKEN" \
+            "$KAKAO_SYNC_URL/internal/deliveries?date=$DELIVERY_DATE" \
+            | jq -r '.[] | [.delivery_date, .member, .status, (.error // "")] | @tsv'

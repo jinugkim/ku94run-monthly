@@ -149,6 +149,47 @@ async function internalTokens(request, env) {
   return json({ error: "method_not_allowed" }, 405);
 }
 
+async function internalDeliveries(request, env, url) {
+  if (!authorized(request, env.SYNC_TOKEN)) return json({ error: "unauthorized" }, 401);
+  if (request.method === "GET") {
+    const deliveryDate = url.searchParams.get("date") || "";
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(deliveryDate)) return json({ error: "valid_date_required" }, 400);
+    const { results } = await env.TOKENS_DB.prepare(
+      "SELECT delivery_date, member, status, attempted_at, updated_at, error FROM kakao_deliveries WHERE delivery_date = ? ORDER BY member",
+    ).bind(deliveryDate).all();
+    return json(results);
+  }
+  if (request.method !== "POST" && request.method !== "PUT") return json({ error: "method_not_allowed" }, 405);
+
+  let body;
+  try { body = await request.json(); } catch { return json({ error: "invalid_json" }, 400); }
+  const deliveryDate = typeof body.date === "string" ? body.date : "";
+  const member = typeof body.member === "string" ? body.member : "";
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(deliveryDate) || !member) return json({ error: "date_and_member_required" }, 400);
+  const now = Math.floor(Date.now() / 1000);
+
+  if (request.method === "POST") {
+    const claim = await env.TOKENS_DB.prepare(
+      "INSERT INTO kakao_deliveries (delivery_date, member, status, attempted_at, updated_at, error) VALUES (?, ?, 'sending', ?, ?, NULL) ON CONFLICT(delivery_date, member) DO UPDATE SET status = 'sending', attempted_at = excluded.attempted_at, updated_at = excluded.updated_at, error = NULL WHERE kakao_deliveries.status = 'failed'",
+    ).bind(deliveryDate, member, now, now).run();
+    if (!claim.meta.changes) {
+      const existing = await env.TOKENS_DB.prepare(
+        "SELECT status FROM kakao_deliveries WHERE delivery_date = ? AND member = ?",
+      ).bind(deliveryDate, member).first();
+      return json({ claimed: false, status: existing?.status || "unknown" });
+    }
+    return json({ claimed: true, status: "sending" });
+  }
+
+  const status = typeof body.status === "string" ? body.status : "";
+  if (!["sent", "failed", "uncertain"].includes(status)) return json({ error: "invalid_status" }, 400);
+  const error = typeof body.error === "string" ? body.error.slice(0, 300) : null;
+  const result = await env.TOKENS_DB.prepare(
+    "UPDATE kakao_deliveries SET status = ?, updated_at = ?, error = ? WHERE delivery_date = ? AND member = ? AND status = 'sending'",
+  ).bind(status, now, error, deliveryDate, member).run();
+  return json({ updated: Boolean(result.meta.changes) });
+}
+
 async function importTokens(request, env) {
   if (!authorized(request, env.ADMIN_TOKEN)) return json({ error: "unauthorized" }, 401);
   let body;
@@ -170,6 +211,7 @@ export default {
     if (request.method === "POST" && url.pathname === "/admin/invites") return makeInvite(request, env);
     if (request.method === "POST" && url.pathname === "/admin/import") return importTokens(request, env);
     if ((request.method === "GET" || request.method === "PUT") && url.pathname === "/internal/tokens") return internalTokens(request, env);
+    if (["GET", "POST", "PUT"].includes(request.method) && url.pathname === "/internal/deliveries") return internalDeliveries(request, env, url);
     if (request.method === "GET" && url.pathname.startsWith("/join/")) return startOAuth(request, env, url.pathname.slice("/join/".length));
     if (request.method === "GET" && url.pathname === "/oauth/callback") return finishOAuth(request, env);
     return json({ error: "not_found" }, 404);

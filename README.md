@@ -36,8 +36,16 @@ GitHub Actions 사용 시 `GEMINI_API_KEY`를 저장소 Actions secret으로 등
 - 저장소 Actions variable: `KAKAO_SYNC_URL` (Cloudflare Worker의 `workers.dev` 주소)
 - Cloudflare Worker secrets: `KAKAO_REST_API_KEY`, `KAKAO_CLIENT_SECRET`, `ADMIN_TOKEN`, `SYNC_TOKEN`. `SYNC_TOKEN`은 GitHub의 `KAKAO_SYNC_TOKEN`과 같은 값이어야 합니다.
 - 토큰 원본은 Cloudflare D1입니다. `KAKAO_REFRESH_TOKENS_JSON` secret은 이전 로컬/환경변수 방식의 잔여 항목으로, 현재 Actions 발송 워크플로에서는 사용하지 않습니다.
+- 공개 보드를 끄려면 GitHub Actions repository variable `PUBLIC_BOARD_ENABLED`를 소문자 `false`로 설정합니다. 이후 페이지에서 보드를 숨기고 새 참가자 기록 저장을 중단합니다. 기존 `data/standings.json` 및 Git 이력은 자동 삭제되지 않으므로 과거 데이터 공개도 중단해야 한다면 별도 정리가 필요합니다.
+- 카카오 발송 이력은 Cloudflare D1의 `kakao_deliveries`에 날짜·팀원·상태별로 저장됩니다. 스키마를 갱신한 뒤 Worker를 배포해야 합니다.
 
-최근 수동 발송 확인: GitHub Actions run `40069548791`이 성공했습니다. 이는 워크플로가 오류 없이 끝났다는 뜻입니다. 팀원별 전송 결과는 run 로그의 `Send Kakao coaching summary` 단계에서 `Kakao summary sent` 및 완료 건수를 확인하고, 실제 수신 여부는 수신자에게 확인하세요.
+  ```sh
+  cd cloudflare/kakao-worker
+  npx wrangler d1 execute run-teller-kakao --remote --file=schema.sql
+  npx wrangler deploy
+  ```
+
+최근 수동 발송 확인: GitHub Actions run `40069548791`이 성공했습니다. 이는 워크플로가 오류 없이 끝났다는 뜻입니다. 이후 팀원별 결과는 `Report Kakao delivery history` 단계 및 D1 이력에서 확인하고, 실제 수신 여부는 수신자에게 확인하세요.
 
 정기 운영은 별도 조치 없이 예약 실행을 사용합니다. 수동 점검은 먼저 **Run-teller Daily Challenge Strategy Cron**을 실행해 오늘 리포트를 Pages에 배포한 뒤, **Run-teller Kakao Coaching Message**를 실행합니다. 발송은 저장된 모든 팀원을 대상으로 하므로, 시험 실행도 전체 대상에게 메시지를 보냅니다. 최근 실행 확인 명령은 다음과 같습니다.
 
@@ -46,9 +54,12 @@ gh run list --repo jinugkim/run-teller \
   --workflow "Run-teller Kakao Coaching Message" --limit 5
 gh run watch <실행_ID> --repo jinugkim/run-teller
 gh run view <실행_ID> --repo jinugkim/run-teller --log
+curl --fail --silent --show-error \
+  -H "Authorization: Bearer $KAKAO_SYNC_TOKEN" \
+  "$KAKAO_SYNC_URL/internal/deliveries?date=YYYY-MM-DD" | jq .
 ```
 
-발송 워크플로는 팀원별 발송 오류나 갱신 토큰 동기화 오류가 있으면 마지막에 실패 상태로 끝나도록 되어 있습니다. Actions 실행 로그에서 해당 멤버와 오류를 확인하고, 토큰 만료·동의 철회라면 새 초대 링크를 발급해 다시 동의받으세요. 메시지는 전송됐지만 갱신 토큰 저장이 실패한 경우에도 워크플로가 실패할 수 있으며, 재실행하면 이미 받은 사람에게 중복 메시지가 갈 수 있습니다. 재실행 전 실패 지점과 수신 여부를 확인하세요.
+같은 날짜에 다시 실행하면 `sent` 수신자는 건너뛰고 명확한 실패(`failed`)만 재시도합니다. 네트워크 타임아웃처럼 카카오 응답을 받지 못해 전송 여부가 불명확하면 `uncertain`으로 저장하고 자동 재시도하지 않습니다. 전송 성공 뒤 D1에 성공 상태를 쓰기 전에 실행이 중단되면 `sending`으로 남으며, 중복 방지를 위해 자동 재시도하지 않습니다. 이 경우 Actions 로그와 D1 이력을 보고 수신 여부를 확인하세요. 카카오 전송과 D1 기록은 원자적 작업이 아니므로 이 경계 상황에는 수동 확인이 필요합니다. 발송 오류나 토큰 동기화 오류가 있으면 Actions 실행도 실패로 끝납니다. 토큰 만료·동의 철회라면 새 초대 링크를 발급해 다시 동의받으세요. 이 이력 기능을 처음 배포할 때 과거 발송은 자동 등록되지 않으므로, 같은 KST 날짜에 이미 발송했다면 그 날짜에는 재실행하지 말고 다음 날짜부터 자동 중복 방지를 사용하세요.
 
 OAuth 동의 도중 닫거나 실패한 초대는 10분 뒤 다시 열 수 있습니다. 초대 링크는 7일간 유효하며 한 번 동의가 완료되면 다시 사용할 수 없습니다. 새 초대를 만들 때 만료된 초대와 OAuth 상태 기록을 정리합니다.
 

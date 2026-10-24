@@ -3,6 +3,7 @@
 from datetime import datetime, timedelta
 import hashlib
 import json
+import os
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -11,6 +12,13 @@ from models import ChallengeAnalysisResult
 KST = ZoneInfo("Asia/Seoul")
 DEFAULT_HISTORY_PATH = Path("data/standings.json")
 HISTORY_DAYS = 180
+
+
+def public_board_enabled() -> bool:
+    """Return whether public participant standings should be stored and rendered."""
+    return os.getenv("PUBLIC_BOARD_ENABLED", "true").strip().lower() not in {
+        "0", "false", "no", "off",
+    }
 
 
 def record_snapshot(

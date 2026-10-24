@@ -44,10 +44,12 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           KAKAO_JS_KEY: ${{ secrets.KAKAO_JS_KEY }}
           KAKAO_SEND_ENABLED: 'false'
+          PUBLIC_BOARD_ENABLED: ${{ vars.PUBLIC_BOARD_ENABLED }}
           GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: python main.py
       - name: Save standings history
+        if: vars.PUBLIC_BOARD_ENABLED != 'false'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
