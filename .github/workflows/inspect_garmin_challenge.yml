@@ -29,7 +29,7 @@ jobs:
         env:
           GARMIN_EMAIL: ${{ secrets.GARMIN_EMAIL }}
           GARMIN_PASSWORD: ${{ secrets.GARMIN_PASSWORD }}
-          GARMIN_CHALLENGE_UUID: ${{ secrets.GARMIN_CHALLENGE_UUID }}
+          GARMIN_CHALLENGE_2026_10_UUID: ${{ secrets.GARMIN_CHALLENGE_2026_10_UUID }}
           GARMIN_CHALLENGE_2026_02_UUID: ${{ secrets.GARMIN_CHALLENGE_2026_02_UUID }}
           GARMIN_CHALLENGE_2026_03_UUID: ${{ secrets.GARMIN_CHALLENGE_2026_03_UUID }}
           GARMIN_CHALLENGE_2026_04_UUID: ${{ secrets.GARMIN_CHALLENGE_2026_04_UUID }}
@@ -50,7 +50,7 @@ jobs:
             7) export GARMIN_CHALLENGE_INSPECT_UUID="$GARMIN_CHALLENGE_2026_07_UUID" ;;
             8) export GARMIN_CHALLENGE_INSPECT_UUID="$GARMIN_CHALLENGE_2026_08_UUID" ;;
             9) export GARMIN_CHALLENGE_INSPECT_UUID="$GARMIN_CHALLENGE_2026_09_UUID" ;;
-            10) export GARMIN_CHALLENGE_INSPECT_UUID="$GARMIN_CHALLENGE_UUID" ;;
+            10) export GARMIN_CHALLENGE_INSPECT_UUID="$GARMIN_CHALLENGE_2026_10_UUID" ;;
             *) echo "Unsupported month" >&2; exit 1 ;;
           esac
           python inspect_challenge_metadata.py

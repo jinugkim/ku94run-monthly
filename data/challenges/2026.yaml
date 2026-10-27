@@ -1,0 +1,169 @@
+year: 2026
+challenges:
+  - id: ku94run-2026-01
+    month: 1
+    title: "KU94RUN1월챌린지: 1.거북이(pace10이하, 거리60k) 2.토끼(pace9이하, 거리100k)"
+    garmin_uuid_secret: GARMIN_CHALLENGE_2026_01_UUID
+    goals:
+      - name: "거북이"
+        pace_limit_min_per_km: 10
+        pace_limit_operator: "<="
+        target_distance_km: 60
+      - name: "토끼"
+        pace_limit_min_per_km: 9
+        pace_limit_operator: "<="
+        target_distance_km: 100
+    status: archived
+  - id: ku94run-2026-02
+    month: 2
+    title: "KU94RUN 2월챌린지: 거북이(pace10이하, 거리 70k), 토끼(pace9이하, 거리 120k)"
+    start_date: "2026-02-01"
+    end_date: "2026-02-28"
+    garmin_uuid_secret: GARMIN_CHALLENGE_2026_02_UUID
+    goals:
+      - name: "거북이"
+        pace_limit_min_per_km: 10
+        pace_limit_operator: "<="
+        target_distance_km: 70
+      - name: "토끼"
+        pace_limit_min_per_km: 9
+        pace_limit_operator: "<="
+        target_distance_km: 120
+    status: archived
+  - id: ku94run-2026-03
+    month: 3
+    title: "KU94RUN 3월 - 거북이 10min/km이하 90km(3개월차), 토끼 9min/km이하 140km"
+    start_date: "2026-03-01"
+    end_date: "2026-03-31"
+    garmin_uuid_secret: GARMIN_CHALLENGE_2026_03_UUID
+    goals:
+      - name: "거북이"
+        pace_limit_min_per_km: 10
+        pace_limit_operator: "<="
+        target_distance_km: 90
+        stage_month: 3
+      - name: "토끼"
+        pace_limit_min_per_km: 9
+        pace_limit_operator: "<="
+        target_distance_km: 140
+    status: archived
+  - id: ku94run-2026-04
+    month: 4
+    title: "KU94RUN 4월 - 해달 10min/km 이하 110km(1개월차), 토끼 9min/km 이하 180km"
+    start_date: "2026-04-01"
+    end_date: "2026-04-30"
+    garmin_uuid_secret: GARMIN_CHALLENGE_2026_04_UUID
+    goals:
+      - name: "해달"
+        pace_limit_min_per_km: 10
+        pace_limit_operator: "<="
+        target_distance_km: 110
+        stage_month: 1
+      - name: "토끼"
+        pace_limit_min_per_km: 9
+        pace_limit_operator: "<="
+        target_distance_km: 180
+    status: archived
+  - id: ku94run-2026-05
+    month: 5
+    title: |-
+      5월챌린지
+      해달(pace10이하,거리130km-2개월차)
+      토끼(pace9이하,거리 200km)
+    start_date: "2026-05-01"
+    end_date: "2026-05-31"
+    garmin_uuid_secret: GARMIN_CHALLENGE_2026_05_UUID
+    goals:
+      - name: "해달"
+        pace_limit_min_per_km: 10
+        pace_limit_operator: "<="
+        target_distance_km: 130
+        stage_month: 2
+      - name: "토끼"
+        pace_limit_min_per_km: 9
+        pace_limit_operator: "<="
+        target_distance_km: 200
+    status: archived
+  - id: ku94run-2026-06
+    month: 6
+    title: |-
+      6월챌린지
+      거북이, 해달(pace10이하)
+      토끼(pace9이하, 거리 170km)
+    start_date: "2026-06-01"
+    end_date: "2026-06-30"
+    garmin_uuid_secret: GARMIN_CHALLENGE_2026_06_UUID
+    goals:
+      - name: "거북이, 해달"
+        pace_limit_min_per_km: 10
+        pace_limit_operator: "<="
+      - name: "토끼"
+        pace_limit_min_per_km: 9
+        pace_limit_operator: "<="
+        target_distance_km: 170
+    status: archived
+  - id: ku94run-2026-07
+    month: 7
+    title: |-
+      ku94run 7월 챌린지
+      거북이, 해달(페이스 10이하)
+      토끼(페이스 9이하, 거리150km)
+    start_date: "2026-07-01"
+    end_date: "2026-07-31"
+    garmin_uuid_secret: GARMIN_CHALLENGE_2026_07_UUID
+    goals:
+      - name: "거북이, 해달"
+        pace_limit_min_per_km: 10
+        pace_limit_operator: "<="
+      - name: "토끼"
+        pace_limit_min_per_km: 9
+        pace_limit_operator: "<="
+        target_distance_km: 150
+    status: archived
+  - id: ku94run-2026-08
+    month: 8
+    title: |-
+      ku94run 8월 챌린지
+      거북이, 해달(pace 10미만)
+      토끼(pace 9미만, 170km 이상)
+    start_date: "2026-08-01"
+    end_date: "2026-08-31"
+    garmin_uuid_secret: GARMIN_CHALLENGE_2026_08_UUID
+    goals:
+      - name: "거북이, 해달"
+        pace_limit_min_per_km: 10
+        pace_limit_operator: "<"
+      - name: "토끼"
+        pace_limit_min_per_km: 9
+        pace_limit_operator: "<"
+        target_distance_km: 170
+    status: archived
+  - id: ku94run-2026-09
+    month: 9
+    title: "KU94RUN 9월챌린지: 토끼(pace 9 이하, 200km), 슈퍼토끼(300km)"
+    start_date: "2026-09-01"
+    end_date: "2026-09-30"
+    garmin_uuid_secret: GARMIN_CHALLENGE_2026_09_UUID
+    goals:
+      - name: "토끼"
+        pace_limit_min_per_km: 9
+        pace_limit_operator: "<="
+        target_distance_km: 200
+      - name: "슈퍼토끼"
+        target_distance_km: 300
+    status: archived
+  - id: ku94run-2026-10
+    month: 10
+    title: "KU94RUN 10월챌린지: 거북이(pace 10이하), 토끼(pace 9이하, 거리 200km)"
+    start_date: "2026-10-01"
+    end_date: "2026-10-31"
+    garmin_uuid_secret: GARMIN_CHALLENGE_2026_10_UUID
+    goals:
+      - name: "거북이"
+        pace_limit_min_per_km: 10
+        pace_limit_operator: "<="
+      - name: "토끼"
+        pace_limit_min_per_km: 9
+        pace_limit_operator: "<="
+        target_distance_km: 200
+    status: active

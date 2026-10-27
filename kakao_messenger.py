@@ -51,8 +51,8 @@ class KakaoMemoSender:
         message = {
             "object_type": "text",
             "text": text,
-            "link": {"web_url": link_url or "https://jinugkim.github.io/run-teller/",
-                     "mobile_web_url": link_url or "https://jinugkim.github.io/run-teller/"},
+            "link": {"web_url": link_url or "https://jinugkim.github.io/ku94run-monthly/",
+                     "mobile_web_url": link_url or "https://jinugkim.github.io/ku94run-monthly/"},
         }
         delivery_date = delivery_date or datetime.now(ZoneInfo("Asia/Seoul")).date().isoformat()
         sent = 0

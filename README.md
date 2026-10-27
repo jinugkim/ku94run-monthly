@@ -1,4 +1,4 @@
-# Run-teller Garmin Challenge Strategy Engine
+# KU94RUN Monthly Garmin Challenge Strategy Engine
 
 가민 커스텀 챌린지 진행 상황을 불러와 목표 거리 달성량을 계산하고, Gemini로 Run-teller 코칭 리포트를 생성합니다. 워치 생체 데이터는 사용하지 않습니다.
 
@@ -6,7 +6,7 @@
 
 Python 3.12 이상에서 의존성을 설치하고 환경 변수를 설정한 뒤 `python main.py`를 실행합니다.
 
-필수 환경 변수: `GARMIN_EMAIL`, `GARMIN_PASSWORD`, `GARMIN_CHALLENGE_UUID`, `GEMINI_API_KEY`
+필수 환경 변수: `GARMIN_EMAIL`, `GARMIN_PASSWORD`, `GARMIN_CHALLENGE_UUID`, `GEMINI_API_KEY`. GitHub Actions에서는 `GARMIN_CHALLENGE_2026_10_UUID` secret을 `GARMIN_CHALLENGE_UUID` 환경 변수로 전달합니다.
 
 선택 환경 변수: `TOKEN_STORE_PATH` (기본 `~/.garminconnect`), `SLACK_WEBHOOK_URL`, `GARMIN_CHALLENGE_TARGET_KM`, `GEMINI_MODEL` (기본 `gemini-3.8-flash`)
 
@@ -32,7 +32,7 @@ GitHub Actions 사용 시 `GEMINI_API_KEY`를 저장소 Actions secret으로 등
 
 #### 운영 체크리스트
 
-- 저장소 Actions secrets: `GARMIN_EMAIL`, `GARMIN_PASSWORD`, `GARMIN_CHALLENGE_UUID`, `GEMINI_API_KEY`, `KAKAO_REST_API_KEY`, `KAKAO_CLIENT_SECRET`, `KAKAO_SYNC_TOKEN`, `KAKAO_JS_KEY`
+- 저장소 Actions secrets: `GARMIN_EMAIL`, `GARMIN_PASSWORD`, `GARMIN_CHALLENGE_2026_10_UUID`, `GEMINI_API_KEY`, `KAKAO_REST_API_KEY`, `KAKAO_CLIENT_SECRET`, `KAKAO_SYNC_TOKEN`, `KAKAO_JS_KEY`
 - 저장소 Actions variable: `KAKAO_SYNC_URL` (Cloudflare Worker의 `workers.dev` 주소)
 - Cloudflare Worker secrets: `KAKAO_REST_API_KEY`, `KAKAO_CLIENT_SECRET`, `ADMIN_TOKEN`, `SYNC_TOKEN`. `SYNC_TOKEN`은 GitHub의 `KAKAO_SYNC_TOKEN`과 같은 값이어야 합니다.
 - 토큰 원본은 Cloudflare D1입니다. `KAKAO_REFRESH_TOKENS_JSON` secret은 이전 로컬/환경변수 방식의 잔여 항목으로, 현재 Actions 발송 워크플로에서는 사용하지 않습니다.
@@ -50,10 +50,10 @@ GitHub Actions 사용 시 `GEMINI_API_KEY`를 저장소 Actions secret으로 등
 정기 운영은 별도 조치 없이 예약 실행을 사용합니다. 수동 점검은 먼저 **Run-teller Daily Challenge Strategy Cron**을 실행해 오늘 리포트를 Pages에 배포한 뒤, **Run-teller Kakao Coaching Message**를 실행합니다. 발송은 저장된 모든 팀원을 대상으로 하므로, 시험 실행도 전체 대상에게 메시지를 보냅니다. 최근 실행 확인 명령은 다음과 같습니다.
 
 ```sh
-gh run list --repo jinugkim/run-teller \
+gh run list --repo jinugkim/ku94run-monthly \
   --workflow "Run-teller Kakao Coaching Message" --limit 5
-gh run watch <실행_ID> --repo jinugkim/run-teller
-gh run view <실행_ID> --repo jinugkim/run-teller --log
+gh run watch <실행_ID> --repo jinugkim/ku94run-monthly
+gh run view <실행_ID> --repo jinugkim/ku94run-monthly --log
 curl --fail --silent --show-error \
   -H "Authorization: Bearer $KAKAO_SYNC_TOKEN" \
   "$KAKAO_SYNC_URL/internal/deliveries?date=YYYY-MM-DD" | jq .
@@ -106,8 +106,8 @@ OAuth 동의 도중 닫거나 실패한 초대는 10분 뒤 다시 열 수 있�
    ```sh
    export KAKAO_SYNC_TOKEN="$(openssl rand -hex 32)"
    printf '%s' "$KAKAO_SYNC_TOKEN" | npx wrangler secret put SYNC_TOKEN
-   printf '%s' "$KAKAO_SYNC_TOKEN" | gh secret set KAKAO_SYNC_TOKEN --repo jinugkim/run-teller
-   gh variable set KAKAO_SYNC_URL --body "$PUBLIC_BASE_URL" --repo jinugkim/run-teller
+   printf '%s' "$KAKAO_SYNC_TOKEN" | gh secret set KAKAO_SYNC_TOKEN --repo jinugkim/ku94run-monthly
+   gh variable set KAKAO_SYNC_URL --body "$PUBLIC_BASE_URL" --repo jinugkim/ku94run-monthly
    ```
 
    `PUBLIC_BASE_URL`은 앞 단계에서 설정한 Worker 주소로 지정합니다. 저장소 Actions secrets에는 기존 `KAKAO_REST_API_KEY`, `KAKAO_CLIENT_SECRET`도 필요합니다. Actions가 메시지 발송 시 토큰을 갱신하는 데 사용합니다.

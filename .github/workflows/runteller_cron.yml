@@ -40,7 +40,7 @@ jobs:
         env:
           GARMIN_EMAIL: ${{ secrets.GARMIN_EMAIL }}
           GARMIN_PASSWORD: ${{ secrets.GARMIN_PASSWORD }}
-          GARMIN_CHALLENGE_UUID: ${{ secrets.GARMIN_CHALLENGE_UUID }}
+          GARMIN_CHALLENGE_UUID: ${{ secrets.GARMIN_CHALLENGE_2026_10_UUID }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           KAKAO_JS_KEY: ${{ secrets.KAKAO_JS_KEY }}
           KAKAO_SEND_ENABLED: 'false'

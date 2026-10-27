@@ -162,7 +162,7 @@ def write_kakao_delivery_payload(
     output_path.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "text": coach_summary_text(result, report),
-        "report_url": report_page_url() or "https://jinugkim.github.io/run-teller/",
+        "report_url": report_page_url() or "https://jinugkim.github.io/ku94run-monthly/",
         "date": datetime.now(ZoneInfo("Asia/Seoul")).date().isoformat(),
     }
     output_path.write_text(json.dumps(payload, ensure_ascii=False) + "\n", encoding="utf-8")
