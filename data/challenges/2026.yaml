@@ -4,15 +4,14 @@ challenges:
     month: 1
     title: "KU94RUN1월챌린지: 1.거북이(pace10이하, 거리60k) 2.토끼(pace9이하, 거리100k)"
     garmin_uuid_secret: GARMIN_CHALLENGE_2026_01_UUID
+    target_distance_km: 100 # Shared achievement threshold: use the longest tier goal.
     goals:
       - name: "거북이"
         pace_limit_min_per_km: 10
         pace_limit_operator: "<="
-        target_distance_km: 60
       - name: "토끼"
         pace_limit_min_per_km: 9
         pace_limit_operator: "<="
-        target_distance_km: 100
     status: archived
   - id: ku94run-2026-02
     month: 2
@@ -20,15 +19,14 @@ challenges:
     start_date: "2026-02-01"
     end_date: "2026-02-28"
     garmin_uuid_secret: GARMIN_CHALLENGE_2026_02_UUID
+    target_distance_km: 120 # Shared achievement threshold: use the longest tier goal.
     goals:
       - name: "거북이"
         pace_limit_min_per_km: 10
         pace_limit_operator: "<="
-        target_distance_km: 70
       - name: "토끼"
         pace_limit_min_per_km: 9
         pace_limit_operator: "<="
-        target_distance_km: 120
     status: archived
   - id: ku94run-2026-03
     month: 3
@@ -36,16 +34,15 @@ challenges:
     start_date: "2026-03-01"
     end_date: "2026-03-31"
     garmin_uuid_secret: GARMIN_CHALLENGE_2026_03_UUID
+    target_distance_km: 140 # Shared achievement threshold: use the longest tier goal.
     goals:
       - name: "거북이"
         pace_limit_min_per_km: 10
         pace_limit_operator: "<="
-        target_distance_km: 90
         stage_month: 3
       - name: "토끼"
         pace_limit_min_per_km: 9
         pace_limit_operator: "<="
-        target_distance_km: 140
     status: archived
   - id: ku94run-2026-04
     month: 4
@@ -53,16 +50,15 @@ challenges:
     start_date: "2026-04-01"
     end_date: "2026-04-30"
     garmin_uuid_secret: GARMIN_CHALLENGE_2026_04_UUID
+    target_distance_km: 180 # Shared achievement threshold: use the longest tier goal.
     goals:
       - name: "해달"
         pace_limit_min_per_km: 10
         pace_limit_operator: "<="
-        target_distance_km: 110
         stage_month: 1
       - name: "토끼"
         pace_limit_min_per_km: 9
         pace_limit_operator: "<="
-        target_distance_km: 180
     status: archived
   - id: ku94run-2026-05
     month: 5
@@ -73,16 +69,15 @@ challenges:
     start_date: "2026-05-01"
     end_date: "2026-05-31"
     garmin_uuid_secret: GARMIN_CHALLENGE_2026_05_UUID
+    target_distance_km: 200 # Shared achievement threshold: use the longest tier goal.
     goals:
       - name: "해달"
         pace_limit_min_per_km: 10
         pace_limit_operator: "<="
-        target_distance_km: 130
         stage_month: 2
       - name: "토끼"
         pace_limit_min_per_km: 9
         pace_limit_operator: "<="
-        target_distance_km: 200
     status: archived
   - id: ku94run-2026-06
     month: 6
@@ -93,6 +88,7 @@ challenges:
     start_date: "2026-06-01"
     end_date: "2026-06-30"
     garmin_uuid_secret: GARMIN_CHALLENGE_2026_06_UUID
+    target_distance_km: 170 # Shared achievement threshold: use the longest tier goal.
     goals:
       - name: "거북이, 해달"
         pace_limit_min_per_km: 10
@@ -100,7 +96,6 @@ challenges:
       - name: "토끼"
         pace_limit_min_per_km: 9
         pace_limit_operator: "<="
-        target_distance_km: 170
     status: archived
   - id: ku94run-2026-07
     month: 7
@@ -111,6 +106,7 @@ challenges:
     start_date: "2026-07-01"
     end_date: "2026-07-31"
     garmin_uuid_secret: GARMIN_CHALLENGE_2026_07_UUID
+    target_distance_km: 150 # Shared achievement threshold: use the longest tier goal.
     goals:
       - name: "거북이, 해달"
         pace_limit_min_per_km: 10
@@ -118,7 +114,6 @@ challenges:
       - name: "토끼"
         pace_limit_min_per_km: 9
         pace_limit_operator: "<="
-        target_distance_km: 150
     status: archived
   - id: ku94run-2026-08
     month: 8
@@ -129,6 +124,7 @@ challenges:
     start_date: "2026-08-01"
     end_date: "2026-08-31"
     garmin_uuid_secret: GARMIN_CHALLENGE_2026_08_UUID
+    target_distance_km: 170 # Shared achievement threshold: use the longest tier goal.
     goals:
       - name: "거북이, 해달"
         pace_limit_min_per_km: 10
@@ -136,7 +132,6 @@ challenges:
       - name: "토끼"
         pace_limit_min_per_km: 9
         pace_limit_operator: "<"
-        target_distance_km: 170
     status: archived
   - id: ku94run-2026-09
     month: 9
@@ -144,13 +139,12 @@ challenges:
     start_date: "2026-09-01"
     end_date: "2026-09-30"
     garmin_uuid_secret: GARMIN_CHALLENGE_2026_09_UUID
+    target_distance_km: 300 # Shared achievement threshold: use the longest tier goal.
     goals:
       - name: "토끼"
         pace_limit_min_per_km: 9
         pace_limit_operator: "<="
-        target_distance_km: 200
       - name: "슈퍼토끼"
-        target_distance_km: 300
     status: archived
   - id: ku94run-2026-10
     month: 10
@@ -158,6 +152,7 @@ challenges:
     start_date: "2026-10-01"
     end_date: "2026-10-31"
     garmin_uuid_secret: GARMIN_CHALLENGE_2026_10_UUID
+    target_distance_km: 200
     goals:
       - name: "거북이"
         pace_limit_min_per_km: 10
@@ -165,5 +160,4 @@ challenges:
       - name: "토끼"
         pace_limit_min_per_km: 9
         pace_limit_operator: "<="
-        target_distance_km: 200
     status: active

@@ -109,7 +109,7 @@ def _running_board_html(result: ChallengeAnalysisResult, history: dict) -> str:
     biggest_label = f"{biggest[0]['name']} +{biggest[1]:.2f} km" if biggest and biggest[1] >= 0.01 else "기록 대기 중"
     stats = (
         ("함께 쌓은 거리", f"{total_distance:.1f} km"),
-        ("목표 달성", f"{finishers}명"),
+        ("공통 거리 목표 달성", f"{finishers}명"),
         ("직전 기록 대비 증가", f"{active_count}명" if previous else "첫 기록"),
         ("가장 많이 늘어난 거리", biggest_label),
     )
@@ -121,13 +121,13 @@ def _running_board_html(result: ChallengeAnalysisResult, history: dict) -> str:
     for person in sorted(latest, key=lambda row: int(row.get("rank", 10**9)))[:10]:
         distance = float(person.get("distance_km", 0))
         remaining = max(0.0, result.target_distance_km - distance)
-        goal_text = "목표 달성 🎉" if remaining <= 0 else f"{remaining:.2f} km 남음"
+        goal_text = "공통 목표 달성 🎉" if remaining <= 0 else f"공통 목표까지 {remaining:.2f} km"
         rows.append(
             f'<tr><td>{int(person.get("rank", 0))}</td><td>{escape(person["name"])}</td>'
             f'<td>{distance:.2f} km</td><td>{goal_text}</td></tr>'
         )
     table = (
-        '<div class="table-wrap"><table><thead><tr><th>순위</th><th>러너</th><th>누적</th><th>목표까지</th></tr></thead>'
+        '<div class="table-wrap"><table><thead><tr><th>순위</th><th>러너</th><th>누적</th><th>공통 목표까지</th></tr></thead>'
         f'<tbody>{"".join(rows)}</tbody></table></div>'
     )
     chart = _rank_history_html(result, history)
@@ -146,8 +146,8 @@ def coach_summary_text(result: ChallengeAnalysisResult, report: str) -> str:
     coach_summary = coach_summary[:90].rstrip()
     summary = (
         f"{result.challenge_name}\n"
-        f"누적 {result.my_distance_km:.1f}/{result.target_distance_km:.1f}km · "
-        f"남은 {result.remaining_distance_km:.1f}km · {result.remaining_days}일\n"
+        f"누적 {result.my_distance_km:.1f}/{result.target_distance_km:.1f}km(공통 목표) · "
+        f"목표까지 {result.remaining_distance_km:.1f}km · {result.remaining_days}일\n"
         f"코칭: {coach_summary}"
     )
     return summary[:200]
@@ -272,8 +272,8 @@ def write_report_page(
       <h1>{challenge_name}</h1>
       <p>Run-teller 일일 거리 전략 리포트</p>
       <section class="stats" aria-label="챌린지 진행 상황">
-        <div class="stat"><span class="label">누적 거리 / 목표</span><span class="value">{result.my_distance_km:.2f} / {result.target_distance_km:.2f} km</span></div>
-        <div class="stat"><span class="label">목표까지 남은 거리</span><span class="value">{result.remaining_distance_km:.2f} km</span></div>
+        <div class="stat"><span class="label">누적 거리 / 공통 목표</span><span class="value">{result.my_distance_km:.2f} / {result.target_distance_km:.2f} km</span></div>
+        <div class="stat"><span class="label">공통 목표까지 남은 거리</span><span class="value">{result.remaining_distance_km:.2f} km</span></div>
         <div class="stat"><span class="label">남은 기간</span><span class="value">{result.remaining_days}일</span></div>
         <div class="stat"><span class="label">하루 평균 필요 거리</span><span class="value">{result.daily_req_for_goal:.2f} km</span></div>
       </section>
@@ -286,7 +286,7 @@ def write_report_page(
       <p class="muted">누적 거리와 남은 목표, 코칭 한 줄을 카카오톡에 공유합니다.</p>
       <button class="kakao-button" id="kakao-send" type="button">코치 요약 공유하기</button>
     </section>
-    <footer>생성 시각: {generated_at}. 거리 목표가 우선이며 페이스는 사용자가 직접 관리합니다.</footer>
+    <footer>생성 시각: {generated_at}. 참가자 그룹을 구분할 수 없어 거리 달성 인원은 모든 그룹에 공통으로 적용되는 기준으로 집계합니다.</footer>
   </main>
   <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.8.4/kakao.min.js" integrity="sha384-BGX7Wb16GmRFagri4bLJV2DgipVZaU2AI812GZtHtHzzDQJnfHasDXN5houxv45w" crossorigin="anonymous"></script>
   <script>

@@ -4,6 +4,7 @@ import logging
 import os
 
 from challenge_analyzer import ChallengeAnalyzer
+from challenge_registry import load_active_challenge
 from config import Config
 from courier import ConsoleCourier, Courier, SlackCourier
 from garmin_client import GarminSessionManager
@@ -19,9 +20,27 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 def main() -> None:
     """Load configuration, analyze a Garmin challenge, and deliver its report."""
     config = Config.from_env()
+    active_challenge = load_active_challenge()
+    if active_challenge:
+        challenge_uuid = os.getenv(active_challenge.garmin_uuid_secret)
+        if not challenge_uuid:
+            raise ValueError(
+                f"Missing GitHub Actions Secret or environment variable: {active_challenge.garmin_uuid_secret}"
+            )
+        logging.info("Selected registered challenge %s", active_challenge.challenge_id)
+    else:
+        challenge_uuid = config.garmin_challenge_uuid
+        if not challenge_uuid:
+            raise ValueError("Missing GARMIN_CHALLENGE_UUID and no active annual challenge is configured")
+
+    target_distance_km = (
+        active_challenge.target_distance_km
+        if active_challenge and active_challenge.target_distance_km is not None
+        else config.challenge_target_distance_km
+    )
     client = GarminSessionManager(config.garmin_email, config.garmin_password, str(config.token_store_path))
-    raw = client.get_challenge_detail(config.garmin_challenge_uuid)
-    result = ChallengeAnalyzer().analyze(raw, target_distance_km=config.challenge_target_distance_km)
+    raw = client.get_challenge_detail(challenge_uuid)
+    result = ChallengeAnalyzer().analyze(raw, target_distance_km=target_distance_km)
     prompt = PromptBuilder().build(result)
     report = GeminiCoach(config.gemini_api_key, config.gemini_model).generate(prompt)
     board_enabled = public_board_enabled()
