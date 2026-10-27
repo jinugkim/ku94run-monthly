@@ -44,7 +44,14 @@ def main() -> None:
     raw = client.get_challenge_detail(challenge_uuid)
     name = raw.get("challengeName") or raw.get("adHocChallengeName") or raw.get("name")
     fields = find_goal_fields(raw)
-    print(json.dumps({"challenge_name": name, "goal_related_fields": fields}, ensure_ascii=False, indent=2))
+    start_date = raw.get("startDate") or raw.get("startDateLocal")
+    end_date = raw.get("endDate") or raw.get("endDateLocal")
+    print(json.dumps({
+        "challenge_name": name,
+        "start_date": start_date,
+        "end_date": end_date,
+        "goal_related_fields": fields,
+    }, ensure_ascii=False, indent=2))
     if not fields:
         print("No obvious goal-related fields found; inspect the challenge title/rules manually.")
 
