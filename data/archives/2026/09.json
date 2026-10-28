@@ -1,0 +1,219 @@
+{
+  "year": 2026,
+  "month": 9,
+  "title": "KU94RUN 9월챌린지: 토끼(pace 9 이하, 200km), 슈퍼토끼(300km)",
+  "end_date": "2026-09-30",
+  "target_distance_km": 300.0,
+  "participants": [
+    {
+      "name": "승학",
+      "rank": 1,
+      "distance_km": 321.31,
+      "is_self": false
+    },
+    {
+      "name": "제진아",
+      "rank": 2,
+      "distance_km": 300.66,
+      "is_self": false
+    },
+    {
+      "name": "Cool Cucumber",
+      "rank": 3,
+      "distance_km": 300.19,
+      "is_self": false
+    },
+    {
+      "name": "김성은",
+      "rank": 4,
+      "distance_km": 274.78,
+      "is_self": false
+    },
+    {
+      "name": "Hong, Yong-Jin",
+      "rank": 5,
+      "distance_km": 269.68,
+      "is_self": false
+    },
+    {
+      "name": "이재상",
+      "rank": 6,
+      "distance_km": 262.69,
+      "is_self": false
+    },
+    {
+      "name": "Greg HONG",
+      "rank": 7,
+      "distance_km": 233.93,
+      "is_self": false
+    },
+    {
+      "name": "정지은",
+      "rank": 8,
+      "distance_km": 223.88,
+      "is_self": false
+    },
+    {
+      "name": "Ej lee",
+      "rank": 9,
+      "distance_km": 209.47,
+      "is_self": false
+    },
+    {
+      "name": "김상종",
+      "rank": 10,
+      "distance_km": 206.64,
+      "is_self": false
+    },
+    {
+      "name": "김남연",
+      "rank": 11,
+      "distance_km": 200.65,
+      "is_self": false
+    },
+    {
+      "name": "장용민",
+      "rank": 12,
+      "distance_km": 157.64,
+      "is_self": false
+    },
+    {
+      "name": "최정(피식)",
+      "rank": 13,
+      "distance_km": 146.95,
+      "is_self": false
+    },
+    {
+      "name": "홍석헌",
+      "rank": 14,
+      "distance_km": 129.63,
+      "is_self": false
+    },
+    {
+      "name": "김진욱",
+      "rank": 15,
+      "distance_km": 127.67,
+      "is_self": true
+    },
+    {
+      "name": "Jeongsang Lee",
+      "rank": 16,
+      "distance_km": 121.51,
+      "is_self": false
+    },
+    {
+      "name": "박혜연",
+      "rank": 17,
+      "distance_km": 117.21,
+      "is_self": false
+    },
+    {
+      "name": "한성훈",
+      "rank": 18,
+      "distance_km": 116.03,
+      "is_self": false
+    },
+    {
+      "name": "JR Oh",
+      "rank": 19,
+      "distance_km": 113.86,
+      "is_self": false
+    },
+    {
+      "name": "Jake KWON",
+      "rank": 20,
+      "distance_km": 89.32,
+      "is_self": false
+    },
+    {
+      "name": "윤영곤 & 윤희상",
+      "rank": 21,
+      "distance_km": 78.87,
+      "is_self": false
+    },
+    {
+      "name": "Heejun An",
+      "rank": 22,
+      "distance_km": 74.95,
+      "is_self": false
+    },
+    {
+      "name": "권동철",
+      "rank": 23,
+      "distance_km": 70.78,
+      "is_self": false
+    },
+    {
+      "name": "문주영",
+      "rank": 24,
+      "distance_km": 69.17,
+      "is_self": false
+    },
+    {
+      "name": "김보현",
+      "rank": 25,
+      "distance_km": 62.3,
+      "is_self": false
+    },
+    {
+      "name": "남신호",
+      "rank": 26,
+      "distance_km": 44.42,
+      "is_self": false
+    },
+    {
+      "name": "이경순",
+      "rank": 27,
+      "distance_km": 42.89,
+      "is_self": false
+    },
+    {
+      "name": "마라톤 양",
+      "rank": 28,
+      "distance_km": 37.16,
+      "is_self": false
+    },
+    {
+      "name": "박승한",
+      "rank": 29,
+      "distance_km": 21.24,
+      "is_self": false
+    },
+    {
+      "name": "HS Kim, SEB",
+      "rank": 30,
+      "distance_km": 17.36,
+      "is_self": false
+    },
+    {
+      "name": "Han jiyeon",
+      "rank": 31,
+      "distance_km": 5.5,
+      "is_self": false
+    },
+    {
+      "name": "김혜진",
+      "rank": 32,
+      "distance_km": 5.07,
+      "is_self": false
+    },
+    {
+      "name": "Thomas R. Jung",
+      "rank": 33,
+      "distance_km": 0.0,
+      "is_self": false
+    },
+    {
+      "name": "Inbyoung K",
+      "rank": 33,
+      "distance_km": 0.0,
+      "is_self": false
+    },
+    {
+      "name": "임채령",
+      "rank": 33,
+      "distance_km": 0.0,
+      "is_self": false
+    }
+  ]
+}

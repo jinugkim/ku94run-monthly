@@ -1,0 +1,321 @@
+{
+  "year": 2026,
+  "month": 1,
+  "title": "KU94RUN1월챌린지: 1.거북이(pace10이하, 거리60k) 2.토끼(pace9이하, 거리100k)  ",
+  "end_date": "2026-01-31T23:59:59.0",
+  "target_distance_km": 100.0,
+  "participants": [
+    {
+      "name": "Thomas R. Jung",
+      "rank": 1,
+      "distance_km": 254.08,
+      "is_self": false
+    },
+    {
+      "name": "Cool Cucumber",
+      "rank": 2,
+      "distance_km": 233.45,
+      "is_self": false
+    },
+    {
+      "name": "Hong, Yong-Jin",
+      "rank": 3,
+      "distance_km": 211.98,
+      "is_self": false
+    },
+    {
+      "name": "제영수",
+      "rank": 4,
+      "distance_km": 200.89,
+      "is_self": false
+    },
+    {
+      "name": "Hyeyoon. Ka",
+      "rank": 5,
+      "distance_km": 194.54,
+      "is_self": false
+    },
+    {
+      "name": "이재상",
+      "rank": 6,
+      "distance_km": 175.18,
+      "is_self": false
+    },
+    {
+      "name": "제진아",
+      "rank": 7,
+      "distance_km": 153.64,
+      "is_self": false
+    },
+    {
+      "name": "김진욱",
+      "rank": 8,
+      "distance_km": 147.8,
+      "is_self": true
+    },
+    {
+      "name": "Greg HONG",
+      "rank": 9,
+      "distance_km": 147.59,
+      "is_self": false
+    },
+    {
+      "name": "마라톤 양",
+      "rank": 10,
+      "distance_km": 142.96,
+      "is_self": false
+    },
+    {
+      "name": "승학",
+      "rank": 11,
+      "distance_km": 139.79,
+      "is_self": false
+    },
+    {
+      "name": "김지영",
+      "rank": 12,
+      "distance_km": 138.13,
+      "is_self": false
+    },
+    {
+      "name": "쪼아(이승환)",
+      "rank": 13,
+      "distance_km": 133.59,
+      "is_self": false
+    },
+    {
+      "name": "Jeongsang Lee",
+      "rank": 14,
+      "distance_km": 124.6,
+      "is_self": false
+    },
+    {
+      "name": "김상종",
+      "rank": 15,
+      "distance_km": 108.97,
+      "is_self": false
+    },
+    {
+      "name": "김보현",
+      "rank": 16,
+      "distance_km": 106.94,
+      "is_self": false
+    },
+    {
+      "name": "정지은",
+      "rank": 17,
+      "distance_km": 105.8,
+      "is_self": false
+    },
+    {
+      "name": "박혜연",
+      "rank": 18,
+      "distance_km": 104.27,
+      "is_self": false
+    },
+    {
+      "name": "장용민",
+      "rank": 19,
+      "distance_km": 100.44,
+      "is_self": false
+    },
+    {
+      "name": "최정(피식)",
+      "rank": 20,
+      "distance_km": 100.21,
+      "is_self": false
+    },
+    {
+      "name": "Elika Lee",
+      "rank": 21,
+      "distance_km": 100.02,
+      "is_self": false
+    },
+    {
+      "name": "권동철",
+      "rank": 22,
+      "distance_km": 90.27,
+      "is_self": false
+    },
+    {
+      "name": "김민정",
+      "rank": 23,
+      "distance_km": 83.11,
+      "is_self": false
+    },
+    {
+      "name": "박민수",
+      "rank": 24,
+      "distance_km": 76.7,
+      "is_self": false
+    },
+    {
+      "name": "김성은",
+      "rank": 25,
+      "distance_km": 68.88,
+      "is_self": false
+    },
+    {
+      "name": "윤훈",
+      "rank": 26,
+      "distance_km": 67.53,
+      "is_self": false
+    },
+    {
+      "name": "JR Oh",
+      "rank": 27,
+      "distance_km": 65.93,
+      "is_self": false
+    },
+    {
+      "name": "이경순",
+      "rank": 28,
+      "distance_km": 62.28,
+      "is_self": false
+    },
+    {
+      "name": "자연",
+      "rank": 29,
+      "distance_km": 62.17,
+      "is_self": false
+    },
+    {
+      "name": "HS Kim, SEB",
+      "rank": 30,
+      "distance_km": 61.51,
+      "is_self": false
+    },
+    {
+      "name": "나정선",
+      "rank": 31,
+      "distance_km": 61.2,
+      "is_self": false
+    },
+    {
+      "name": "두잇나우 규백",
+      "rank": 32,
+      "distance_km": 55.38,
+      "is_self": false
+    },
+    {
+      "name": "윤영훈",
+      "rank": 33,
+      "distance_km": 54.11,
+      "is_self": false
+    },
+    {
+      "name": "김남연",
+      "rank": 34,
+      "distance_km": 47.25,
+      "is_self": false
+    },
+    {
+      "name": "이소현",
+      "rank": 35,
+      "distance_km": 39.83,
+      "is_self": false
+    },
+    {
+      "name": "Heejun An",
+      "rank": 36,
+      "distance_km": 36.42,
+      "is_self": false
+    },
+    {
+      "name": "홍석헌",
+      "rank": 37,
+      "distance_km": 29.92,
+      "is_self": false
+    },
+    {
+      "name": "박승한",
+      "rank": 38,
+      "distance_km": 26.12,
+      "is_self": false
+    },
+    {
+      "name": "Kim Bo Youn",
+      "rank": 39,
+      "distance_km": 12.75,
+      "is_self": false
+    },
+    {
+      "name": "Yunee Choe",
+      "rank": 40,
+      "distance_km": 6.81,
+      "is_self": false
+    },
+    {
+      "name": "한석준",
+      "rank": 41,
+      "distance_km": 0.0,
+      "is_self": false
+    },
+    {
+      "name": "윤영곤 & 윤희상",
+      "rank": 41,
+      "distance_km": 0.0,
+      "is_self": false
+    },
+    {
+      "name": "Jungmin Park",
+      "rank": 41,
+      "distance_km": 0.0,
+      "is_self": false
+    },
+    {
+      "name": "문주영",
+      "rank": 41,
+      "distance_km": 0.0,
+      "is_self": false
+    },
+    {
+      "name": "Inbyoung K",
+      "rank": 41,
+      "distance_km": 0.0,
+      "is_self": false
+    },
+    {
+      "name": "장근호",
+      "rank": 41,
+      "distance_km": 0.0,
+      "is_self": false
+    },
+    {
+      "name": "황혜미",
+      "rank": 41,
+      "distance_km": 0.0,
+      "is_self": false
+    },
+    {
+      "name": "안용경",
+      "rank": 41,
+      "distance_km": 0.0,
+      "is_self": false
+    },
+    {
+      "name": "허기영",
+      "rank": 41,
+      "distance_km": 0.0,
+      "is_self": false
+    },
+    {
+      "name": "남신호",
+      "rank": 41,
+      "distance_km": 0.0,
+      "is_self": false
+    },
+    {
+      "name": "Yeontak Kim",
+      "rank": 41,
+      "distance_km": 0.0,
+      "is_self": false
+    },
+    {
+      "name": "김소연",
+      "rank": 41,
+      "distance_km": 0.0,
+      "is_self": false
+    }
+  ]
+}
