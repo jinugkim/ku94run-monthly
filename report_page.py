@@ -268,6 +268,7 @@ def write_report_page(
 </head>
 <body>
   <main>
+    <p><a href="history/">2026년 지난 챌린지 결과 보기 →</a></p>
     <header>
       <h1>{challenge_name}</h1>
       <p>Run-teller 일일 거리 전략 리포트</p>

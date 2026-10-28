@@ -3,6 +3,7 @@
 import logging
 import os
 
+from archive_pages import render_archive_pages
 from challenge_analyzer import ChallengeAnalyzer
 from challenge_registry import load_active_challenge
 from config import Config
@@ -45,6 +46,7 @@ def main() -> None:
     report = GeminiCoach(config.gemini_api_key, config.gemini_model).generate(prompt)
     board_enabled = public_board_enabled()
     history = record_snapshot(result) if board_enabled else None
+    render_archive_pages()
     write_report_page(result, report, history=history, public_board_enabled=board_enabled)
     write_kakao_delivery_payload(result, report)
     page_url = report_page_url()
