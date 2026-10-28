@@ -1949,6 +1949,395 @@
               "is_self": false
             }
           ]
+        },
+        {
+          "date": "2026-10-29",
+          "participants": [
+            {
+              "name": "마라톤 양",
+              "rank": 1,
+              "distance_km": 298.52,
+              "is_self": false
+            },
+            {
+              "name": "승학",
+              "rank": 2,
+              "distance_km": 271.67,
+              "is_self": false
+            },
+            {
+              "name": "제진아",
+              "rank": 3,
+              "distance_km": 252.76,
+              "is_self": false
+            },
+            {
+              "name": "Greg HONG",
+              "rank": 4,
+              "distance_km": 245.02,
+              "is_self": false
+            },
+            {
+              "name": "Hong, Yong-Jin",
+              "rank": 5,
+              "distance_km": 234.45,
+              "is_self": false
+            },
+            {
+              "name": "김성은",
+              "rank": 6,
+              "distance_km": 232.82,
+              "is_self": false
+            },
+            {
+              "name": "Cool Cucumber",
+              "rank": 7,
+              "distance_km": 215.68,
+              "is_self": false
+            },
+            {
+              "name": "정지은",
+              "rank": 8,
+              "distance_km": 198.83,
+              "is_self": false
+            },
+            {
+              "name": "장용민",
+              "rank": 9,
+              "distance_km": 164.62,
+              "is_self": false
+            },
+            {
+              "name": "Ej lee",
+              "rank": 10,
+              "distance_km": 138.97,
+              "is_self": false
+            },
+            {
+              "name": "김혜원",
+              "rank": 11,
+              "distance_km": 127.15,
+              "is_self": false
+            },
+            {
+              "name": "김상종",
+              "rank": 12,
+              "distance_km": 124.74,
+              "is_self": false
+            },
+            {
+              "name": "김진욱",
+              "rank": 13,
+              "distance_km": 101.81,
+              "is_self": true
+            },
+            {
+              "name": "최정(피식)",
+              "rank": 14,
+              "distance_km": 101.68,
+              "is_self": false
+            },
+            {
+              "name": "김남연",
+              "rank": 15,
+              "distance_km": 96.03,
+              "is_self": false
+            },
+            {
+              "name": "JR Oh",
+              "rank": 16,
+              "distance_km": 92.02,
+              "is_self": false
+            },
+            {
+              "name": "박혜연",
+              "rank": 17,
+              "distance_km": 89.14,
+              "is_self": false
+            },
+            {
+              "name": "홍석헌",
+              "rank": 18,
+              "distance_km": 83.48,
+              "is_self": false
+            },
+            {
+              "name": "문주영",
+              "rank": 19,
+              "distance_km": 83.06,
+              "is_self": false
+            },
+            {
+              "name": "이재상",
+              "rank": 20,
+              "distance_km": 79.94,
+              "is_self": false
+            },
+            {
+              "name": "윤영곤 & 윤희상",
+              "rank": 21,
+              "distance_km": 70.94,
+              "is_self": false
+            },
+            {
+              "name": "박민수",
+              "rank": 22,
+              "distance_km": 64.0,
+              "is_self": false
+            },
+            {
+              "name": "이경순",
+              "rank": 23,
+              "distance_km": 60.59,
+              "is_self": false
+            },
+            {
+              "name": "권동철",
+              "rank": 24,
+              "distance_km": 56.38,
+              "is_self": false
+            },
+            {
+              "name": "이소현",
+              "rank": 25,
+              "distance_km": 49.78,
+              "is_self": false
+            },
+            {
+              "name": "HS Kim, SEB",
+              "rank": 26,
+              "distance_km": 48.67,
+              "is_self": false
+            },
+            {
+              "name": "김민정",
+              "rank": 27,
+              "distance_km": 47.56,
+              "is_self": false
+            },
+            {
+              "name": "Han jiyeon",
+              "rank": 28,
+              "distance_km": 39.7,
+              "is_self": false
+            },
+            {
+              "name": "한성훈",
+              "rank": 29,
+              "distance_km": 29.79,
+              "is_self": false
+            },
+            {
+              "name": "Hena Choi",
+              "rank": 30,
+              "distance_km": 26.76,
+              "is_self": false
+            },
+            {
+              "name": "박승한",
+              "rank": 31,
+              "distance_km": 25.33,
+              "is_self": false
+            },
+            {
+              "name": "Inbyoung K",
+              "rank": 32,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "안상욱",
+              "rank": 32,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "쪼아(이승환)",
+              "rank": 34,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "Elika Lee",
+              "rank": 35,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "두잇나우 규백",
+              "rank": 36,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "Jake KWON",
+              "rank": 37,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "자연",
+              "rank": 38,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "Jeongsang Lee",
+              "rank": 39,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "Thomas R. Jung",
+              "rank": 40,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "김보현",
+              "rank": 41,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "김지영",
+              "rank": 42,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "이선정",
+              "rank": 43,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "SH K",
+              "rank": 44,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "제영수",
+              "rank": 45,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "신종미",
+              "rank": 46,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "Jungmin Park",
+              "rank": 47,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "Yunee Choe",
+              "rank": 48,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "Heejun An",
+              "rank": 49,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "장근호",
+              "rank": 50,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "이종환",
+              "rank": 51,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "choonghyun",
+              "rank": 52,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "Hyeyoon. Ka",
+              "rank": 53,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "황혜미",
+              "rank": 54,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "허기영",
+              "rank": 55,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "남신호",
+              "rank": 56,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "Yeontak Kim",
+              "rank": 57,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "나정선",
+              "rank": 58,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "윤영훈",
+              "rank": 59,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "Kim Bo Youn",
+              "rank": 60,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "김소연",
+              "rank": 61,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "임채령",
+              "rank": 62,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "심창훈",
+              "rank": 63,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "김윤정",
+              "rank": 64,
+              "distance_km": 0.0,
+              "is_self": false
+            }
+          ]
         }
       ]
     }
