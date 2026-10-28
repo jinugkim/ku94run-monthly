@@ -1573,7 +1573,7 @@
             {
               "name": "승학",
               "rank": 2,
-              "distance_km": 266.75,
+              "distance_km": 271.67,
               "is_self": false
             },
             {
@@ -1585,7 +1585,7 @@
             {
               "name": "Greg HONG",
               "rank": 4,
-              "distance_km": 236.93,
+              "distance_km": 245.02,
               "is_self": false
             },
             {
@@ -1603,13 +1603,13 @@
             {
               "name": "Cool Cucumber",
               "rank": 7,
-              "distance_km": 204.53,
+              "distance_km": 215.68,
               "is_self": false
             },
             {
               "name": "정지은",
               "rank": 8,
-              "distance_km": 188.21,
+              "distance_km": 198.83,
               "is_self": false
             },
             {
@@ -1637,16 +1637,16 @@
               "is_self": false
             },
             {
-              "name": "최정(피식)",
+              "name": "김진욱",
               "rank": 13,
-              "distance_km": 101.68,
-              "is_self": false
+              "distance_km": 101.81,
+              "is_self": true
             },
             {
-              "name": "김진욱",
+              "name": "최정(피식)",
               "rank": 14,
-              "distance_km": 97.62,
-              "is_self": true
+              "distance_km": 101.68,
+              "is_self": false
             },
             {
               "name": "김남연",
@@ -1691,33 +1691,33 @@
               "is_self": false
             },
             {
-              "name": "이경순",
+              "name": "박민수",
               "rank": 22,
+              "distance_km": 64.0,
+              "is_self": false
+            },
+            {
+              "name": "이경순",
+              "rank": 23,
               "distance_km": 60.59,
               "is_self": false
             },
             {
               "name": "권동철",
-              "rank": 23,
+              "rank": 24,
               "distance_km": 56.38,
               "is_self": false
             },
             {
-              "name": "박민수",
-              "rank": 24,
-              "distance_km": 53.86,
+              "name": "이소현",
+              "rank": 25,
+              "distance_km": 49.78,
               "is_self": false
             },
             {
               "name": "김민정",
-              "rank": 25,
-              "distance_km": 47.56,
-              "is_self": false
-            },
-            {
-              "name": "이소현",
               "rank": 26,
-              "distance_km": 45.71,
+              "distance_km": 47.56,
               "is_self": false
             },
             {
