@@ -8,9 +8,6 @@ from pathlib import Path
 import re
 from zoneinfo import ZoneInfo
 
-import bleach
-import markdown
-
 from archive_pages import archive_section_html
 from models import ChallengeAnalysisResult
 
@@ -177,166 +174,62 @@ def write_report_page(
     history: dict | None = None,
     public_board_enabled: bool = True,
 ) -> Path:
-    """Write a self-contained static HTML report for the current challenge run."""
+    """Write the month-focused challenge archive as the public home page."""
     output_dir.mkdir(parents=True, exist_ok=True)
-    challenge_name = escape(result.challenge_name)
-    history = history or ({
-        "snapshots": [{
-            "date": datetime.now(ZoneInfo("Asia/Seoul")).date().isoformat(),
-            "participants": [
-                {"name": p.display_name, "rank": p.rank, "distance_km": p.distance_km, "is_self": p.is_self}
-                for p in result.participants
-            ],
-        }]
-    } if public_board_enabled else {"snapshots": []})
-    report_html = markdown.markdown(report, extensions=["extra", "sane_lists"])
-    report_html = bleach.clean(
-        report_html,
-        tags={
-            "a", "blockquote", "br", "code", "del", "em", "h1", "h2", "h3", "h4",
-            "hr", "li", "ol", "p", "pre", "strong", "table", "tbody", "td",
-            "th", "thead", "tr", "ul",
-        },
-        attributes={"a": ["href", "title"]},
-        protocols={"http", "https", "mailto"},
-        strip=True,
-    )
     generated_at = datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M KST")
-    board_html = (
-        '<h2>오늘의 러닝 보드</h2><p class="muted">친구들과 함께 쌓은 챌린지 진행 상황</p>'
-        + _running_board_html(result, history)
-        if public_board_enabled
-        else '<section class="private-note"><h2>러닝 보드 비공개</h2><p class="muted">참가자 기록은 공개하지 않습니다.</p></section>'
-    )
-    kakao_javascript_key = json.dumps(os.getenv("KAKAO_JS_KEY", ""))
-    kakao_share_text = json.dumps(coach_summary_text(result, report), ensure_ascii=False).replace("<", "\\u003c")
-    archive_html = archive_section_html()
+    archive_html = archive_section_html(current_result=result)
     html = f"""<!doctype html>
 <html lang="ko">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#10231f">
-  <title>Run-teller | {challenge_name}</title>
+  <meta name="theme-color" content="#7a1735">
+  <title>KU94 RUN | 월별 챌린지 기록</title>
   <style>
-    :root {{ color-scheme: light; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f3f5f1; color: #17221e; }}
-    body {{ margin: 0; }}
-    main {{ max-width: 780px; margin: 0 auto; padding: 32px 18px 56px; }}
-    header {{ padding: 26px; border-radius: 20px; background: #10231f; color: #f5f7f2; }}
-    header p {{ margin: 8px 0 0; color: #c3d1c8; }}
-    h1 {{ margin: 0; font-size: clamp(1.35rem, 4vw, 2rem); }}
-    h2 {{ margin: 28px 0 14px; font-size: 1.1rem; }}
-    .stats {{ display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 18px; }}
-    .stat {{ padding: 16px; border-radius: 14px; background: #1c3730; }}
-    .label {{ display: block; margin-bottom: 7px; color: #c3d1c8; font-size: .85rem; }}
-    .value {{ font-size: 1.35rem; font-weight: 700; }}
-    article {{ padding: 22px; border: 1px solid #e0e5df; border-radius: 16px; background: white; line-height: 1.75; overflow-wrap: anywhere; }}
-    article > :first-child {{ margin-top: 0; }}
-    article > :last-child {{ margin-bottom: 0; }}
-    article h1, article h2, article h3, article h4 {{ line-height: 1.4; }}
-    article h1 {{ font-size: 1.45rem; }}
-    article h2 {{ margin: 1.5em 0 .6em; font-size: 1.25rem; }}
-    article h3, article h4 {{ margin: 1.25em 0 .5em; font-size: 1.08rem; }}
-    article ul, article ol {{ padding-left: 1.5em; }}
-    article blockquote {{ margin: 1em 0; padding: .2em 1em; border-left: 3px solid #9aada2; color: #52635a; }}
-    article table {{ width: 100%; border-collapse: collapse; }}
-    article th, article td {{ padding: .5em; border: 1px solid #e0e5df; text-align: left; }}
-    article code {{ padding: .12em .3em; border-radius: 4px; background: #f0f3ef; }}
-    article pre {{ padding: 14px; overflow-x: auto; border-radius: 8px; background: #f0f3ef; }}
-    article pre code {{ padding: 0; }}
-    article a {{ color: #126a4a; }}
-    .board-stats {{ display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 14px 0 20px; }}
-    .board-stat {{ display: flex; flex-direction: column; gap: 8px; padding: 16px; border-radius: 14px; background: white; border: 1px solid #e0e5df; }}
-    .board-stat span, .muted {{ color: #64736c; font-size: .9rem; }}
-    .board-stat strong {{ font-size: 1.2rem; overflow-wrap: anywhere; }}
-    .table-wrap {{ overflow-x: auto; border-radius: 12px; background: white; }}
-    table {{ width: 100%; border-collapse: collapse; min-width: 440px; }}
-    th, td {{ padding: 11px 12px; border-bottom: 1px solid #e8ece8; text-align: left; }}
-    th {{ color: #52635a; font-size: .86rem; }}
-    .chart-heading {{ margin-top: 30px; }}
-    .chart-wrap {{ overflow-x: auto; border: 1px solid #e0e5df; border-radius: 14px; background: white; }}
-    .rank-chart {{ display: block; width: 100%; min-width: 520px; height: auto; }}
-    .grid-line {{ stroke: #e7ece8; stroke-width: 1; }}
-    .axis-label {{ fill: #64736c; font-size: 12px; }}
-    .chart-legend {{ display: flex; flex-wrap: wrap; gap: 10px 16px; margin: 12px 2px; color: #52635a; font-size: .88rem; }}
-    .chart-legend span {{ display: inline-flex; align-items: center; gap: 6px; }}
-    .chart-legend i {{ width: 10px; height: 10px; border-radius: 50%; }}
-    .kakao-action {{ margin-top: 28px; padding: 20px; border: 1px solid #e0e5df; border-radius: 16px; background: white; }}
-    .kakao-button {{ padding: 12px 18px; border: 0; border-radius: 10px; background: #fee500; color: #191919; font: inherit; font-weight: 700; cursor: pointer; }}
-    .kakao-button:disabled {{ cursor: wait; opacity: .65; }}
-    .archive-section {{ margin-top: 32px; padding: 20px; border: 1px solid #e0e5df; border-radius: 16px; background: #fff; }}
-    .archive-heading-row {{ display: flex; align-items: end; gap: 10px; flex-wrap: wrap; }}
-    .archive-heading-row h2 {{ margin: 0 0 5px; }}
-    .archive-heading-row p {{ margin: 0; }}
-    .archive-year-label {{ margin-left: auto; color: #52635a; font-size: .9rem; }}
-    .archive-year {{ padding: 8px 10px; border: 1px solid #ccd6ce; border-radius: 8px; background: #fff; color: #17221e; font: inherit; }}
-    .archive-tabs {{ display: flex; gap: 7px; overflow-x: auto; margin: 20px -2px 16px; padding: 2px 2px 8px; }}
-    .archive-tab {{ flex: 0 0 auto; padding: 9px 15px; border: 1px solid #d7dfd9; border-radius: 999px; background: #f5f7f4; color: #42534a; font: inherit; cursor: pointer; }}
-    .archive-tab[aria-selected="true"] {{ border-color: #126a4a; background: #126a4a; color: #fff; }}
+    :root {{ color-scheme: light; --ink: #2b1b20; --muted: #806f73; --crimson: #7a1735; --crimson-dark: #5d1028; --line: #eadfe2; --paper: #fffdfb; --bg: #f7f2ef; font-family: Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }}
+    * {{ box-sizing: border-box; }}
+    body {{ margin: 0; min-height: 100vh; color: var(--ink); background: radial-gradient(ellipse at 50% 0, #fffaf5 0, var(--bg) 58%); }}
+    .topbar {{ height: 66px; display: flex; align-items: center; border-bottom: 1px solid var(--line); background: rgba(255,253,251,.92); }}
+    .topbar-inner {{ width: min(100% - 40px, 920px); margin: auto; display: flex; align-items: center; justify-content: space-between; }}
+    .brand {{ display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 800; letter-spacing: .08em; }}
+    .brand-mark {{ color: var(--crimson); font-size: 18px; }}
+    .brand-divider {{ width: 1px; height: 22px; background: #d9c8cd; }}
+    .brand-note {{ color: var(--muted); font-size: 12px; }}
+    main {{ width: min(100% - 40px, 920px); margin: 38px auto 70px; }}
+    .archive-section {{ padding: 28px; border: 1px solid var(--line); border-radius: 18px; background: var(--paper); box-shadow: 0 14px 36px rgba(76,25,42,.07); }}
+    .archive-eyebrow {{ margin: 0 0 10px; color: var(--crimson); font-size: 12px; font-weight: 800; letter-spacing: .16em; }}
+    .archive-section h1 {{ margin: 0; font-size: clamp(28px, 6vw, 42px); letter-spacing: -.05em; }}
+    .archive-intro {{ margin: 10px 0 22px; color: var(--muted); font-size: 14px; }}
+    .archive-year-tabs, .archive-tabs {{ display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }}
+    .archive-year-tabs::-webkit-scrollbar, .archive-tabs::-webkit-scrollbar {{ display: none; }}
+    .archive-year-tabs {{ padding: 2px 0 12px; }}
+    .archive-year-tab {{ flex: 0 0 auto; padding: 9px 17px; border: 1px solid var(--line); border-radius: 999px; color: #606b63; background: var(--paper); font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }}
+    .archive-year-tab[aria-selected="true"] {{ border-color: var(--crimson); color: white; background: var(--crimson); box-shadow: 0 5px 14px rgba(122,23,53,.18); }}
+    .archive-tabs {{ padding: 2px 0 16px; border-bottom: 1px solid var(--line); }}
+    .archive-tab {{ display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto; padding: 10px 15px; border: 1px solid var(--line); border-radius: 999px; color: #606b63; background: var(--paper); font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }}
+    .archive-tab:hover {{ border-color: #c68d9e; }}
+    .archive-tab[aria-selected="true"] {{ border-color: var(--crimson); color: white; background: var(--crimson); }}
+    .archive-current-badge {{ padding: 3px 6px; border-radius: 999px; color: var(--crimson-dark); background: #f5e9ed; font-size: 10px; font-weight: 800; }}
+    .archive-tab[aria-selected="true"] .archive-current-badge {{ color: var(--crimson-dark); background: #fff; }}
     .archive-tab[hidden], .archive-panel[hidden] {{ display: none; }}
-    .archive-panel h3 {{ margin: 12px 0 4px; font-size: 1rem; }}
-    .archive-panel > .muted {{ margin: 0 0 12px; }}
-    .archive-table-wrap {{ overflow-x: auto; border-radius: 10px; }}
-    .archive-table-wrap table {{ min-width: 420px; }}
-    .archive-table-wrap th, .archive-table-wrap td {{ padding: 9px 10px; }}
-    footer {{ margin-top: 18px; color: #64736c; font-size: .82rem; }}
-    @media (max-width: 480px) {{ .stats {{ grid-template-columns: 1fr 1fr; }} .stat {{ padding: 12px; }} .value {{ font-size: 1.1rem; }} .archive-section {{ padding: 15px; }} .archive-year-label {{ margin-left: 0; }} }}
+    .archive-panel h3 {{ margin: 20px 0 5px; color: var(--crimson-dark); font-size: 16px; line-height: 1.5; }}
+    .archive-panel > .muted {{ margin: 0 0 14px; color: var(--muted); font-size: 13px; }}
+    .archive-table-wrap {{ overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }}
+    table {{ width: 100%; border-collapse: collapse; min-width: 480px; }}
+    th, td {{ padding: 11px 13px; border-bottom: 1px solid #f2ebed; text-align: left; }}
+    th {{ color: var(--muted); background: #fbf7f4; font-size: 12px; }}
+    td:first-child {{ width: 64px; color: #95878b; font-weight: 700; }}
+    td:nth-child(2) {{ font-weight: 700; }}
+    td:nth-child(3) {{ color: var(--crimson-dark); font-weight: 800; white-space: nowrap; }}
+    tbody tr:last-child td {{ border-bottom: 0; }}
+    footer {{ margin-top: 18px; color: #8a7c80; text-align: center; font-size: 12px; }}
+    @media (max-width: 520px) {{ .topbar {{ height: 58px; }} .topbar-inner, main {{ width: min(100% - 32px, 920px); }} main {{ margin-top: 24px; }} .brand-note {{ display: none; }} .archive-section {{ padding: 19px 16px; border-radius: 15px; }} .archive-intro {{ line-height: 1.6; }} th, td {{ padding: 10px; }} }}
   </style>
 </head>
 <body>
-  <main>
-    <p><a href="history/">2026년 지난 챌린지 결과 보기 →</a></p>
-    <header>
-      <h1>{challenge_name}</h1>
-      <p>Run-teller 일일 거리 전략 리포트</p>
-      <section class="stats" aria-label="챌린지 진행 상황">
-        <div class="stat"><span class="label">누적 거리 / 공통 목표</span><span class="value">{result.my_distance_km:.2f} / {result.target_distance_km:.2f} km</span></div>
-        <div class="stat"><span class="label">공통 목표까지 남은 거리</span><span class="value">{result.remaining_distance_km:.2f} km</span></div>
-        <div class="stat"><span class="label">남은 기간</span><span class="value">{result.remaining_days}일</span></div>
-        <div class="stat"><span class="label">하루 평균 필요 거리</span><span class="value">{result.daily_req_for_goal:.2f} km</span></div>
-      </section>
-    </header>
-    <h2>오늘의 코칭</h2>
-    <article>{report_html}</article>
-    {board_html}
-    {archive_html}
-    <section class="kakao-action" aria-labelledby="kakao-heading">
-      <h2 id="kakao-heading">러닝 코치 요약 공유</h2>
-      <p class="muted">누적 거리와 남은 목표, 코칭 한 줄을 카카오톡에 공유합니다.</p>
-      <button class="kakao-button" id="kakao-send" type="button">코치 요약 공유하기</button>
-    </section>
-    <footer>생성 시각: {generated_at}. 참가자 그룹을 구분할 수 없어 거리 달성 인원은 모든 그룹에 공통으로 적용되는 기준으로 집계합니다.</footer>
-  </main>
-  <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.8.4/kakao.min.js" integrity="sha384-BGX7Wb16GmRFagri4bLJV2DgipVZaU2AI812GZtHtHzzDQJnfHasDXN5houxv45w" crossorigin="anonymous"></script>
-  <script>
-    (() => {{
-      const JAVASCRIPT_KEY = {kakao_javascript_key};
-      if (!window.Kakao) {{
-        alert('카카오 SDK를 불러오지 못했습니다. 네트워크 연결을 확인해 주세요.');
-        return;
-      }}
-      if (!JAVASCRIPT_KEY) {{
-        alert('카카오 JavaScript 키가 설정되지 않았습니다. GitHub Actions secret KAKAO_JS_KEY를 확인해 주세요.');
-        return;
-      }}
-      if (!Kakao.isInitialized()) Kakao.init(JAVASCRIPT_KEY);
-
-      const button = document.getElementById('kakao-send');
-      button.addEventListener('click', () => {{
-        const reportUrl = window.location.href.split('#')[0];
-        try {{
-          Kakao.Share.sendDefault({{
-            objectType: 'text',
-            text: {kakao_share_text},
-            link: {{ webUrl: reportUrl, mobileWebUrl: reportUrl }}
-          }});
-        }} catch (error) {{
-          console.error('Kakao share error:', error);
-          alert('카카오톡 공유를 시작하지 못했습니다. 앱 키와 도메인 설정을 확인해 주세요.');
-        }}
-      }});
-    }})();
-  </script>
+  <header class="topbar"><div class="topbar-inner"><div class="brand"><span class="brand-mark">KU</span><span>KU94 RUN</span><span class="brand-divider" aria-hidden="true"></span><span class="brand-note">고려대학교 94학번 러닝 모임</span></div></div></header>
+  <main>{archive_html}</main>
+  <footer>KU94 RUN · 월별 챌린지 아카이브 · 생성 {generated_at}</footer>
 </body>
 </html>
 """
