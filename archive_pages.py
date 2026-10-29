@@ -44,7 +44,13 @@ def _rabbit_icon(super_rabbit: bool = False) -> str:
     )
 
 
+def _visible_participants(participants: list[dict]) -> list[dict]:
+    """Omit participants who have not recorded any distance in the challenge."""
+    return [person for person in participants if float(person.get("distance_km", 0)) > 0]
+
+
 def _participants_table_with_tiers(participants: list[dict], achievement_tiers: dict) -> str:
+    participants = _visible_participants(participants)
     rabbit_goal = float(achievement_tiers.get("rabbit", achievement_tiers.get("target_distance_km", 0)))
     super_goal = achievement_tiers.get("superrabbit")
     super_goal = float(super_goal) if super_goal is not None else None
@@ -114,7 +120,7 @@ def archive_section_html(data_root: Path = Path("data/archives"), current_result
             f'data-year="{year}" data-month="{month:02d}">{month}월{current_badge}</button>'
         )
         title = escape(str(archive["title"]))
-        participants = archive["participants"]
+        participants = _visible_participants(archive["participants"])
         tiers = archive.get("achievement_tiers") or {"rabbit": archive["target_distance_km"]}
         panels.append(
             f'<section class="archive-panel" id="{panel_id}" role="tabpanel" aria-labelledby="{tab_id}" '
@@ -202,7 +208,7 @@ def render_archive_pages(data_root: Path = Path("data/archives"), site_dir: Path
         year = int(archive["year"])
         month = int(archive["month"])
         title = escape(str(archive["title"]))
-        participants = archive["participants"]
+        participants = _visible_participants(archive["participants"])
         tiers = archive.get("achievement_tiers") or {"rabbit": archive["target_distance_km"]}
         page = f'''<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{title} 결과</title><style>body{{font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;max-width:900px;margin:30px auto;padding:0 16px;color:#2b1b20;background:#f7f2ef}}table{{width:100%;border-collapse:collapse;background:#fffdfb}}th,td{{padding:9px;border-bottom:1px solid #eadfe2;text-align:left}}th{{color:#806f73;background:#fbf7f4}}td:nth-child(3){{color:#5d1028;font-weight:700}}a{{color:#7a1735}}.achievement-icon{{width:24px;height:24px;vertical-align:middle}}</style>
