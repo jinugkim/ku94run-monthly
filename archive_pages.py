@@ -117,12 +117,12 @@ def _consistency_champion_html(
     for value in (0, round(max_value)):
         _, y = point(1, value)
         svg.append(f'<line x1="{left}" y1="{y:.1f}" x2="{width-right}" y2="{y:.1f}" class="consistency-grid"/>')
-        svg.append(f'<text x="{left-8}" y="{y+4:.1f}" text-anchor="end" class="consistency-axis">{value}</text>')
+        svg.append(f'<text x="{left-8}" y="{y+4:.1f}" text-anchor="end" class="consistency-axis">{value}점</text>')
     for month in (1, 3, 6, 9, 12):
         x, _ = point(month, 0)
         svg.append(f'<text x="{x:.1f}" y="{height-10}" text-anchor="middle" class="consistency-axis">{month}월</text>')
 
-    colors = ["#7a1735", "#b08a42", "#5d1028", "#a96d7e", "#806f73"]
+    colors = ["#7a1735", "#64748b", "#94a3b8", "#b08a42", "#cbd5e1"]
     legends = []
     for index, name in enumerate(leaders):
         color = colors[index % len(colors)]
@@ -133,12 +133,26 @@ def _consistency_champion_html(
             actual_points.append(point(month, running))
         if len(actual_points) > 1:
             coordinates = " ".join(f"{x:.1f},{y:.1f}" for x, y in actual_points)
-            svg.append(f'<polyline points="{coordinates}" fill="none" stroke="{color}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>')
-        svg.extend(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="3.5" fill="{color}"/>' for x, y in actual_points)
+            svg.append(f'<polyline class="consistency-line" pathLength="1" points="{coordinates}" fill="none" stroke="{color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>')
+        running = 0
+        for month, (x, y) in enumerate(actual_points, 1):
+            running += points_by_month.get(month, {}).get(name, 0)
+            svg.append(
+                f'<circle class="consistency-point" cx="{x:.1f}" cy="{y:.1f}" r="3.4" fill="{color}" '
+                f'tabindex="0" role="button" data-name="{escape(name, quote=True)}" '
+                f'aria-label="{year}년 {month}월 {escape(name, quote=True)} {running}점" '
+                f'data-month="{year}년 {month}월" data-value="{running}" data-label="누적 포인트"/>'
+            )
         if forecast:
             start_x, start_y = actual_points[-1]
             end_x, end_y = point(12, estimates[name])
-            svg.append(f'<line x1="{start_x:.1f}" y1="{start_y:.1f}" x2="{end_x:.1f}" y2="{end_y:.1f}" stroke="{color}" stroke-width="2" stroke-dasharray="6 5" opacity=".7"/>')
+            svg.append(f'<line class="consistency-projection" pathLength="1" x1="{start_x:.1f}" y1="{start_y:.1f}" x2="{end_x:.1f}" y2="{end_y:.1f}" stroke="{color}" stroke-width="2" stroke-dasharray="5 5" opacity=".65"/>')
+            svg.append(
+                f'<circle class="consistency-point projection-point" cx="{end_x:.1f}" cy="{end_y:.1f}" r="4" fill="{color}" '
+                f'tabindex="0" role="button" data-name="{escape(name, quote=True)}" data-month="12월 예상" '
+                f'aria-label="12월 예상 {escape(name, quote=True)} {estimates[name]}점" '
+                f'data-value="{estimates[name]}" data-label="연말 예상 포인트"/>'
+            )
         legends.append(
             f'<span><i style="background:{color}"></i>{escape(name)} · {month_totals[name]}점'
             f'{f" · 연말 예상 {estimates[name]}점" if forecast else ""}</span>'
@@ -164,7 +178,7 @@ def _consistency_champion_html(
         f'<section class="consistency-panel" data-year="{year}"{"" if selected else " hidden"}><h2>Consistency Champion</h2>'
         f'<p class="archive-intro">{note}</p>'
         '<p class="points-key">배점: 1위 10점 · 2위 8점 · 3위 6점 · 4위 5점 · 5위 4점 · 6~10위 2점 · 그 외 참가 1점</p>'
-        f'<div class="consistency-chart-wrap">{"".join(svg)}</div>'
+        f'<div class="consistency-chart-wrap">{"".join(svg)}<div class="consistency-tooltip" role="tooltip" hidden></div></div>'
         f'<div class="consistency-legend">{"".join(legends)}</div>'
         f'<div class="archive-table-wrap"><table><thead><tr><th>순위</th><th>러너</th><th>누적</th><th>{"연말 예상" if forecast else "최종 점수"}</th></tr></thead>'
         f'<tbody>{"".join(table_rows)}</tbody></table></div></section>'
@@ -249,7 +263,7 @@ def archive_section_html(data_root: Path = Path("data/archives"), current_result
 <div class="archive-tabs" role="tablist" aria-label="월별 챌린지 결과">{"".join(tabs)}</div>
 {"".join(panels)}
 {"".join(year_graphs)}
-<script>(()=>{{const years=[...document.querySelectorAll('.archive-year-tab')];const tabs=[...document.querySelectorAll('.archive-tab')];const panels=[...document.querySelectorAll('.archive-panel')];const charts=[...document.querySelectorAll('.consistency-panel')];function selectMonth(year,month){{tabs.forEach(t=>t.setAttribute('aria-selected',String(t.dataset.year===year&&t.dataset.month===month)));panels.forEach(p=>p.hidden=!(p.dataset.year===year&&p.id.endsWith('-'+month)))}}function selectYear(year){{years.forEach(t=>t.setAttribute('aria-selected',String(t.dataset.year===year)));tabs.forEach(t=>t.hidden=t.dataset.year!==year);charts.forEach(p=>p.hidden=p.dataset.year!==year);const months=tabs.filter(t=>t.dataset.year===year);const active=months.find(t=>t.getAttribute('aria-selected')==='true')||months[months.length-1];if(active)selectMonth(year,active.dataset.month)}}years.forEach(t=>t.addEventListener('click',()=>selectYear(t.dataset.year)));tabs.forEach(t=>t.addEventListener('click',()=>selectMonth(t.dataset.year,t.dataset.month)));selectYear('{selected_year}')}})();</script></section>'''
+<script>(()=>{{const years=[...document.querySelectorAll('.archive-year-tab')];const tabs=[...document.querySelectorAll('.archive-tab')];const panels=[...document.querySelectorAll('.archive-panel')];const charts=[...document.querySelectorAll('.consistency-panel')];function selectMonth(year,month){{tabs.forEach(t=>t.setAttribute('aria-selected',String(t.dataset.year===year&&t.dataset.month===month)));panels.forEach(p=>p.hidden=!(p.dataset.year===year&&p.id.endsWith('-'+month)))}}function selectYear(year){{years.forEach(t=>t.setAttribute('aria-selected',String(t.dataset.year===year)));tabs.forEach(t=>t.hidden=t.dataset.year!==year);charts.forEach(p=>p.hidden=p.dataset.year!==year);const months=tabs.filter(t=>t.dataset.year===year);const active=months.find(t=>t.getAttribute('aria-selected')==='true')||months[months.length-1];if(active)selectMonth(year,active.dataset.month)}}years.forEach(t=>t.addEventListener('click',()=>selectYear(t.dataset.year)));tabs.forEach(t=>t.addEventListener('click',()=>selectMonth(t.dataset.year,t.dataset.month)));document.querySelectorAll('.consistency-chart-wrap').forEach(wrap=>{{const tip=wrap.querySelector('.consistency-tooltip');const show=(point,event)=>{{const box=wrap.getBoundingClientRect();const name=document.createElement('strong');name.textContent=point.dataset.name;const detail=document.createElement('span');detail.textContent=`${{point.dataset.month}} · ${{point.dataset.label}}`;const value=document.createElement('b');value.textContent=`${{point.dataset.value}}점`;tip.replaceChildren(name,detail,value);tip.hidden=false;const target=event.type.startsWith('pointer')?event.target.getBoundingClientRect():point.getBoundingClientRect();tip.style.left=`${{target.left-box.left+wrap.scrollLeft+target.width/2}}px`;tip.style.top=`${{target.top-box.top}}px`}};wrap.querySelectorAll('.consistency-point').forEach(point=>{{point.addEventListener('pointerenter',event=>show(point,event));point.addEventListener('focus',event=>show(point,event));point.addEventListener('pointerleave',()=>tip.hidden=true);point.addEventListener('blur',()=>tip.hidden=true)}})}});selectYear('{selected_year}')}})();</script></section>'''
 
 
 def archive_completed_snapshots(

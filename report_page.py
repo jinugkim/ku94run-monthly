@@ -222,10 +222,22 @@ def write_report_page(
     .consistency-panel h2 {{ margin: 0 0 6px; color: var(--crimson-dark); font-size: 20px; }}
     .consistency-panel > .archive-intro {{ margin: 0 0 14px; line-height: 1.6; }}
     .points-key {{ margin: -4px 0 12px; color: var(--muted); font-size: 12px; line-height: 1.6; }}
-    .consistency-chart-wrap {{ overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: #fffdfb; }}
+    .consistency-chart-wrap {{ position: relative; overflow-x: auto; }}
     .consistency-chart {{ display: block; width: 100%; min-width: 620px; height: auto; }}
-    .consistency-grid {{ stroke: #eadfe2; stroke-width: 1; }}
-    .consistency-axis {{ fill: #806f73; font-size: 11px; }}
+    .consistency-chart text {{ font-family: inherit; }}
+    .consistency-grid {{ stroke: #f1f5f9; stroke-width: 1; }}
+    .consistency-axis {{ fill: #64748b; font-size: 11px; }}
+    .consistency-line, .consistency-projection {{ stroke-dasharray: 1; stroke-dashoffset: 1; animation: chart-line-draw 1.1s ease-out forwards; }}
+    .consistency-point {{ cursor: crosshair; animation: chart-point-in .35s ease-out both; }}
+    .consistency-point:hover, .consistency-point:focus {{ r: 5; outline: none; stroke: #fff; stroke-width: 2; }}
+    .consistency-tooltip {{ position: absolute; z-index: 2; display: grid; gap: 3px; min-width: 145px; padding: 9px 11px; transform: translate(-50%, -112%); border: 1px solid #e2e8f0; border-radius: 9px; color: var(--ink); background: #fff; box-shadow: 0 8px 24px rgba(43,27,32,.12); font-size: 12px; pointer-events: none; white-space: nowrap; }}
+    .consistency-tooltip[hidden] {{ display: none; }}
+    .consistency-tooltip strong {{ color: var(--crimson-dark); }}
+    .consistency-tooltip span {{ color: var(--muted); }}
+    .consistency-tooltip b {{ color: var(--crimson); font-size: 14px; }}
+    @keyframes chart-line-draw {{ to {{ stroke-dashoffset: 0; }} }}
+    @keyframes chart-point-in {{ from {{ opacity: 0; }} to {{ opacity: 1; }} }}
+    @media (prefers-reduced-motion: reduce) {{ .consistency-line, .consistency-projection, .consistency-point {{ animation: none; stroke-dashoffset: 0; }} }}
     .consistency-legend {{ display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 12px 2px 16px; color: #5d1028; font-size: 12px; }}
     .consistency-legend span {{ display: inline-flex; align-items: center; gap: 6px; }}
     .consistency-legend i {{ width: 10px; height: 10px; border-radius: 50%; }}
