@@ -11,6 +11,7 @@ from zoneinfo import ZoneInfo
 import bleach
 import markdown
 
+from archive_pages import archive_section_html
 from models import ChallengeAnalysisResult
 
 
@@ -209,6 +210,7 @@ def write_report_page(
     )
     kakao_javascript_key = json.dumps(os.getenv("KAKAO_JS_KEY", ""))
     kakao_share_text = json.dumps(coach_summary_text(result, report), ensure_ascii=False).replace("<", "\\u003c")
+    archive_html = archive_section_html()
     html = f"""<!doctype html>
 <html lang="ko">
 <head>
@@ -262,8 +264,23 @@ def write_report_page(
     .kakao-action {{ margin-top: 28px; padding: 20px; border: 1px solid #e0e5df; border-radius: 16px; background: white; }}
     .kakao-button {{ padding: 12px 18px; border: 0; border-radius: 10px; background: #fee500; color: #191919; font: inherit; font-weight: 700; cursor: pointer; }}
     .kakao-button:disabled {{ cursor: wait; opacity: .65; }}
+    .archive-section {{ margin-top: 32px; padding: 20px; border: 1px solid #e0e5df; border-radius: 16px; background: #fff; }}
+    .archive-heading-row {{ display: flex; align-items: end; gap: 10px; flex-wrap: wrap; }}
+    .archive-heading-row h2 {{ margin: 0 0 5px; }}
+    .archive-heading-row p {{ margin: 0; }}
+    .archive-year-label {{ margin-left: auto; color: #52635a; font-size: .9rem; }}
+    .archive-year {{ padding: 8px 10px; border: 1px solid #ccd6ce; border-radius: 8px; background: #fff; color: #17221e; font: inherit; }}
+    .archive-tabs {{ display: flex; gap: 7px; overflow-x: auto; margin: 20px -2px 16px; padding: 2px 2px 8px; }}
+    .archive-tab {{ flex: 0 0 auto; padding: 9px 15px; border: 1px solid #d7dfd9; border-radius: 999px; background: #f5f7f4; color: #42534a; font: inherit; cursor: pointer; }}
+    .archive-tab[aria-selected="true"] {{ border-color: #126a4a; background: #126a4a; color: #fff; }}
+    .archive-tab[hidden], .archive-panel[hidden] {{ display: none; }}
+    .archive-panel h3 {{ margin: 12px 0 4px; font-size: 1rem; }}
+    .archive-panel > .muted {{ margin: 0 0 12px; }}
+    .archive-table-wrap {{ overflow-x: auto; border-radius: 10px; }}
+    .archive-table-wrap table {{ min-width: 420px; }}
+    .archive-table-wrap th, .archive-table-wrap td {{ padding: 9px 10px; }}
     footer {{ margin-top: 18px; color: #64736c; font-size: .82rem; }}
-    @media (max-width: 480px) {{ .stats {{ grid-template-columns: 1fr 1fr; }} .stat {{ padding: 12px; }} .value {{ font-size: 1.1rem; }} }}
+    @media (max-width: 480px) {{ .stats {{ grid-template-columns: 1fr 1fr; }} .stat {{ padding: 12px; }} .value {{ font-size: 1.1rem; }} .archive-section {{ padding: 15px; }} .archive-year-label {{ margin-left: 0; }} }}
   </style>
 </head>
 <body>
@@ -282,6 +299,7 @@ def write_report_page(
     <h2>오늘의 코칭</h2>
     <article>{report_html}</article>
     {board_html}
+    {archive_html}
     <section class="kakao-action" aria-labelledby="kakao-heading">
       <h2 id="kakao-heading">러닝 코치 요약 공유</h2>
       <p class="muted">누적 거리와 남은 목표, 코칭 한 줄을 카카오톡에 공유합니다.</p>
