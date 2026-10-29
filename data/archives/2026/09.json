@@ -4,6 +4,10 @@
   "title": "KU94RUN 9월챌린지: 토끼(pace 9 이하, 200km), 슈퍼토끼(300km)",
   "end_date": "2026-09-30",
   "target_distance_km": 300.0,
+  "achievement_tiers": {
+    "rabbit": 200,
+    "superrabbit": 300
+  },
   "participants": [
     {
       "name": "승학",

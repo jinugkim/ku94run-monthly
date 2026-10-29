@@ -140,6 +140,9 @@ challenges:
     end_date: "2026-09-30"
     garmin_uuid_secret: GARMIN_CHALLENGE_2026_09_UUID
     target_distance_km: 300 # Shared achievement threshold: use the longest tier goal.
+    achievement_tiers:
+      rabbit: 200
+      superrabbit: 300
     goals:
       - name: "토끼"
         pace_limit_min_per_km: 9

@@ -45,6 +45,7 @@ def main() -> None:
         output.write_text(json.dumps({
             "year": 2026, "month": month, "title": result.challenge_name,
             "end_date": str(end_date), "target_distance_km": result.target_distance_km,
+            "achievement_tiers": entry.get("achievement_tiers") or {"rabbit": result.target_distance_km},
             "participants": participants,
         }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         print(f"Saved {output}: {len(participants)} participants")

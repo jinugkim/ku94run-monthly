@@ -215,6 +215,8 @@ def write_report_page(
     .archive-panel h3 {{ margin: 20px 0 5px; color: var(--crimson-dark); font-size: 16px; line-height: 1.5; }}
     .archive-panel > .muted {{ margin: 0 0 14px; color: var(--muted); font-size: 13px; }}
     .archive-table-wrap {{ overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }}
+    .achievement-icon {{ width: 24px; height: 24px; vertical-align: middle; }}
+    .archive-table-wrap td:last-child {{ white-space: nowrap; color: var(--crimson-dark); font-size: 13px; font-weight: 700; }}
     table {{ width: 100%; border-collapse: collapse; min-width: 480px; }}
     th, td {{ padding: 11px 13px; border-bottom: 1px solid #f2ebed; text-align: left; }}
     th {{ color: var(--muted); background: #fbf7f4; font-size: 12px; }}
