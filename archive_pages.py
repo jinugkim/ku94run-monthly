@@ -66,6 +66,111 @@ def _participants_table_with_tiers(participants: list[dict], achievement_tiers: 
     )
 
 
+def _consistency_champion_html(
+    archives: list[dict], year: int, current_year: int, selected: bool
+) -> str:
+    """Render cumulative monthly points and a simple December pace projection."""
+    completed = sorted(
+        (archive for archive in archives
+         if int(archive["year"]) == year and not archive.get("is_current")),
+        key=lambda archive: int(archive["month"]),
+    )
+    if not completed:
+        return (
+            f'<section class="consistency-panel" data-year="{year}"{"" if selected else " hidden"}><h2>Consistency Champion</h2>'
+            '<p class="archive-intro">확정된 월별 결과가 모이면 누적 포인트 그래프가 표시됩니다.</p></section>'
+        )
+
+    points_by_month: dict[int, dict[str, int]] = {}
+    month_totals: dict[str, int] = {}
+    latest_month = max(int(archive["month"]) for archive in completed)
+    rank_points = {1: 10, 2: 8, 3: 6, 4: 5, 5: 4}
+    for archive in completed:
+        month = int(archive["month"])
+        this_month: dict[str, int] = {}
+        for person in _visible_participants(archive["participants"]):
+            rank = int(person["rank"])
+            score = rank_points.get(rank, 2 if rank <= 10 else 1)
+            name = str(person["name"])
+            this_month[name] = this_month.get(name, 0) + score
+            month_totals[name] = month_totals.get(name, 0) + score
+        points_by_month[month] = this_month
+
+    forecast = year == current_year and latest_month < 12
+    estimates = {
+        name: round(total * 12 / latest_month) if forecast else total
+        for name, total in month_totals.items()
+    }
+    leaders = sorted(
+        month_totals,
+        key=lambda name: (-estimates[name], -month_totals[name], name.casefold()),
+    )[:5]
+    max_value = max([*month_totals.values(), *(estimates[name] for name in leaders)], default=1)
+    max_value = max(10, max_value * 1.15)
+    width, height, left, right, top, bottom = 760, 300, 48, 18, 20, 38
+    plot_width, plot_height = width - left - right, height - top - bottom
+
+    def point(month: int, value: float) -> tuple[float, float]:
+        return left + (month - 1) * plot_width / 11, top + (max_value - value) * plot_height / max_value
+
+    svg = [f'<svg class="consistency-chart" viewBox="0 0 {width} {height}" role="img" aria-label="Consistency Champion 월별 누적 포인트 그래프">']
+    for value in (0, round(max_value)):
+        _, y = point(1, value)
+        svg.append(f'<line x1="{left}" y1="{y:.1f}" x2="{width-right}" y2="{y:.1f}" class="consistency-grid"/>')
+        svg.append(f'<text x="{left-8}" y="{y+4:.1f}" text-anchor="end" class="consistency-axis">{value}</text>')
+    for month in (1, 3, 6, 9, 12):
+        x, _ = point(month, 0)
+        svg.append(f'<text x="{x:.1f}" y="{height-10}" text-anchor="middle" class="consistency-axis">{month}월</text>')
+
+    colors = ["#7a1735", "#b08a42", "#5d1028", "#a96d7e", "#806f73"]
+    legends = []
+    for index, name in enumerate(leaders):
+        color = colors[index % len(colors)]
+        running = 0
+        actual_points = []
+        for month in range(1, latest_month + 1):
+            running += points_by_month.get(month, {}).get(name, 0)
+            actual_points.append(point(month, running))
+        if len(actual_points) > 1:
+            coordinates = " ".join(f"{x:.1f},{y:.1f}" for x, y in actual_points)
+            svg.append(f'<polyline points="{coordinates}" fill="none" stroke="{color}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>')
+        svg.extend(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="3.5" fill="{color}"/>' for x, y in actual_points)
+        if forecast:
+            start_x, start_y = actual_points[-1]
+            end_x, end_y = point(12, estimates[name])
+            svg.append(f'<line x1="{start_x:.1f}" y1="{start_y:.1f}" x2="{end_x:.1f}" y2="{end_y:.1f}" stroke="{color}" stroke-width="2" stroke-dasharray="6 5" opacity=".7"/>')
+        legends.append(
+            f'<span><i style="background:{color}"></i>{escape(name)} · {month_totals[name]}점'
+            f'{f" · 연말 예상 {estimates[name]}점" if forecast else ""}</span>'
+        )
+    svg.append("</svg>")
+
+    table_rows = []
+    for rank, name in enumerate(sorted(month_totals, key=lambda person: (-estimates[person], -month_totals[person], person.casefold()))[:10], 1):
+        estimate = f"{estimates[name]}점" if forecast else f"{month_totals[name]}점"
+        table_rows.append(
+            f'<tr><td>{rank}</td><td>{escape(name)}</td><td>{month_totals[name]}점</td><td>{estimate}</td></tr>'
+        )
+    note = (
+        f"1~{latest_month}월 확정 결과 기준 · 현재 월간 평균을 12개월로 환산한 단순 예상입니다."
+        if forecast else
+        f"1~{latest_month}월 확정 결과 기준 · 연간 최종 포인트입니다."
+        if latest_month == 12 else
+        f"1~{latest_month}월 저장 결과 기준 · 아직 수집되지 않은 달은 점수에 포함하지 않았습니다."
+    )
+    if forecast and datetime.now(ZoneInfo("Asia/Seoul")).month > latest_month:
+        note += f" 진행 중인 {datetime.now(ZoneInfo('Asia/Seoul')).month}월은 마감 후 반영됩니다."
+    return (
+        f'<section class="consistency-panel" data-year="{year}"{"" if selected else " hidden"}><h2>Consistency Champion</h2>'
+        f'<p class="archive-intro">{note}</p>'
+        '<p class="points-key">배점: 1위 10점 · 2위 8점 · 3위 6점 · 4위 5점 · 5위 4점 · 6~10위 2점 · 그 외 참가 1점</p>'
+        f'<div class="consistency-chart-wrap">{"".join(svg)}</div>'
+        f'<div class="consistency-legend">{"".join(legends)}</div>'
+        f'<div class="archive-table-wrap"><table><thead><tr><th>순위</th><th>러너</th><th>누적</th><th>{"연말 예상" if forecast else "최종 점수"}</th></tr></thead>'
+        f'<tbody>{"".join(table_rows)}</tbody></table></div></section>'
+    )
+
+
 def archive_section_html(data_root: Path = Path("data/archives"), current_result=None) -> str:
     """Return an accessible year selector and monthly result tabs for the home page."""
     archives = load_archives(data_root)
@@ -104,6 +209,13 @@ def archive_section_html(data_root: Path = Path("data/archives"), current_result
         f'aria-selected="{str(year == selected_year).lower()}">{year}</button>'
         for year in years
     )
+    year_graphs = "".join(
+        _consistency_champion_html(
+            archives, year, datetime.now(ZoneInfo("Asia/Seoul")).year,
+            selected=year == selected_year,
+        )
+        for year in years
+    )
     tabs = []
     panels = []
     for archive in archives:
@@ -117,7 +229,8 @@ def archive_section_html(data_root: Path = Path("data/archives"), current_result
         tabs.append(
             f'<button class="archive-tab" id="{tab_id}" type="button" role="tab" '
             f'aria-controls="{panel_id}" aria-selected="{str(selected).lower()}" '
-            f'data-year="{year}" data-month="{month:02d}">{month}월{current_badge}</button>'
+            f'data-year="{year}" data-month="{month:02d}"{"" if year == selected_year else " hidden"}>'
+            f'{month}월{current_badge}</button>'
         )
         title = escape(str(archive["title"]))
         participants = _visible_participants(archive["participants"])
@@ -135,7 +248,8 @@ def archive_section_html(data_root: Path = Path("data/archives"), current_result
 <div class="archive-year-tabs" role="tablist" aria-label="챌린지 연도">{year_tabs}</div>
 <div class="archive-tabs" role="tablist" aria-label="월별 챌린지 결과">{"".join(tabs)}</div>
 {"".join(panels)}
-<script>(()=>{{const years=[...document.querySelectorAll('.archive-year-tab')];const tabs=[...document.querySelectorAll('.archive-tab')];const panels=[...document.querySelectorAll('.archive-panel')];function selectMonth(year,month){{tabs.forEach(t=>t.setAttribute('aria-selected',String(t.dataset.year===year&&t.dataset.month===month)));panels.forEach(p=>p.hidden=!(p.dataset.year===year&&p.id.endsWith('-'+month)))}}function selectYear(year){{years.forEach(t=>t.setAttribute('aria-selected',String(t.dataset.year===year)));tabs.forEach(t=>t.hidden=t.dataset.year!==year);const months=tabs.filter(t=>t.dataset.year===year);const active=months.find(t=>t.getAttribute('aria-selected')==='true')||months[months.length-1];if(active)selectMonth(year,active.dataset.month)}}years.forEach(t=>t.addEventListener('click',()=>selectYear(t.dataset.year)));tabs.forEach(t=>t.addEventListener('click',()=>selectMonth(t.dataset.year,t.dataset.month)));selectYear('{selected_year}')}})();</script></section>'''
+{"".join(year_graphs)}
+<script>(()=>{{const years=[...document.querySelectorAll('.archive-year-tab')];const tabs=[...document.querySelectorAll('.archive-tab')];const panels=[...document.querySelectorAll('.archive-panel')];const charts=[...document.querySelectorAll('.consistency-panel')];function selectMonth(year,month){{tabs.forEach(t=>t.setAttribute('aria-selected',String(t.dataset.year===year&&t.dataset.month===month)));panels.forEach(p=>p.hidden=!(p.dataset.year===year&&p.id.endsWith('-'+month)))}}function selectYear(year){{years.forEach(t=>t.setAttribute('aria-selected',String(t.dataset.year===year)));tabs.forEach(t=>t.hidden=t.dataset.year!==year);charts.forEach(p=>p.hidden=p.dataset.year!==year);const months=tabs.filter(t=>t.dataset.year===year);const active=months.find(t=>t.getAttribute('aria-selected')==='true')||months[months.length-1];if(active)selectMonth(year,active.dataset.month)}}years.forEach(t=>t.addEventListener('click',()=>selectYear(t.dataset.year)));tabs.forEach(t=>t.addEventListener('click',()=>selectMonth(t.dataset.year,t.dataset.month)));selectYear('{selected_year}')}})();</script></section>'''
 
 
 def archive_completed_snapshots(

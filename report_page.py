@@ -217,6 +217,18 @@ def write_report_page(
     .archive-table-wrap {{ overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }}
     .achievement-icon {{ width: 24px; height: 24px; vertical-align: middle; }}
     .archive-table-wrap td:last-child {{ white-space: nowrap; color: var(--crimson-dark); font-size: 13px; font-weight: 700; }}
+    .consistency-panel {{ margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--line); }}
+    .consistency-panel[hidden] {{ display: none; }}
+    .consistency-panel h2 {{ margin: 0 0 6px; color: var(--crimson-dark); font-size: 20px; }}
+    .consistency-panel > .archive-intro {{ margin: 0 0 14px; line-height: 1.6; }}
+    .points-key {{ margin: -4px 0 12px; color: var(--muted); font-size: 12px; line-height: 1.6; }}
+    .consistency-chart-wrap {{ overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: #fffdfb; }}
+    .consistency-chart {{ display: block; width: 100%; min-width: 620px; height: auto; }}
+    .consistency-grid {{ stroke: #eadfe2; stroke-width: 1; }}
+    .consistency-axis {{ fill: #806f73; font-size: 11px; }}
+    .consistency-legend {{ display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 12px 2px 16px; color: #5d1028; font-size: 12px; }}
+    .consistency-legend span {{ display: inline-flex; align-items: center; gap: 6px; }}
+    .consistency-legend i {{ width: 10px; height: 10px; border-radius: 50%; }}
     table {{ width: 100%; border-collapse: collapse; min-width: 480px; }}
     th, td {{ padding: 11px 13px; border-bottom: 1px solid #f2ebed; text-align: left; }}
     th {{ color: var(--muted); background: #fbf7f4; font-size: 12px; }}
