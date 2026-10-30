@@ -2351,25 +2351,25 @@
             {
               "name": "승학",
               "rank": 2,
-              "distance_km": 272.74,
-              "is_self": false
-            },
-            {
-              "name": "Greg HONG",
-              "rank": 3,
-              "distance_km": 255.85,
+              "distance_km": 280.75,
               "is_self": false
             },
             {
               "name": "제진아",
+              "rank": 3,
+              "distance_km": 256.5,
+              "is_self": false
+            },
+            {
+              "name": "Greg HONG",
               "rank": 4,
-              "distance_km": 252.76,
+              "distance_km": 255.85,
               "is_self": false
             },
             {
               "name": "Hong, Yong-Jin",
               "rank": 5,
-              "distance_km": 234.45,
+              "distance_km": 239.49,
               "is_self": false
             },
             {
@@ -2387,7 +2387,7 @@
             {
               "name": "정지은",
               "rank": 8,
-              "distance_km": 198.83,
+              "distance_km": 204.84,
               "is_self": false
             },
             {
@@ -2411,13 +2411,13 @@
             {
               "name": "김상종",
               "rank": 12,
-              "distance_km": 124.74,
+              "distance_km": 125.75,
               "is_self": false
             },
             {
               "name": "김진욱",
               "rank": 13,
-              "distance_km": 105.88,
+              "distance_km": 109.95,
               "is_self": true
             },
             {
@@ -2489,7 +2489,7 @@
             {
               "name": "이소현",
               "rank": 25,
-              "distance_km": 54.06,
+              "distance_km": 58.07,
               "is_self": false
             },
             {
