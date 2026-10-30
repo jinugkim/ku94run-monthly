@@ -4,6 +4,9 @@
   "title": "KU94RUN1월챌린지: 1.거북이(pace10이하, 거리60k) 2.토끼(pace9이하, 거리100k)  ",
   "end_date": "2026-01-31T23:59:59.0",
   "target_distance_km": 100.0,
+  "achievement_tiers": {
+    "rabbit": 100.0
+  },
   "participants": [
     {
       "name": "Thomas R. Jung",

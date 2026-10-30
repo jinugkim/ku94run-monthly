@@ -4,6 +4,9 @@
   "title": "6월챌린지\n거북이, 해달(pace10이하), 토끼(pace9이하, 거리 170km)",
   "end_date": "2026-06-30",
   "target_distance_km": 170.0,
+  "achievement_tiers": {
+    "rabbit": 170.0
+  },
   "participants": [
     {
       "name": "마라톤 양",

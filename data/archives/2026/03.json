@@ -4,6 +4,9 @@
   "title": "KU94RUN 3월 - 거북이 10min/km이하 90km(3개월차), 토끼 9min/km이하 140km",
   "end_date": "2026-03-31",
   "target_distance_km": 140.0,
+  "achievement_tiers": {
+    "rabbit": 140.0
+  },
   "participants": [
     {
       "name": "마라톤 양",

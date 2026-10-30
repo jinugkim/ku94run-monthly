@@ -4,6 +4,9 @@
   "title": "ku94run 8월 챌린지\n거북이, 해달(pace 10미만) 토끼(pace 9미만, 170km 이상)",
   "end_date": "2026-08-31",
   "target_distance_km": 170.0,
+  "achievement_tiers": {
+    "rabbit": 170.0
+  },
   "participants": [
     {
       "name": "승학",

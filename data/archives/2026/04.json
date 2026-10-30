@@ -4,6 +4,9 @@
   "title": "KU94RUN 4월 - 해달 10min/km 이하 110km(1개월차), 토끼 9min/km 이하 180km",
   "end_date": "2026-04-30",
   "target_distance_km": 180.0,
+  "achievement_tiers": {
+    "rabbit": 180.0
+  },
   "participants": [
     {
       "name": "마라톤 양",

@@ -4,6 +4,9 @@
   "title": "ku94run 7월 챌린지\n거북이, 해달(페이스 10이하), 토끼(페이스 9이하, 거리150km)",
   "end_date": "2026-07-31",
   "target_distance_km": 150.0,
+  "achievement_tiers": {
+    "rabbit": 150.0
+  },
   "participants": [
     {
       "name": "마라톤 양",

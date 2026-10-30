@@ -4,6 +4,9 @@
   "title": "5월챌린지🏃‍♂️🏃‍♀️\n🦦 해달(pace10이하,거리130km-2개월차) \n🐇 토끼(pace9이하,거리 200km)",
   "end_date": "2026-05-31",
   "target_distance_km": 200.0,
+  "achievement_tiers": {
+    "rabbit": 200.0
+  },
   "participants": [
     {
       "name": "마라톤 양",

@@ -4,6 +4,9 @@
   "title": "KU94RUN 2월챌린지: 거북이(pace10이하, 거리 70k), 토끼(pace9이하, 거리 120k)",
   "end_date": "2026-02-28",
   "target_distance_km": 120.0,
+  "achievement_tiers": {
+    "rabbit": 120.0
+  },
   "participants": [
     {
       "name": "승학",
