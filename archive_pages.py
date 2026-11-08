@@ -339,7 +339,7 @@ def render_archive_pages(data_root: Path = Path("data/archives"), site_dir: Path
         participants = _visible_participants(archive["participants"])
         tiers = archive.get("achievement_tiers") or {"rabbit": archive["target_distance_km"]}
         page = f'''<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{title} 결과</title><style>body{{font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;max-width:900px;margin:30px auto;padding:0 16px;color:#2b1b20;background:#f7f2ef}}table{{width:100%;border-collapse:collapse;background:#fffdfb}}th,td{{padding:9px;border-bottom:1px solid #eadfe2;text-align:left}}th{{color:#806f73;background:#fbf7f4}}td:nth-child(3){{color:#5d1028;font-weight:700}}a{{color:#7a1735}}.achievement-icon{{width:24px;height:24px;vertical-align:middle}}</style>
+<title>{title} 결과</title><style>body{{font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;max-width:900px;margin:30px auto;padding:0 16px;color:#2b1b20;background:#f7f2ef}}table{{width:100%;border-collapse:collapse;background:#fffdfb;overflow-x:auto}}th,td{{padding:9px;border-bottom:1px solid #eadfe2;text-align:left}}th{{color:#806f73;background:#fbf7f4}}td:nth-child(3){{color:#5d1028;font-weight:700}}a{{color:#7a1735}}.achievement-icon{{width:24px;height:24px;vertical-align:middle}}@media(prefers-color-scheme:dark){{body{{color:#f5eff2;background:#121013}}table{{background:#1c181e}}th,td{{border-color:#2e2832}}th{{color:#9e8e94;background:#241f27}}td:nth-child(3){{color:#ffa1b7}}a{{color:#ff5e84}}}}</style>
 <p><a href="../index.html">← 최신 리포트</a></p><h1>{year}년 {month}월 · {title}</h1><p>{escape(str(archive["end_date"]))} · 참가 {len(participants)}명</p>
 {_participants_table_with_tiers(participants, tiers)}</html>'''
         (history_dir / f"{year}-{month:02d}.html").write_text(page, encoding="utf-8")
@@ -353,11 +353,11 @@ def render_archive_pages(data_root: Path = Path("data/archives"), site_dir: Path
             for item in sorted(months, key=lambda item: int(item["month"]), reverse=True)
         )
         year_page = f'''<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{year} 월별 결과</title>
-<style>body{{font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;max-width:780px;margin:40px auto;padding:0 18px;color:#2b1b20;background:#f7f2ef}}li{{margin:14px 0}}a{{color:#7a1735}}</style>
+<style>body{{font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;max-width:780px;margin:40px auto;padding:0 18px;color:#2b1b20;background:#f7f2ef}}li{{margin:14px 0}}a{{color:#7a1735}}@media(prefers-color-scheme:dark){{body{{color:#f5eff2;background:#121013}}li{{color:#c9bdc2}}a{{color:#ff5e84}}}}</style>
 <p><a href="index.html">← 연도 목록</a></p><h1>{year}년 월별 챌린지 결과</h1><ul>{month_links}</ul></html>'''
         (history_dir / str(year)).mkdir(parents=True, exist_ok=True)
         (history_dir / str(year) / "index.html").write_text(year_page, encoding="utf-8")
     index = f'''<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>챌린지 연도별 결과</title>
-<style>body{{font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;max-width:780px;margin:40px auto;padding:0 18px;color:#2b1b20;background:#f7f2ef}}li{{margin:14px 0}}a{{color:#7a1735}}</style>
+<style>body{{font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;max-width:780px;margin:40px auto;padding:0 18px;color:#2b1b20;background:#f7f2ef}}li{{margin:14px 0}}a{{color:#7a1735}}@media(prefers-color-scheme:dark){{body{{color:#f5eff2;background:#121013}}li{{color:#c9bdc2}}a{{color:#ff5e84}}}}</style>
 <p><a href="../index.html">← 최신 리포트</a></p><h1>연도별 챌린지 결과</h1><ul>{year_links}</ul></html>'''
     (history_dir / "index.html").write_text(index, encoding="utf-8")

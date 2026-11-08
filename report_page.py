@@ -173,6 +173,73 @@ def write_kakao_delivery_payload(
     return output_path
 
 
+def _live_hero_section_html(result: ChallengeAnalysisResult, report: str) -> str:
+    """Render a mobile-first hero card showing current challenge progress and AI coaching."""
+    pct = min(100.0, (result.my_distance_km / max(0.1, result.target_distance_km)) * 100)
+    clean_paragraphs = [p.strip() for p in report.strip().split("\n") if p.strip()]
+    coaching_html = "".join(f"<p>{escape(p)}</p>" for p in clean_paragraphs) or "<p>오늘도 활기찬 러닝을 시작해보세요!</p>"
+
+    challenge_name = result.challenge_name.strip()
+    return f"""<section class="live-hero-card" aria-labelledby="live-heading">
+  <div class="live-meta-row">
+    <span class="live-pill"><span class="pulse-dot" aria-hidden="true"></span>진행 중</span>
+    <span class="live-days-left">남은 기간 <strong>{result.remaining_days}일</strong></span>
+  </div>
+  <h2 id="live-heading" class="live-title">{escape(challenge_name)}</h2>
+
+  <div class="progress-container" aria-label="목표 달성률 {pct:.1f}%">
+    <div class="progress-info">
+      <span>목표 달성률 <strong>{pct:.1f}%</strong></span>
+      <span>{result.my_distance_km:.1f} / {result.target_distance_km:.1f} km</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" style="width: {pct:.1f}%"></div>
+    </div>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-icon" aria-hidden="true">🏆</div>
+      <div class="stat-body">
+        <span class="stat-label">현재 순위</span>
+        <span class="stat-value"><strong>{result.my_rank}</strong>위 <small>/ {result.total_participants}명</small></span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" aria-hidden="true">🏃</div>
+      <div class="stat-body">
+        <span class="stat-label">누적 거리</span>
+        <span class="stat-value"><strong>{result.my_distance_km:.1f}</strong> <small>km</small></span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" aria-hidden="true">🎯</div>
+      <div class="stat-body">
+        <span class="stat-label">일일 권장</span>
+        <span class="stat-value"><strong>{result.daily_req_for_goal:.1f}</strong> <small>km/일</small></span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" aria-hidden="true">🏁</div>
+      <div class="stat-body">
+        <span class="stat-label">남은 거리</span>
+        <span class="stat-value"><strong>{result.remaining_distance_km:.1f}</strong> <small>km</small></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="coach-card">
+    <div class="coach-header">
+      <span class="coach-badge" aria-hidden="true">💡 AI COACH</span>
+      <span class="coach-title">Run-teller 전략 코칭</span>
+    </div>
+    <div class="coach-body">
+      {coaching_html}
+    </div>
+  </div>
+</section>"""
+
+
 def write_report_page(
     result: ChallengeAnalysisResult,
     report: str,
@@ -180,88 +247,784 @@ def write_report_page(
     history: dict | None = None,
     public_board_enabled: bool = True,
 ) -> Path:
-    """Write the month-focused challenge archive as the public home page."""
+    """Write the mobile-optimized, dark-mode ready challenge report as the home page."""
     output_dir.mkdir(parents=True, exist_ok=True)
     generated_at = datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M KST")
+    hero_html = _live_hero_section_html(result, report)
     archive_html = archive_section_html(current_result=result)
+
     html = f"""<!doctype html>
 <html lang="ko">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#7a1735">
-  <title>KU94 RUN | 월별 챌린지 기록</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#7a1735" id="meta-theme-color">
+  <meta name="color-scheme" content="light dark">
+  <title>KU94 RUN | 챌린지 리포트 & 기록</title>
+  <script>
+    (function() {{
+      try {{
+        var saved = localStorage.getItem('ku94run_theme');
+        if (saved) {{
+          document.documentElement.setAttribute('data-theme', saved);
+        }} else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {{
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }}
+      }} catch(e) {{}}
+    }})();
+  </script>
   <style>
-    :root {{ color-scheme: light; --ink: #2b1b20; --muted: #806f73; --crimson: #7a1735; --crimson-dark: #5d1028; --line: #eadfe2; --paper: #fffdfb; --bg: #f7f2ef; font-family: Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }}
+    :root {{
+      color-scheme: light dark;
+      --bg: #f8f5f2;
+      --bg-gradient: radial-gradient(ellipse at 50% 0%, #ffffff 0%, #f6f1ee 70%);
+      --paper: #ffffff;
+      --paper-subtle: #fbf8f6;
+      --ink: #2b1b20;
+      --ink-secondary: #57484d;
+      --muted: #847479;
+      --crimson: #7a1735;
+      --crimson-dark: #580d22;
+      --crimson-light: #fcedf1;
+      --crimson-border: #f0cdd6;
+      --line: #eadfe2;
+      --topbar-bg: rgba(255, 255, 255, 0.88);
+      --card-shadow: 0 12px 32px rgba(76, 25, 42, 0.06);
+      --progress-bg: #ece2e5;
+      --progress-fill: linear-gradient(90deg, #7a1735 0%, #a8244b 100%);
+      font-family: Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }}
+
+    [data-theme="dark"] {{
+      --bg: #121013;
+      --bg-gradient: radial-gradient(ellipse at 50% 0%, #1e1920 0%, #121013 70%);
+      --paper: #1c181e;
+      --paper-subtle: #241f27;
+      --ink: #f5eff2;
+      --ink-secondary: #c9bdc2;
+      --muted: #9e8e94;
+      --crimson: #ff5e84;
+      --crimson-dark: #ffa1b7;
+      --crimson-light: #381622;
+      --crimson-border: #5e1c31;
+      --line: #2e2832;
+      --topbar-bg: rgba(26, 22, 28, 0.88);
+      --card-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+      --progress-bg: #2d2630;
+      --progress-fill: linear-gradient(90deg, #d82c57 0%, #ff5e84 100%);
+    }}
+
+    @media (prefers-color-scheme: dark) {{
+      :root:not([data-theme="light"]) {{
+        --bg: #121013;
+        --bg-gradient: radial-gradient(ellipse at 50% 0%, #1e1920 0%, #121013 70%);
+        --paper: #1c181e;
+        --paper-subtle: #241f27;
+        --ink: #f5eff2;
+        --ink-secondary: #c9bdc2;
+        --muted: #9e8e94;
+        --crimson: #ff5e84;
+        --crimson-dark: #ffa1b7;
+        --crimson-light: #381622;
+        --crimson-border: #5e1c31;
+        --line: #2e2832;
+        --topbar-bg: rgba(26, 22, 28, 0.88);
+        --card-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+        --progress-bg: #2d2630;
+        --progress-fill: linear-gradient(90deg, #d82c57 0%, #ff5e84 100%);
+      }}
+    }}
+
     * {{ box-sizing: border-box; }}
-    body {{ margin: 0; min-height: 100vh; color: var(--ink); background: radial-gradient(ellipse at 50% 0, #fffaf5 0, var(--bg) 58%); }}
-    .topbar {{ height: 66px; display: flex; align-items: center; border-bottom: 1px solid var(--line); background: rgba(255,253,251,.92); }}
-    .topbar-inner {{ width: min(100% - 40px, 920px); margin: auto; display: flex; align-items: center; justify-content: space-between; }}
-    .brand {{ display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 800; letter-spacing: .08em; }}
-    .brand-mark {{ color: var(--crimson); font-size: 18px; }}
-    .brand-divider {{ width: 1px; height: 22px; background: #d9c8cd; }}
-    .brand-note {{ color: var(--muted); font-size: 12px; }}
-    main {{ width: min(100% - 40px, 920px); margin: 38px auto 70px; }}
-    .archive-section {{ padding: 28px; border: 1px solid var(--line); border-radius: 18px; background: var(--paper); box-shadow: 0 14px 36px rgba(76,25,42,.07); }}
-    .archive-eyebrow {{ margin: 0 0 10px; color: var(--crimson); font-size: 12px; font-weight: 800; letter-spacing: .16em; }}
-    .archive-section h1 {{ margin: 0; font-size: clamp(28px, 6vw, 42px); letter-spacing: -.05em; }}
-    .archive-intro {{ margin: 10px 0 22px; color: var(--muted); font-size: 14px; }}
-    .archive-year-tabs, .archive-tabs {{ display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }}
-    .archive-year-tabs::-webkit-scrollbar, .archive-tabs::-webkit-scrollbar {{ display: none; }}
-    .archive-year-tabs {{ padding: 2px 0 12px; }}
-    .archive-year-tab {{ flex: 0 0 auto; padding: 9px 17px; border: 1px solid var(--line); border-radius: 999px; color: #606b63; background: var(--paper); font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }}
-    .archive-year-tab[aria-selected="true"] {{ border-color: var(--crimson); color: white; background: var(--crimson); box-shadow: 0 5px 14px rgba(122,23,53,.18); }}
-    .archive-tabs {{ padding: 2px 0 16px; border-bottom: 1px solid var(--line); }}
-    .archive-tab {{ display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto; padding: 10px 15px; border: 1px solid var(--line); border-radius: 999px; color: #606b63; background: var(--paper); font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }}
-    .archive-tab:hover {{ border-color: #c68d9e; }}
-    .archive-tab[aria-selected="true"] {{ border-color: var(--crimson); color: white; background: var(--crimson); }}
-    .archive-current-badge {{ padding: 3px 6px; border-radius: 999px; color: var(--crimson-dark); background: #f5e9ed; font-size: 10px; font-weight: 800; }}
-    .archive-tab[aria-selected="true"] .archive-current-badge {{ color: var(--crimson-dark); background: #fff; }}
-    .archive-tab[hidden], .archive-panel[hidden] {{ display: none; }}
-    .archive-panel h3 {{ margin: 20px 0 5px; color: var(--crimson-dark); font-size: 16px; line-height: 1.5; }}
-    .archive-panel > .muted {{ margin: 0 0 14px; color: var(--muted); font-size: 13px; }}
-    .archive-table-wrap {{ overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }}
-    .achievement-icon {{ width: 24px; height: 24px; vertical-align: middle; }}
-    .archive-table-wrap td:last-child {{ white-space: nowrap; color: var(--crimson-dark); font-size: 13px; font-weight: 700; }}
-    .consistency-panel {{ margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--line); }}
-    .consistency-panel[hidden] {{ display: none; }}
-    .consistency-panel h2 {{ margin: 0 0 6px; color: var(--crimson-dark); font-size: 20px; }}
-    .consistency-panel > .archive-intro {{ margin: 0 0 14px; line-height: 1.6; }}
-    .points-key {{ margin: -4px 0 12px; color: var(--muted); font-size: 12px; line-height: 1.6; }}
-    .consistency-chart-wrap {{ position: relative; overflow-x: auto; }}
-    .consistency-chart {{ display: block; width: 100%; min-width: 620px; height: auto; }}
-    .consistency-chart text {{ font-family: inherit; }}
-    .consistency-grid {{ stroke: #f1f5f9; stroke-width: 1; }}
-    .consistency-axis {{ fill: #64748b; font-size: 11px; }}
-    .consistency-line, .consistency-projection {{ stroke-dasharray: 1; stroke-dashoffset: 1; animation: chart-line-draw 1.1s ease-out forwards; }}
-    .consistency-point {{ cursor: crosshair; animation: chart-point-in .35s ease-out both; }}
-    .consistency-point:hover, .consistency-point:focus {{ r: 5; outline: none; stroke: #fff; stroke-width: 2; }}
-    .consistency-tooltip {{ position: absolute; z-index: 2; display: grid; gap: 3px; min-width: 145px; padding: 9px 11px; transform: translate(-50%, -112%); border: 1px solid #e2e8f0; border-radius: 9px; color: var(--ink); background: #fff; box-shadow: 0 8px 24px rgba(43,27,32,.12); font-size: 12px; pointer-events: none; white-space: nowrap; }}
-    .consistency-tooltip[hidden] {{ display: none; }}
-    .consistency-tooltip strong {{ color: var(--crimson-dark); }}
-    .consistency-tooltip span {{ color: var(--muted); }}
-    .consistency-tooltip b {{ color: var(--crimson); font-size: 14px; }}
+    body {{
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background: var(--bg-gradient);
+      padding-bottom: max(30px, env(safe-area-inset-bottom));
+      line-height: 1.5;
+    }}
+
+    .topbar {{
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 62px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+      background: var(--topbar-bg);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }}
+    .topbar-inner {{
+      width: min(100% - 32px, 920px);
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }}
+    .brand {{
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: .06em;
+      color: var(--ink);
+      text-decoration: none;
+    }}
+    .brand-mark {{
+      color: var(--crimson);
+      font-size: 19px;
+      font-weight: 900;
+    }}
+    .brand-divider {{
+      width: 1px;
+      height: 18px;
+      background: var(--line);
+    }}
+    .brand-note {{
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 500;
+    }}
+
+    /* Theme Toggle */
+    .theme-toggle {{
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--paper-subtle);
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s ease;
+      touch-action: manipulation;
+    }}
+    .theme-toggle:hover {{
+      border-color: var(--crimson);
+      color: var(--crimson);
+    }}
+
+    main {{
+      width: min(100% - 32px, 920px);
+      margin: 24px auto 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }}
+
+    /* Live Hero Card */
+    .live-hero-card {{
+      padding: 26px 28px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--paper);
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }}
+    .live-meta-row {{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }}
+    .live-pill {{
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--crimson-light);
+      color: var(--crimson-dark);
+      border: 1px solid var(--crimson-border);
+      font-size: 12px;
+      font-weight: 700;
+    }}
+    .pulse-dot {{
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--crimson);
+      animation: pulse-ring 1.8s infinite;
+    }}
+    @keyframes pulse-ring {{
+      0% {{ transform: scale(0.9); opacity: 0.8; }}
+      50% {{ transform: scale(1.3); opacity: 1; }}
+      100% {{ transform: scale(0.9); opacity: 0.8; }}
+    }}
+    .live-days-left {{
+      font-size: 13px;
+      color: var(--muted);
+    }}
+    .live-days-left strong {{
+      color: var(--crimson);
+      font-weight: 800;
+    }}
+    .live-title {{
+      margin: 0;
+      font-size: clamp(20px, 4.5vw, 28px);
+      font-weight: 800;
+      letter-spacing: -.03em;
+      color: var(--ink);
+      line-height: 1.3;
+    }}
+
+    /* Progress bar */
+    .progress-container {{
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }}
+    .progress-info {{
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--ink-secondary);
+    }}
+    .progress-info strong {{
+      color: var(--crimson);
+      font-size: 14px;
+    }}
+    .progress-track {{
+      height: 12px;
+      border-radius: 999px;
+      background: var(--progress-bg);
+      overflow: hidden;
+    }}
+    .progress-fill {{
+      height: 100%;
+      border-radius: 999px;
+      background: var(--progress-fill);
+      transition: width .8s cubic-bezier(.16, 1, .3, 1);
+    }}
+
+    /* Stat Grid */
+    .stat-grid {{
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }}
+    .stat-card {{
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: var(--paper-subtle);
+      border: 1px solid var(--line);
+    }}
+    .stat-icon {{
+      font-size: 22px;
+      flex-shrink: 0;
+    }}
+    .stat-body {{
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }}
+    .stat-label {{
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 600;
+      white-space: nowrap;
+    }}
+    .stat-value {{
+      font-size: 15px;
+      color: var(--ink);
+      font-weight: 500;
+      white-space: nowrap;
+    }}
+    .stat-value strong {{
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--crimson-dark);
+    }}
+    .stat-value small {{
+      font-size: 12px;
+      color: var(--muted);
+    }}
+
+    /* AI Coach Box */
+    .coach-card {{
+      padding: 16px 18px;
+      border-radius: 14px;
+      background: var(--crimson-light);
+      border: 1px solid var(--crimson-border);
+      border-left: 5px solid var(--crimson);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }}
+    .coach-header {{
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }}
+    .coach-badge {{
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: var(--crimson);
+      color: white;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .06em;
+    }}
+    .coach-title {{
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--crimson-dark);
+    }}
+    .coach-body {{
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.6;
+    }}
+    .coach-body p {{
+      margin: 4px 0;
+    }}
+
+    /* Archive Section */
+    .archive-section {{
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--paper);
+      box-shadow: var(--card-shadow);
+    }}
+    .archive-eyebrow {{
+      margin: 0 0 8px;
+      color: var(--crimson);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .14em;
+    }}
+    .archive-section h1 {{
+      margin: 0;
+      font-size: clamp(24px, 5vw, 36px);
+      letter-spacing: -.04em;
+      color: var(--ink);
+    }}
+    .archive-intro {{
+      margin: 8px 0 20px;
+      color: var(--muted);
+      font-size: 14px;
+    }}
+    .archive-year-tabs, .archive-tabs {{
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 8px;
+    }}
+    .archive-year-tabs::-webkit-scrollbar, .archive-tabs::-webkit-scrollbar {{
+      display: none;
+    }}
+    .archive-year-tab {{
+      flex: 0 0 auto;
+      padding: 8px 16px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: var(--paper-subtle);
+      font: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      touch-action: manipulation;
+    }}
+    .archive-year-tab[aria-selected="true"] {{
+      border-color: var(--crimson);
+      color: white;
+      background: var(--crimson);
+      box-shadow: 0 4px 12px rgba(122,23,53,.22);
+    }}
+    .archive-tabs {{
+      padding: 4px 0 16px;
+      border-bottom: 1px solid var(--line);
+    }}
+    .archive-tab {{
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex: 0 0 auto;
+      padding: 9px 15px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--ink-secondary);
+      background: var(--paper-subtle);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      touch-action: manipulation;
+    }}
+    .archive-tab:hover {{
+      border-color: var(--crimson);
+    }}
+    .archive-tab[aria-selected="true"] {{
+      border-color: var(--crimson);
+      color: white;
+      background: var(--crimson);
+    }}
+    .archive-current-badge {{
+      padding: 2px 6px;
+      border-radius: 999px;
+      color: var(--crimson-dark);
+      background: var(--crimson-light);
+      font-size: 10px;
+      font-weight: 800;
+    }}
+    .archive-tab[aria-selected="true"] .archive-current-badge {{
+      color: var(--crimson);
+      background: white;
+    }}
+    .archive-tab[hidden], .archive-panel[hidden] {{
+      display: none;
+    }}
+    .archive-panel h3 {{
+      margin: 20px 0 5px;
+      color: var(--crimson-dark);
+      font-size: 16px;
+      line-height: 1.5;
+    }}
+    .archive-panel > .muted {{
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 13px;
+    }}
+    .archive-table-wrap {{
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--paper);
+    }}
+    .achievement-icon {{
+      width: 22px;
+      height: 22px;
+      vertical-align: middle;
+    }}
+    .archive-table-wrap td:last-child {{
+      white-space: nowrap;
+      color: var(--crimson);
+      font-size: 13px;
+      font-weight: 700;
+    }}
+
+    /* Consistency Champion */
+    .consistency-panel {{
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+    }}
+    .consistency-panel[hidden] {{
+      display: none;
+    }}
+    .consistency-panel h2 {{
+      margin: 0 0 6px;
+      color: var(--crimson-dark);
+      font-size: 20px;
+    }}
+    .consistency-panel > .archive-intro {{
+      margin: 0 0 12px;
+      line-height: 1.6;
+    }}
+    .points-key {{
+      margin: -4px 0 14px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }}
+    .consistency-chart-wrap {{
+      position: relative;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }}
+    .consistency-chart {{
+      display: block;
+      width: 100%;
+      min-width: 600px;
+      height: auto;
+    }}
+    .consistency-chart text {{
+      font-family: inherit;
+    }}
+    .consistency-grid {{
+      stroke: var(--line);
+      stroke-width: 1;
+    }}
+    .consistency-axis {{
+      fill: var(--muted);
+      font-size: 11px;
+    }}
+    .consistency-line, .consistency-projection {{
+      stroke-dasharray: 1;
+      stroke-dashoffset: 1;
+      animation: chart-line-draw 1.1s ease-out forwards;
+    }}
+    .consistency-point {{
+      cursor: crosshair;
+      animation: chart-point-in .35s ease-out both;
+    }}
+    .consistency-point:hover, .consistency-point:focus {{
+      r: 6;
+      outline: none;
+      stroke: var(--paper);
+      stroke-width: 2;
+    }}
+    .consistency-tooltip {{
+      position: absolute;
+      z-index: 2;
+      display: grid;
+      gap: 3px;
+      min-width: 140px;
+      padding: 9px 12px;
+      transform: translate(-50%, -112%);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: var(--ink);
+      background: var(--paper);
+      box-shadow: var(--card-shadow);
+      font-size: 12px;
+      pointer-events: none;
+      white-space: nowrap;
+    }}
+    .consistency-tooltip[hidden] {{
+      display: none;
+    }}
+    .consistency-tooltip strong {{
+      color: var(--crimson-dark);
+    }}
+    .consistency-tooltip span {{
+      color: var(--muted);
+    }}
+    .consistency-tooltip b {{
+      color: var(--crimson);
+      font-size: 14px;
+    }}
     @keyframes chart-line-draw {{ to {{ stroke-dashoffset: 0; }} }}
     @keyframes chart-point-in {{ from {{ opacity: 0; }} to {{ opacity: 1; }} }}
-    @media (prefers-reduced-motion: reduce) {{ .consistency-line, .consistency-projection, .consistency-point {{ animation: none; stroke-dashoffset: 0; }} }}
-    .consistency-legend {{ display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 12px 2px 16px; color: #5d1028; font-size: 12px; }}
-    .consistency-legend span {{ display: inline-flex; align-items: center; gap: 6px; }}
-    .consistency-legend i {{ width: 10px; height: 10px; border-radius: 50%; }}
-    table {{ width: 100%; border-collapse: collapse; min-width: 480px; }}
-    th, td {{ padding: 11px 13px; border-bottom: 1px solid #f2ebed; text-align: left; }}
-    th {{ color: var(--muted); background: #fbf7f4; font-size: 12px; }}
-    td:first-child {{ width: 64px; color: #95878b; font-weight: 700; }}
-    td:nth-child(2) {{ font-weight: 700; }}
-    td:nth-child(3) {{ color: var(--crimson-dark); font-weight: 800; white-space: nowrap; }}
-    tbody tr:last-child td {{ border-bottom: 0; }}
-    footer {{ margin-top: 18px; color: #8a7c80; text-align: center; font-size: 12px; }}
-    @media (max-width: 520px) {{ .topbar {{ height: 58px; }} .topbar-inner, main {{ width: min(100% - 32px, 920px); }} main {{ margin-top: 24px; }} .brand-note {{ display: none; }} .archive-section {{ padding: 19px 16px; border-radius: 15px; }} .archive-intro {{ line-height: 1.6; }} th, td {{ padding: 10px; }} }}
+    @media (prefers-reduced-motion: reduce) {{
+      .consistency-line, .consistency-projection, .consistency-point {{
+        animation: none;
+        stroke-dashoffset: 0;
+      }}
+    }}
+    .consistency-legend {{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      margin: 12px 2px 16px;
+      color: var(--ink-secondary);
+      font-size: 12px;
+    }}
+    .consistency-legend span {{
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }}
+    .consistency-legend i {{
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }}
+
+    /* Tables */
+    table {{
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 440px;
+    }}
+    th, td {{
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+    }}
+    th {{
+      color: var(--muted);
+      background: var(--paper-subtle);
+      font-size: 12px;
+      font-weight: 700;
+    }}
+    td:first-child {{
+      width: 58px;
+      color: var(--muted);
+      font-weight: 700;
+    }}
+    td:nth-child(2) {{
+      font-weight: 700;
+      color: var(--ink);
+    }}
+    td:nth-child(3) {{
+      color: var(--crimson-dark);
+      font-weight: 800;
+      white-space: nowrap;
+    }}
+    tbody tr:last-child td {{
+      border-bottom: 0;
+    }}
+    tbody tr:hover td {{
+      background: var(--paper-subtle);
+    }}
+
+    footer {{
+      margin-top: 10px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 12px;
+      line-height: 1.6;
+    }}
+
+    /* Mobile Enhancements */
+    @media (max-width: 680px) {{
+      .topbar {{
+        height: 56px;
+      }}
+      .topbar-inner, main {{
+        width: min(100% - 24px, 920px);
+      }}
+      main {{
+        margin: 16px auto 40px;
+        gap: 16px;
+      }}
+      .brand-note {{
+        display: none;
+      }}
+      .brand-divider {{
+        display: none;
+      }}
+      .live-hero-card {{
+        padding: 18px 16px;
+        border-radius: 16px;
+        gap: 16px;
+      }}
+      .live-title {{
+        font-size: 19px;
+      }}
+      .stat-grid {{
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }}
+      .stat-card {{
+        padding: 10px 12px;
+        gap: 10px;
+        border-radius: 12px;
+      }}
+      .stat-icon {{
+        font-size: 20px;
+      }}
+      .stat-value strong {{
+        font-size: 16px;
+      }}
+      .stat-label {{
+        font-size: 10.5px;
+      }}
+      .coach-card {{
+        padding: 14px 14px;
+        border-radius: 12px;
+      }}
+      .coach-body {{
+        font-size: 13.5px;
+      }}
+      .archive-section {{
+        padding: 18px 16px;
+        border-radius: 16px;
+      }}
+      .archive-section h1 {{
+        font-size: 22px;
+      }}
+      .archive-year-tab, .archive-tab {{
+        padding: 8px 13px;
+        font-size: 13px;
+      }}
+      th, td {{
+        padding: 10px 10px;
+        font-size: 13px;
+      }}
+    }}
   </style>
 </head>
 <body>
-  <header class="topbar"><div class="topbar-inner"><div class="brand"><span class="brand-mark">KU</span><span>KU94 RUN</span><span class="brand-divider" aria-hidden="true"></span><span class="brand-note">고려대학교 94학번 러닝 모임</span></div></div></header>
-  <main>{archive_html}</main>
-  <footer>KU94 RUN · 월별 챌린지 아카이브 · 생성 {generated_at}</footer>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="#" class="brand">
+        <span class="brand-mark">KU</span>
+        <span>KU94 RUN</span>
+        <span class="brand-divider" aria-hidden="true"></span>
+        <span class="brand-note">고려대학교 94학번 러닝 크루</span>
+      </a>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="다크 모드 전환">
+        <span class="theme-icon" aria-hidden="true">🌓</span>
+        <span class="theme-label">테마</span>
+      </button>
+    </div>
+  </header>
+  <main>
+    {hero_html}
+    {archive_html}
+  </main>
+  <footer>
+    KU94 RUN · 월별 챌린지 리포트 & 아카이브<br>
+    최근 데이터 수집: {generated_at}
+  </footer>
+
+  <script>
+    (() => {{
+      const toggle = document.getElementById('theme-toggle');
+      if (!toggle) return;
+      const root = document.documentElement;
+      const icon = toggle.querySelector('.theme-icon');
+      const label = toggle.querySelector('.theme-label');
+      const metaTheme = document.getElementById('meta-theme-color');
+
+      function getEffectiveTheme() {{
+        const explicit = root.getAttribute('data-theme');
+        if (explicit === 'dark' || explicit === 'light') return explicit;
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }}
+
+      function updateUI(theme) {{
+        if (theme === 'dark') {{
+          if (icon) icon.textContent = '☀️';
+          if (label) label.textContent = '라이트';
+          if (metaTheme) metaTheme.setAttribute('content', '#1c181e');
+        }} else {{
+          if (icon) icon.textContent = '🌙';
+          if (label) label.textContent = '다크';
+          if (metaTheme) metaTheme.setAttribute('content', '#7a1735');
+        }}
+      }}
+
+      updateUI(getEffectiveTheme());
+
+      toggle.addEventListener('click', () => {{
+        const next = getEffectiveTheme() === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', next);
+        try {{ localStorage.setItem('ku94run_theme', next); }} catch (e) {{}}
+        updateUI(next);
+      }});
+
+      if (window.matchMedia) {{
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {{
+          if (!localStorage.getItem('ku94run_theme')) {{
+            updateUI(e.matches ? 'dark' : 'light');
+          }}
+        }});
+      }}
+    }})();
+  </script>
 </body>
 </html>
 """
