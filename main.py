@@ -1,6 +1,8 @@
 """Run the end-to-end Garmin challenge strategy pipeline."""
 
 from datetime import datetime
+import hashlib
+import json
 import logging
 import os
 from zoneinfo import ZoneInfo
@@ -23,6 +25,15 @@ from report_page import report_page_url, write_kakao_delivery_payload, write_rep
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 KST = ZoneInfo("Asia/Seoul")
+
+
+def _standings_fingerprint(result: ChallengeAnalysisResult) -> str:
+    """Compute a deterministic hash of participant standings to detect mileage changes."""
+    data = [
+        (p.display_name, round(p.distance_km, 2), p.rank, p.is_self)
+        for p in result.participants
+    ]
+    return hashlib.sha256(json.dumps(data, sort_keys=True).encode("utf-8")).hexdigest()
 
 
 def main() -> None:
@@ -95,7 +106,16 @@ def main() -> None:
     raw = client.get_challenge_detail(challenge_uuid)
     result = ChallengeAnalyzer().analyze(raw, target_distance_km=target_distance_km)
     prompt = PromptBuilder().build(result)
-    report = GeminiCoach(config.gemini_api_key, config.gemini_model).generate(prompt)
+    fingerprint = _standings_fingerprint(result)
+    now_kst = datetime.now(KST)
+    is_morning_report = (now_kst.hour == 7 and now_kst.minute >= 40) or (now_kst.hour == 8 and now_kst.minute <= 10)
+    force_refresh = is_morning_report or (os.getenv("FORCE_AI_REFRESH", "false").lower() in ("true", "1", "yes"))
+
+    report = GeminiCoach(config.gemini_api_key, config.gemini_model).generate_with_cache(
+        prompt,
+        fingerprint=fingerprint,
+        force_refresh=force_refresh,
+    )
     board_enabled = public_board_enabled()
     history = record_snapshot(result) if board_enabled else None
     if board_enabled:

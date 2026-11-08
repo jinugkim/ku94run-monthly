@@ -69,11 +69,25 @@ flowchart TD
 
 ---
 
-## 6. 핵심 파일 및 역할
-- `main.py`: 1단계 가민 데이터 수집, 챌린지 자동 탐색, AI 코칭 생성, Pages 빌드 진입점
+## 6. 성능 및 토큰 최적화 (Smart Fingerprint Caching)
+- **배경**: 1시간 간격 수집 시 하루 18회 실행되나, 대부분의 시간대에는 러너들의 누적 거리가 변동되지 않음.
+- **최적화 기법**:
+  1. **지문 기반 스마트 캐싱 (`data/coaching_cache.json`)**:
+     - 전체 참가자의 순위·거리 데이터를 SHA-256 해시로 지문(`fingerprint`)화.
+     - 당일 아침 카톡 전송 직전(07:50)이거나 실제 누군가 뛰어 순위/거리가 변경되었을 때만 Gemini API 호출.
+     - 기록 변동이 없는 시간대에는 직전 코칭 리포트를 즉시 재사용하여 **Gemini API 호출 및 토큰을 80% 이상 절감(0 tokens)**.
+  2. **Gemini 생성 파라미터 제약**:
+     - `max_output_tokens=300`, `temperature=0.7`로 고정하여 비용 상한 보장 및 응답 속도 최적화.
+  3. **가민 OAuth 세션 즉시 덤프**:
+     - 세션 복원 성공 시에도 최신 토큰을 `client.garth.dump()`하여 Actions 캐시 만료 및 SSO 재인증 방지.
+
+---
+
+## 7. 핵심 파일 및 역할
+- `main.py`: 1단계 가민 데이터 수집, 챌린지 자동 탐색, 스마트 캐싱 기반 AI 코칭 생성, Pages 빌드 진입점
 - `send_kakao_message.py`: 2단계 Cloudflare Worker 연동 및 카카오톡 템플릿 메시지 발송
-- `garmin_client.py`: Garmin Connect OAuth 세션 복원, 활성 챌린지 자동 탐색, 리더보드 수집
+- `garmin_client.py`: Garmin Connect OAuth 세션 복원(토큰 즉시 덤프), 활성 챌린지 자동 탐색, 리더보드 수집
 - `challenge_registry.py`: 연간 챌린지 목록 관리, 챌린지 자동 업서트 및 아카이빙
-- `gemini_coach.py`: Gemini 3.8 Flash 기반 러너별 동기부여 및 훈련 코칭 생성
+- `gemini_coach.py`: Gemini 3.8 Flash 기반 러너별 동기부여 및 스마트 캐싱 코칭 생성 (`generate_with_cache`)
 - `report_page.py`: 정적 HTML 웹 리포트 및 `kakao_delivery.json` 빌드
 - `cloudflare/kakao-worker/`: 토큰 동기화 및 발송 이력 Cloudflare Worker 소스

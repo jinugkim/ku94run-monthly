@@ -39,11 +39,17 @@ class GarminSessionManager:
             try:
                 client.login(self.token_store_path)
                 logger.info("Authenticated with saved Garmin tokens")
+                try:
+                    if hasattr(client, "garth") and hasattr(client.garth, "dump"):
+                        client.garth.dump(self.token_store_path)
+                except Exception:
+                    pass
             except Exception as token_error:
                 logger.info("Saved Garmin tokens unavailable; attempting credential login (%s)", type(token_error).__name__)
                 client = Garmin(self.email, self.password)
                 client.login()
-                client.garth.dump(self.token_store_path)
+                if hasattr(client, "garth") and hasattr(client.garth, "dump"):
+                    client.garth.dump(self.token_store_path)
                 logger.info("Garmin tokens saved")
             self.client = client
         except Exception as exc:
