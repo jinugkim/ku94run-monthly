@@ -20,6 +20,7 @@ from garmin_client import GarminSessionManager
 from gemini_coach import GeminiCoach
 from history_store import public_board_enabled, record_snapshot
 from kakao_messenger import KakaoMemoSender
+from models import ChallengeAnalysisResult
 from prompt_builder import PromptBuilder
 from report_page import report_page_url, write_kakao_delivery_payload, write_report_page
 
