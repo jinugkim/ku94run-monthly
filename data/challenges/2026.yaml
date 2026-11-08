@@ -163,4 +163,19 @@ challenges:
       - name: "토끼"
         pace_limit_min_per_km: 9
         pace_limit_operator: "<="
+    status: archived
+  - id: ku94run-2026-11
+    month: 11
+    title: "KU94RUN 11월챌린지"
+    start_date: "2026-11-01"
+    end_date: "2026-11-30"
+    garmin_uuid_secret: GARMIN_CHALLENGE_2026_11_UUID
+    target_distance_km: 200
+    goals:
+      - name: "거북이"
+        pace_limit_min_per_km: 10
+        pace_limit_operator: "<="
+      - name: "토끼"
+        pace_limit_min_per_km: 9
+        pace_limit_operator: "<="
     status: active
