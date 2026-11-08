@@ -43,6 +43,7 @@ flowchart TD
 - **역할**:
   - `GET /internal/tokens`: 멤버별 최신 카카오 refresh token 조회
   - `POST /internal/deliveries`: 카카오 메시지 전송 성공/실패 이력 로깅
+  - **장애 복원력 (Resilience Fallback)**: Cloudflare D1 일일 한도 초과(code 7500) 등으로 이력 서버가 500 에러를 반환하더라도, 카카오톡 메시지 발송 자체는 차단되지 않고 정상 전송되도록 예외 처리되어 있음.
 - 중앙 `courier` 프로젝트와 유사한 형태이나, `ku94run-monthly` 전용으로 독립 구축된 Worker/D1을 사용함.
 
 ---

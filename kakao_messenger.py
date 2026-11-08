@@ -61,14 +61,16 @@ class KakaoMemoSender:
         for member, old_refresh_token in self.refresh_tokens.items():
             try:
                 claim = self._claim_delivery(delivery_date, member)
+                if not claim.get("claimed", False):
+                    skipped += 1
+                    logger.info("Kakao delivery skipped for member %s: date status is %s", member, claim.get("status"))
+                    continue
             except (requests.RequestException, ValueError) as exc:
-                logger.error("Could not claim Kakao delivery for member %s: %s", member, exc)
-                failures.append(member)
-                continue
-            if not claim["claimed"]:
-                skipped += 1
-                logger.info("Kakao delivery skipped for member %s: date status is %s", member, claim["status"])
-                continue
+                logger.warning(
+                    "Could not claim Kakao delivery via Worker DB for member %s (proceeding with message send): %s",
+                    member,
+                    exc,
+                )
 
             try:
                 access_token, new_refresh_token = self._refresh(old_refresh_token)
@@ -76,33 +78,26 @@ class KakaoMemoSender:
                     self.refresh_tokens[member] = new_refresh_token
                     self._save_rotated_token(member, new_refresh_token)
             except (requests.RequestException, ValueError) as exc:
-                if not self._record_delivery(delivery_date, member, "failed", str(exc)):
-                    failures.append(f"{member} delivery history")
+                self._record_delivery(delivery_date, member, "failed", str(exc))
                 logger.error("Kakao token refresh or persistence failed for member %s: %s", member, exc)
                 failures.append(member)
                 continue
 
             try:
                 self._send_message(access_token, message)
+                sent += 1
+                logger.info("Kakao summary sent to member %s", member)
+                self._record_delivery(delivery_date, member, "sent")
             except requests.RequestException as exc:
-                if not self._record_delivery(delivery_date, member, "uncertain", "Kakao request outcome is unknown"):
-                    failures.append(f"{member} delivery history")
+                self._record_delivery(delivery_date, member, "uncertain", "Kakao request outcome is unknown")
                 logger.error("Kakao delivery outcome is uncertain for member %s: %s", member, exc)
                 failures.append(member)
                 continue
             except ValueError as exc:
-                if not self._record_delivery(delivery_date, member, "failed", str(exc)):
-                    failures.append(f"{member} delivery history")
+                self._record_delivery(delivery_date, member, "failed", str(exc))
                 logger.error("Kakao delivery failed for member %s: %s", member, exc)
                 failures.append(member)
                 continue
-
-            if self._record_delivery(delivery_date, member, "sent"):
-                sent += 1
-                logger.info("Kakao summary sent to member %s", member)
-            else:
-                logger.error("Kakao message sent but delivery history update failed for member %s", member)
-                failures.append(member)
 
         logger.info("Kakao delivery for %s: %d sent, %d already claimed, %d failed", delivery_date, sent, skipped, len(failures))
         if failures:
