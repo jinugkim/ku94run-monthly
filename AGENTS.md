@@ -83,11 +83,59 @@ flowchart TD
 
 ---
 
-## 7. 핵심 파일 및 역할
+## 7. 모바일 브라우저 최적화 및 다크 모드 (Mobile & Dark Mode UX)
+- **모바일 라이브 히어로 카드**:
+  - 카카오톡 링크 접속 시, 최상단에 당월 챌린지명, 진행 일수, 목표 달성률(%) 프로그레스 바 렌더링.
+  - 4개 주요 스탯 모바일 2x2 반응형 그리드: [🏆 현재 순위], [🏃 누적 거리], [🎯 일일 권장], [🏁 남은 거리].
+  - 💡 Run-teller AI 전략 코칭 카드를 모바일 카드형으로 배치하여 가독성 극대화.
+- **다크 모드 시스템**:
+  - 스마트폰 OS 테마(`prefers-color-scheme: dark`) 자동 반영 (FOUC 방지 인라인 스크립트 적용).
+  - 상단 헤더 원터치 토글 버튼 (🌙 다크 / ☀️ 라이트) 및 `localStorage` 영구 보존.
+  - 고려대 크림슨 아이덴티티와 조화되는 딥 차콜/크림슨 다크 팔레트 (`--bg: #121013`, `--crimson: #ff5e84`).
+  - 모바일 터치 스크롤 스냅, 가로 스크롤 테이블 가이드 및 SVG 차트 다크모드 반전 적용.
+
+---
+
+## 8. [차기 마이그레이션 계획] Cloudflare Worker/D1 ➔ GCP (Cloud Run + Firestore)
+
+### 1) 마이그레이션 배경 & 필요성
+- **문제점**: Cloudflare D1 무료 티어의 계정 전체 일일 500만 Row 읽기 한도로 인해, 다른 프로젝트 사용량 급증 시 카카오톡 토큰 조회 및 발송이 차단되는 500 에러(code 7500) 발생 위험이 있음.
+- **해결책**: `riro2notion`에서 검증된 **GCP Cloud Run (서울 리전 `asia-northeast3`) + Google Cloud Firestore**로 이전하여 플랫폼을 단일화하고 DB 한도 문제를 영구 해소.
+  - Firestore 무료 티어(하루 5만 회 읽기)는 크루 규모 대비 1,000배 이상 여유로움.
+  - 팀원들에게 재로그인을 요청하지 않고 기존 토큰을 투명하게 이전(Zero-downtime Token Import) 가능.
+
+### 2) 단계별 실행 가이드 (공수 약 30분)
+1. **[1단계] 기존 토큰 백업**:
+   ```bash
+   curl -s -H "Authorization: Bearer <KAKAO_SYNC_TOKEN>" \
+     "https://run-teller-kakao-auth.jinug-kim.workers.dev/internal/tokens" > kakao_tokens_backup.json
+   ```
+2. **[2단계] FastAPI + Firestore 인증 서버 작성**:
+   - `cloudflare/kakao-worker/src/index.js`의 219줄 로직을 Python FastAPI (`server.py`)로 1:1 변환.
+   - 컬렉션 구조: `members/{member_id}` (`refresh_token`, `updated_at`), `invitations/{token_hash}`, `kakao_deliveries/{date}_{member}`.
+   - 공식 SDK: `google-cloud-firestore`.
+3. **[3단계] Cloud Run 배포**:
+   ```bash
+   gcloud run deploy run-teller-kakao-auth \
+     --source . \
+     --region asia-northeast3 \
+     --allow-unauthenticated \
+     --set-env-vars "KAKAO_REST_API_KEY=...,KAKAO_CLIENT_SECRET=...,SYNC_TOKEN=...,ADMIN_TOKEN=..."
+   ```
+4. **[4단계] 기존 토큰 일괄 복원**:
+   - `/admin/import` 엔드포인트에 `kakao_tokens_backup.json`을 POST하여 팀원 재로그인 없이 즉시 활성화.
+5. **[5단계] 환경변수 & 카카오 콘솔 변경**:
+   - 카카오 개발자 콘솔 > 플랫폼 > Redirect URI에 `https://<새CloudRun주소>/oauth/callback` 등록.
+   - GitHub Actions Repository Secret/Variable `KAKAO_SYNC_URL`을 새 Cloud Run 주소로 변경.
+
+---
+
+## 9. 핵심 파일 및 역할
 - `main.py`: 1단계 가민 데이터 수집, 챌린지 자동 탐색, 스마트 캐싱 기반 AI 코칭 생성, Pages 빌드 진입점
 - `send_kakao_message.py`: 2단계 Cloudflare Worker 연동 및 카카오톡 템플릿 메시지 발송
 - `garmin_client.py`: Garmin Connect OAuth 세션 복원(토큰 즉시 덤프), 활성 챌린지 자동 탐색, 리더보드 수집
 - `challenge_registry.py`: 연간 챌린지 목록 관리, 챌린지 자동 업서트 및 아카이빙
 - `gemini_coach.py`: Gemini 3.8 Flash 기반 러너별 동기부여 및 스마트 캐싱 코칭 생성 (`generate_with_cache`)
-- `report_page.py`: 정적 HTML 웹 리포트 및 `kakao_delivery.json` 빌드
-- `cloudflare/kakao-worker/`: 토큰 동기화 및 발송 이력 Cloudflare Worker 소스
+- `report_page.py`: 모바일 최적화 및 다크 모드가 내장된 반응형 웹 리포트 및 `kakao_delivery.json` 빌드
+- `archive_pages.py`: 연도별/월별 아카이브 및 Consistency Champion 차트 생성
+- `cloudflare/kakao-worker/`: 토큰 동기화 및 발송 이력 Cloudflare Worker 소스 (향후 GCP 이전 대상)
