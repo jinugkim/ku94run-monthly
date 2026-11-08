@@ -2,7 +2,7 @@ name: Run-teller Daily Challenge Strategy Cron
 
 on:
   schedule:
-    - cron: '10 17 * * *' # KST 02:10
+    - cron: '50 0-14,21-23 * * *' # KST 06:50 ~ 23:50 매시간 50분 (UTC 00-14, 21-23)
   workflow_dispatch:
     inputs:
       backfill_month:
@@ -95,6 +95,7 @@ jobs:
             echo "No standings history changes to commit"
           else
             git commit -m "Update daily standings history"
+            git pull --rebase origin main || true
             git push
           fi
       - name: Save archived challenge results
