@@ -58,10 +58,22 @@ flowchart TD
 
 ---
 
-## 5. 핵심 파일 및 역할
-- `main.py`: 1단계 가민 데이터 수집, 챌린지 분석, AI 코칭 생성, Pages 빌드 진입점
+## 5. 가민 챌린지 자동 탐색 (Auto-Discovery) 메커니즘
+- **목적**: 매달 호스트가 새 챌린지를 생성하고 사용자가 '참여(Join)'했을 때, GitHub Secrets나 YAML 파일을 수동으로 업데이트하지 않아도 런타임에 자동 인식.
+- **동작 방식**:
+  1. `garmin_client.py`: `discover_crew_challenge()`가 가민의 `get_active_adhoc_challenges()` 및 `/adhocchallenge-service/adHocChallenge/inProgress`를 조회.
+  2. 키워드(`ku94`, `94`, `고려`)와 이번 달 날짜 범위를 검사하여 이번 달 챌린지 UUID를 자동 취득.
+  3. `challenge_registry.py`: `upsert_active_challenge()`가 `data/challenges/{year}.yaml`에 새 챌린지를 자동 등록(`status: active`, `garmin_uuid: <UUID>`)하고 지난달은 `status: archived`로 자동 보관.
+  4. GitHub Actions가 변경된 `data/challenges`를 자동으로 커밋하여 영구 보존.
+  5. 월초 아직 챌린지가 열리지 않았거나 참여 전인 경우, 파이프라인 에러 없이 안내 로그를 남기고 안전하게 대기.
+
+---
+
+## 6. 핵심 파일 및 역할
+- `main.py`: 1단계 가민 데이터 수집, 챌린지 자동 탐색, AI 코칭 생성, Pages 빌드 진입점
 - `send_kakao_message.py`: 2단계 Cloudflare Worker 연동 및 카카오톡 템플릿 메시지 발송
-- `garmin_client.py`: Garmin Connect OAuth 세션 복원 및 리더보드 수집
+- `garmin_client.py`: Garmin Connect OAuth 세션 복원, 활성 챌린지 자동 탐색, 리더보드 수집
+- `challenge_registry.py`: 연간 챌린지 목록 관리, 챌린지 자동 업서트 및 아카이빙
 - `gemini_coach.py`: Gemini 3.8 Flash 기반 러너별 동기부여 및 훈련 코칭 생성
 - `report_page.py`: 정적 HTML 웹 리포트 및 `kakao_delivery.json` 빌드
 - `cloudflare/kakao-worker/`: 토큰 동기화 및 발송 이력 Cloudflare Worker 소스

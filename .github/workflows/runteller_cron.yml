@@ -91,10 +91,11 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/standings.json
+          git add data/challenges
           if git diff --cached --quiet; then
-            echo "No standings history changes to commit"
+            echo "No standings history or registry changes to commit"
           else
-            git commit -m "Update daily standings history"
+            git commit -m "Update daily standings history and challenge registry"
             git pull --rebase origin main || true
             git push
           fi

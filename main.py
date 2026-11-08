@@ -1,11 +1,17 @@
 """Run the end-to-end Garmin challenge strategy pipeline."""
 
+from datetime import datetime
 import logging
 import os
+from zoneinfo import ZoneInfo
 
 from archive_pages import archive_completed_snapshots, render_archive_pages
 from challenge_analyzer import ChallengeAnalyzer
-from challenge_registry import load_active_challenge
+from challenge_registry import (
+    DEFAULT_REGISTRY_DIR,
+    load_active_challenge,
+    upsert_active_challenge,
+)
 from config import Config
 from courier import ConsoleCourier, Courier, SlackCourier
 from garmin_client import GarminSessionManager
@@ -16,30 +22,76 @@ from prompt_builder import PromptBuilder
 from report_page import report_page_url, write_kakao_delivery_payload, write_report_page
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+KST = ZoneInfo("Asia/Seoul")
 
 
 def main() -> None:
     """Load configuration, analyze a Garmin challenge, and deliver its report."""
     config = Config.from_env()
-    active_challenge = load_active_challenge()
-    if active_challenge:
-        challenge_uuid = os.getenv(active_challenge.garmin_uuid_secret)
-        if not challenge_uuid:
-            raise ValueError(
-                f"Missing GitHub Actions Secret or environment variable: {active_challenge.garmin_uuid_secret}"
-            )
-        logging.info("Selected registered challenge %s", active_challenge.challenge_id)
-    else:
-        challenge_uuid = config.garmin_challenge_uuid
-        if not challenge_uuid:
-            raise ValueError("Missing GARMIN_CHALLENGE_UUID and no active annual challenge is configured")
-
-    target_distance_km = (
-        active_challenge.target_distance_km
-        if active_challenge and active_challenge.target_distance_km is not None
-        else config.challenge_target_distance_km
-    )
     client = GarminSessionManager(config.garmin_email, config.garmin_password, str(config.token_store_path))
+    today = datetime.now(KST).date()
+
+    challenge_uuid: str | None = None
+    target_distance_km: float | None = None
+    active_challenge = None
+
+    # Step 1: Auto-discover active crew challenge from Garmin Connect
+    try:
+        discovered = client.discover_crew_challenge(today=today)
+        if discovered:
+            challenge_uuid, raw_item = discovered
+            title = str(
+                raw_item.get("challengeName")
+                or raw_item.get("adHocChallengeName")
+                or raw_item.get("name")
+                or f"KU94RUN {today.month}월 챌린지"
+            )
+            logging.info("Auto-discovered active Garmin challenge: %s (UUID: %s)", title, challenge_uuid)
+            active_challenge = upsert_active_challenge(
+                registry_dir=DEFAULT_REGISTRY_DIR,
+                year=today.year,
+                month=today.month,
+                title=title,
+                uuid=challenge_uuid,
+                target_distance_km=config.challenge_target_distance_km or 200.0,
+            )
+            target_distance_km = active_challenge.target_distance_km
+    except Exception as exc:
+        logging.warning("Auto-discovery from Garmin Connect encountered an issue: %s", exc)
+
+    # Step 2: Fallback to local registry if auto-discovery did not find a challenge
+    if not challenge_uuid:
+        try:
+            active_challenge = load_active_challenge(today)
+            if active_challenge:
+                challenge_uuid = active_challenge.garmin_uuid or os.getenv(active_challenge.garmin_uuid_secret)
+                target_distance_km = active_challenge.target_distance_km
+                if challenge_uuid:
+                    logging.info("Selected challenge from registry: %s", active_challenge.challenge_id)
+        except Exception as exc:
+            logging.info("Registry lookup fallback note: %s", exc)
+
+    # Step 3: Fallback to global environment variable
+    if not challenge_uuid:
+        challenge_uuid = config.garmin_challenge_uuid
+
+    if target_distance_km is None:
+        target_distance_km = (
+            active_challenge.target_distance_km
+            if active_challenge and active_challenge.target_distance_km is not None
+            else config.challenge_target_distance_km
+        )
+
+    # If still no challenge found, log a friendly message and return cleanly
+    if not challenge_uuid:
+        logging.warning(
+            "⚠️ 활성 94 러닝 챌린지 UUID를 찾을 수 없습니다. (년-월: %d-%02d)\n"
+            "가민 커넥트 앱에서 호스트가 생성한 챌린지에 '참여(Join)'했는지 확인해 주세요.",
+            today.year,
+            today.month,
+        )
+        return
+
     raw = client.get_challenge_detail(challenge_uuid)
     result = ChallengeAnalyzer().analyze(raw, target_distance_km=target_distance_km)
     prompt = PromptBuilder().build(result)

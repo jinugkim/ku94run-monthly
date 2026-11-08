@@ -169,6 +169,7 @@ challenges:
     title: "KU94RUN 11월챌린지"
     start_date: "2026-11-01"
     end_date: "2026-11-30"
+    garmin_uuid: "55146EF273EB47FC9B8C1B3B7AE3F905"
     garmin_uuid_secret: GARMIN_CHALLENGE_2026_11_UUID
     target_distance_km: 200
     goals:
