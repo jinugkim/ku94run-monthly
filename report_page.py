@@ -138,17 +138,23 @@ def _running_board_html(result: ChallengeAnalysisResult, history: dict) -> str:
 
 
 def coach_summary_text(result: ChallengeAnalysisResult, report: str) -> str:
-    """Build a compact message that fits Kakao's 200-character text template."""
-    coach_summary = re.sub(r"(?m)^\s{0,3}#{1,6}\s*|[*_`>\[\]]", "", report)
-    coach_summary = " ".join(coach_summary.split()) or "오늘도 무리하지 말고 목표 페이스를 지켜요."
-    coach_summary = coach_summary[:90].rstrip()
-    summary = (
-        f"{result.challenge_name}\n"
-        f"누적 {result.my_distance_km:.1f}/{result.target_distance_km:.1f}km(공통 목표) · "
-        f"목표까지 {result.remaining_distance_km:.1f}km · {result.remaining_days}일\n"
-        f"코칭: {coach_summary}"
+    """Build an actionable, compact message that fits Kakao's 200-character text template."""
+    clean_report = re.sub(r"(?m)^\s{0,3}#{1,6}\s*|[*_`>\[\]]", "", report)
+    # Strip unnecessary greetings, introductions, or verbose prefixes
+    clean_report = re.sub(r"^(안녕하세요|반갑습니다|안녕)[^.!\n]*[.!\n]\s*", "", clean_report)
+    clean_report = re.sub(r"^.*?Run-teller입니다[^.!\n]*[.!\n]\s*", "", clean_report)
+    clean_report = re.sub(r"^.*?AI\s*코치[^.!\n]*[.!\n]\s*", "", clean_report)
+    clean_report = " ".join(clean_report.split()).strip() or f"오늘 {result.daily_req_for_goal:.1f}km 러닝으로 목표를 채워보세요!"
+
+    challenge_label = result.challenge_name.split(":")[0].strip() if ":" in result.challenge_name else result.challenge_name[:18].strip()
+    header = (
+        f"[{challenge_label}]\n"
+        f"🏃 {result.my_distance_km:.1f}/{result.target_distance_km:.1f}km · 잔여 {result.remaining_days}일\n"
+        f"🎯 일일권장: {result.daily_req_for_goal:.1f}km/일 ({result.my_rank}위)"
     )
-    return summary[:200]
+    budget = 195 - len(header) - 5
+    advice = clean_report[:budget].rstrip() if len(clean_report) > budget else clean_report
+    return f"{header}\n💡 {advice}"[:200]
 
 
 def write_kakao_delivery_payload(
