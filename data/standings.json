@@ -3588,16 +3588,16 @@
               "is_self": false
             },
             {
-              "name": "정지은",
+              "name": "김진욱",
               "rank": 10,
-              "distance_km": 34.38,
-              "is_self": false
+              "distance_km": 36.5,
+              "is_self": true
             },
             {
-              "name": "김진욱",
+              "name": "정지은",
               "rank": 11,
-              "distance_km": 31.48,
-              "is_self": true
+              "distance_km": 34.38,
+              "is_self": false
             },
             {
               "name": "Hong, Yong-Jin",
