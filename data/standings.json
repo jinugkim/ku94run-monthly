@@ -3560,7 +3560,7 @@
             {
               "name": "김혜원",
               "rank": 5,
-              "distance_km": 50.18,
+              "distance_km": 54.11,
               "is_self": false
             },
             {
@@ -3596,7 +3596,7 @@
             {
               "name": "정지은",
               "rank": 11,
-              "distance_km": 34.38,
+              "distance_km": 36.39,
               "is_self": false
             },
             {
@@ -3684,38 +3684,38 @@
               "is_self": false
             },
             {
-              "name": "Inbyoung K",
-              "rank": 26,
-              "distance_km": 0.0,
-              "is_self": false
-            },
-            {
               "name": "Kim Bo Youn",
               "rank": 26,
-              "distance_km": 0.0,
+              "distance_km": 5.21,
               "is_self": false
             },
             {
               "name": "임채령",
-              "rank": 26,
+              "rank": 27,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "Inbyoung K",
+              "rank": 27,
               "distance_km": 0.0,
               "is_self": false
             },
             {
               "name": "제영수",
-              "rank": 26,
+              "rank": 27,
               "distance_km": 0.0,
               "is_self": false
             },
             {
               "name": "김보현",
-              "rank": 26,
+              "rank": 27,
               "distance_km": 0.0,
               "is_self": false
             },
             {
               "name": "윤영곤 & 윤희상",
-              "rank": 26,
+              "rank": 27,
               "distance_km": 0.0,
               "is_self": false
             },
