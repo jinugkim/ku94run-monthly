@@ -4356,7 +4356,7 @@
             {
               "name": "승학",
               "rank": 2,
-              "distance_km": 97.86,
+              "distance_km": 108.02,
               "is_self": false
             },
             {
@@ -4372,15 +4372,15 @@
               "is_self": false
             },
             {
-              "name": "김혜원",
+              "name": "박민수",
               "rank": 5,
-              "distance_km": 54.11,
+              "distance_km": 57.36,
               "is_self": false
             },
             {
-              "name": "박민수",
+              "name": "김혜원",
               "rank": 6,
-              "distance_km": 53.3,
+              "distance_km": 54.11,
               "is_self": false
             },
             {
