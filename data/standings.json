@@ -4037,27 +4037,27 @@
               "is_self": false
             },
             {
-              "name": "박혜연",
+              "name": "홍석헌",
               "rank": 17,
+              "distance_km": 20.66,
+              "is_self": false
+            },
+            {
+              "name": "박혜연",
+              "rank": 18,
               "distance_km": 17.62,
               "is_self": false
             },
             {
               "name": "이경순",
-              "rank": 18,
+              "rank": 19,
               "distance_km": 16.48,
               "is_self": false
             },
             {
               "name": "장용민",
-              "rank": 19,
-              "distance_km": 14.21,
-              "is_self": false
-            },
-            {
-              "name": "홍석헌",
               "rank": 20,
-              "distance_km": 12.97,
+              "distance_km": 14.21,
               "is_self": false
             },
             {
@@ -4097,32 +4097,32 @@
               "is_self": false
             },
             {
-              "name": "임채령",
+              "name": "김보현",
               "rank": 27,
+              "distance_km": 5.07,
+              "is_self": false
+            },
+            {
+              "name": "윤영곤 & 윤희상",
+              "rank": 28,
+              "distance_km": 0.0,
+              "is_self": false
+            },
+            {
+              "name": "임채령",
+              "rank": 28,
               "distance_km": 0.0,
               "is_self": false
             },
             {
               "name": "Inbyoung K",
-              "rank": 27,
+              "rank": 28,
               "distance_km": 0.0,
               "is_self": false
             },
             {
               "name": "제영수",
-              "rank": 27,
-              "distance_km": 0.0,
-              "is_self": false
-            },
-            {
-              "name": "윤영곤 & 윤희상",
-              "rank": 27,
-              "distance_km": 0.0,
-              "is_self": false
-            },
-            {
-              "name": "김보현",
-              "rank": 27,
+              "rank": 28,
               "distance_km": 0.0,
               "is_self": false
             },
