@@ -4368,7 +4368,7 @@
             {
               "name": "제진아",
               "rank": 4,
-              "distance_km": 72.65,
+              "distance_km": 81.11,
               "is_self": false
             },
             {
@@ -4378,21 +4378,21 @@
               "is_self": false
             },
             {
-              "name": "김혜원",
+              "name": "이재상",
               "rank": 6,
+              "distance_km": 56.13,
+              "is_self": false
+            },
+            {
+              "name": "김혜원",
+              "rank": 7,
               "distance_km": 54.11,
               "is_self": false
             },
             {
               "name": "정지은",
-              "rank": 7,
-              "distance_km": 53.86,
-              "is_self": false
-            },
-            {
-              "name": "이재상",
               "rank": 8,
-              "distance_km": 49.83,
+              "distance_km": 53.86,
               "is_self": false
             },
             {
