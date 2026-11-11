@@ -4755,15 +4755,15 @@
           "date": "2026-11-12",
           "participants": [
             {
-              "name": "Cool Cucumber",
+              "name": "승학",
               "rank": 1,
-              "distance_km": 116.9,
+              "distance_km": 118.13,
               "is_self": false
             },
             {
-              "name": "승학",
+              "name": "Cool Cucumber",
               "rank": 2,
-              "distance_km": 108.02,
+              "distance_km": 116.9,
               "is_self": false
             },
             {
