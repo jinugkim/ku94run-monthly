@@ -4390,22 +4390,22 @@
               "is_self": false
             },
             {
-              "name": "Ej lee",
+              "name": "김진욱",
               "rank": 8,
+              "distance_km": 46.53,
+              "is_self": true
+            },
+            {
+              "name": "Ej lee",
+              "rank": 9,
               "distance_km": 45.09,
               "is_self": false
             },
             {
               "name": "정지은",
-              "rank": 9,
+              "rank": 10,
               "distance_km": 42.76,
               "is_self": false
-            },
-            {
-              "name": "김진욱",
-              "rank": 10,
-              "distance_km": 41.52,
-              "is_self": true
             },
             {
               "name": "김성은",
