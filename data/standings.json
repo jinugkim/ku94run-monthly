@@ -4350,7 +4350,7 @@
             {
               "name": "Cool Cucumber",
               "rank": 1,
-              "distance_km": 108.87,
+              "distance_km": 116.9,
               "is_self": false
             },
             {
@@ -4384,27 +4384,27 @@
               "is_self": false
             },
             {
-              "name": "이재상",
+              "name": "정지은",
               "rank": 7,
+              "distance_km": 53.86,
+              "is_self": false
+            },
+            {
+              "name": "이재상",
+              "rank": 8,
               "distance_km": 49.83,
               "is_self": false
             },
             {
               "name": "김진욱",
-              "rank": 8,
+              "rank": 9,
               "distance_km": 46.53,
               "is_self": true
             },
             {
               "name": "Ej lee",
-              "rank": 9,
-              "distance_km": 45.09,
-              "is_self": false
-            },
-            {
-              "name": "정지은",
               "rank": 10,
-              "distance_km": 42.76,
+              "distance_km": 45.09,
               "is_self": false
             },
             {
@@ -4480,33 +4480,33 @@
               "is_self": false
             },
             {
-              "name": "김민정",
+              "name": "김보현",
               "rank": 23,
+              "distance_km": 10.14,
+              "is_self": false
+            },
+            {
+              "name": "김민정",
+              "rank": 24,
               "distance_km": 10.11,
               "is_self": false
             },
             {
               "name": "최정(피식)",
-              "rank": 24,
+              "rank": 25,
               "distance_km": 10.09,
               "is_self": false
             },
             {
               "name": "Han jiyeon",
-              "rank": 25,
+              "rank": 26,
               "distance_km": 10.01,
               "is_self": false
             },
             {
               "name": "Kim Bo Youn",
-              "rank": 26,
-              "distance_km": 5.21,
-              "is_self": false
-            },
-            {
-              "name": "김보현",
               "rank": 27,
-              "distance_km": 5.07,
+              "distance_km": 5.21,
               "is_self": false
             },
             {
