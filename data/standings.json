@@ -4815,39 +4815,39 @@
               "is_self": false
             },
             {
-              "name": "김성은",
+              "name": "Hena Choi",
               "rank": 11,
+              "distance_km": 42.62,
+              "is_self": false
+            },
+            {
+              "name": "JR Oh",
+              "rank": 12,
+              "distance_km": 38.27,
+              "is_self": false
+            },
+            {
+              "name": "김성은",
+              "rank": 13,
               "distance_km": 36.9,
               "is_self": false
             },
             {
               "name": "HS Kim, SEB",
-              "rank": 12,
+              "rank": 14,
               "distance_km": 35.66,
               "is_self": false
             },
             {
-              "name": "Hena Choi",
-              "rank": 13,
-              "distance_km": 34.97,
-              "is_self": false
-            },
-            {
               "name": "Hong, Yong-Jin",
-              "rank": 14,
+              "rank": 15,
               "distance_km": 31.17,
               "is_self": false
             },
             {
               "name": "권동철",
-              "rank": 15,
-              "distance_km": 30.74,
-              "is_self": false
-            },
-            {
-              "name": "JR Oh",
               "rank": 16,
-              "distance_km": 28.2,
+              "distance_km": 30.74,
               "is_self": false
             },
             {
