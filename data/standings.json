@@ -4869,21 +4869,21 @@
               "is_self": false
             },
             {
-              "name": "장용민",
+              "name": "김상종",
               "rank": 20,
+              "distance_km": 14.23,
+              "is_self": false
+            },
+            {
+              "name": "장용민",
+              "rank": 21,
               "distance_km": 14.21,
               "is_self": false
             },
             {
               "name": "Jeongsang Lee",
-              "rank": 21,
-              "distance_km": 12.36,
-              "is_self": false
-            },
-            {
-              "name": "김상종",
               "rank": 22,
-              "distance_km": 10.93,
+              "distance_km": 12.36,
               "is_self": false
             },
             {
