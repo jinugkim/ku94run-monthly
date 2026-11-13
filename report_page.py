@@ -173,73 +173,6 @@ def write_kakao_delivery_payload(
     return output_path
 
 
-def _live_hero_section_html(result: ChallengeAnalysisResult, report: str) -> str:
-    """Render a mobile-first hero card showing current challenge progress and AI coaching."""
-    pct = min(100.0, (result.my_distance_km / max(0.1, result.target_distance_km)) * 100)
-    clean_paragraphs = [p.strip() for p in report.strip().split("\n") if p.strip()]
-    coaching_html = "".join(f"<p>{escape(p)}</p>" for p in clean_paragraphs) or "<p>오늘도 활기찬 러닝을 시작해보세요!</p>"
-
-    challenge_name = result.challenge_name.strip()
-    return f"""<section class="live-hero-card" aria-labelledby="live-heading">
-  <div class="live-meta-row">
-    <span class="live-pill"><span class="pulse-dot" aria-hidden="true"></span>진행 중</span>
-    <span class="live-days-left">남은 기간 <strong>{result.remaining_days}일</strong></span>
-  </div>
-  <h2 id="live-heading" class="live-title">{escape(challenge_name)}</h2>
-
-  <div class="progress-container" aria-label="목표 달성률 {pct:.1f}%">
-    <div class="progress-info">
-      <span>목표 달성률 <strong>{pct:.1f}%</strong></span>
-      <span>{result.my_distance_km:.1f} / {result.target_distance_km:.1f} km</span>
-    </div>
-    <div class="progress-track">
-      <div class="progress-fill" style="width: {pct:.1f}%"></div>
-    </div>
-  </div>
-
-  <div class="stat-grid">
-    <div class="stat-card">
-      <div class="stat-icon" aria-hidden="true">🏆</div>
-      <div class="stat-body">
-        <span class="stat-label">현재 순위</span>
-        <span class="stat-value"><strong>{result.my_rank}</strong>위 <small>/ {result.total_participants}명</small></span>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon" aria-hidden="true">🏃</div>
-      <div class="stat-body">
-        <span class="stat-label">누적 거리</span>
-        <span class="stat-value"><strong>{result.my_distance_km:.1f}</strong> <small>km</small></span>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon" aria-hidden="true">🎯</div>
-      <div class="stat-body">
-        <span class="stat-label">일일 권장</span>
-        <span class="stat-value"><strong>{result.daily_req_for_goal:.1f}</strong> <small>km/일</small></span>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon" aria-hidden="true">🏁</div>
-      <div class="stat-body">
-        <span class="stat-label">남은 거리</span>
-        <span class="stat-value"><strong>{result.remaining_distance_km:.1f}</strong> <small>km</small></span>
-      </div>
-    </div>
-  </div>
-
-  <div class="coach-card">
-    <div class="coach-header">
-      <span class="coach-badge" aria-hidden="true">💡 AI COACH</span>
-      <span class="coach-title">Run-teller 전략 코칭</span>
-    </div>
-    <div class="coach-body">
-      {coaching_html}
-    </div>
-  </div>
-</section>"""
-
-
 def write_report_page(
     result: ChallengeAnalysisResult,
     report: str,
@@ -250,7 +183,6 @@ def write_report_page(
     """Write the mobile-optimized, dark-mode ready challenge report as the home page."""
     output_dir.mkdir(parents=True, exist_ok=True)
     generated_at = datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M KST")
-    hero_html = _live_hero_section_html(result, report)
     archive_html = archive_section_html(current_result=result)
 
     html = f"""<!doctype html>
@@ -290,8 +222,6 @@ def write_report_page(
       --line: #eadfe2;
       --topbar-bg: rgba(255, 255, 255, 0.88);
       --card-shadow: 0 12px 32px rgba(76, 25, 42, 0.06);
-      --progress-bg: #ece2e5;
-      --progress-fill: linear-gradient(90deg, #7a1735 0%, #a8244b 100%);
       font-family: Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
@@ -312,8 +242,6 @@ def write_report_page(
       --line: #2e2832;
       --topbar-bg: rgba(26, 22, 28, 0.88);
       --card-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
-      --progress-bg: #2d2630;
-      --progress-fill: linear-gradient(90deg, #d82c57 0%, #ff5e84 100%);
     }}
 
     @media (prefers-color-scheme: dark) {{
@@ -332,8 +260,6 @@ def write_report_page(
         --line: #2e2832;
         --topbar-bg: rgba(26, 22, 28, 0.88);
         --card-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
-        --progress-bg: #2d2630;
-        --progress-fill: linear-gradient(90deg, #d82c57 0%, #ff5e84 100%);
       }}
     }}
 
@@ -419,179 +345,6 @@ def write_report_page(
       display: flex;
       flex-direction: column;
       gap: 24px;
-    }}
-
-    /* Live Hero Card */
-    .live-hero-card {{
-      padding: 26px 28px;
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      background: var(--paper);
-      box-shadow: var(--card-shadow);
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }}
-    .live-meta-row {{
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }}
-    .live-pill {{
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: var(--crimson-light);
-      color: var(--crimson-dark);
-      border: 1px solid var(--crimson-border);
-      font-size: 12px;
-      font-weight: 700;
-    }}
-    .pulse-dot {{
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--crimson);
-      animation: pulse-ring 1.8s infinite;
-    }}
-    @keyframes pulse-ring {{
-      0% {{ transform: scale(0.9); opacity: 0.8; }}
-      50% {{ transform: scale(1.3); opacity: 1; }}
-      100% {{ transform: scale(0.9); opacity: 0.8; }}
-    }}
-    .live-days-left {{
-      font-size: 13px;
-      color: var(--muted);
-    }}
-    .live-days-left strong {{
-      color: var(--crimson);
-      font-weight: 800;
-    }}
-    .live-title {{
-      margin: 0;
-      font-size: clamp(20px, 4.5vw, 28px);
-      font-weight: 800;
-      letter-spacing: -.03em;
-      color: var(--ink);
-      line-height: 1.3;
-    }}
-
-    /* Progress bar */
-    .progress-container {{
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-    }}
-    .progress-info {{
-      display: flex;
-      justify-content: space-between;
-      font-size: 13px;
-      color: var(--ink-secondary);
-    }}
-    .progress-info strong {{
-      color: var(--crimson);
-      font-size: 14px;
-    }}
-    .progress-track {{
-      height: 12px;
-      border-radius: 999px;
-      background: var(--progress-bg);
-      overflow: hidden;
-    }}
-    .progress-fill {{
-      height: 100%;
-      border-radius: 999px;
-      background: var(--progress-fill);
-      transition: width .8s cubic-bezier(.16, 1, .3, 1);
-    }}
-
-    /* Stat Grid */
-    .stat-grid {{
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-    }}
-    .stat-card {{
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 16px;
-      border-radius: 14px;
-      background: var(--paper-subtle);
-      border: 1px solid var(--line);
-    }}
-    .stat-icon {{
-      font-size: 22px;
-      flex-shrink: 0;
-    }}
-    .stat-body {{
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-    }}
-    .stat-label {{
-      font-size: 11px;
-      color: var(--muted);
-      font-weight: 600;
-      white-space: nowrap;
-    }}
-    .stat-value {{
-      font-size: 15px;
-      color: var(--ink);
-      font-weight: 500;
-      white-space: nowrap;
-    }}
-    .stat-value strong {{
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--crimson-dark);
-    }}
-    .stat-value small {{
-      font-size: 12px;
-      color: var(--muted);
-    }}
-
-    /* AI Coach Box */
-    .coach-card {{
-      padding: 16px 18px;
-      border-radius: 14px;
-      background: var(--crimson-light);
-      border: 1px solid var(--crimson-border);
-      border-left: 5px solid var(--crimson);
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }}
-    .coach-header {{
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }}
-    .coach-badge {{
-      display: inline-block;
-      padding: 2px 7px;
-      border-radius: 6px;
-      background: var(--crimson);
-      color: white;
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: .06em;
-    }}
-    .coach-title {{
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--crimson-dark);
-    }}
-    .coach-body {{
-      color: var(--ink);
-      font-size: 14px;
-      line-height: 1.6;
-    }}
-    .coach-body p {{
-      margin: 4px 0;
     }}
 
     /* Archive Section */
@@ -905,39 +658,6 @@ def write_report_page(
       .brand-divider {{
         display: none;
       }}
-      .live-hero-card {{
-        padding: 18px 16px;
-        border-radius: 16px;
-        gap: 16px;
-      }}
-      .live-title {{
-        font-size: 19px;
-      }}
-      .stat-grid {{
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-      }}
-      .stat-card {{
-        padding: 10px 12px;
-        gap: 10px;
-        border-radius: 12px;
-      }}
-      .stat-icon {{
-        font-size: 20px;
-      }}
-      .stat-value strong {{
-        font-size: 16px;
-      }}
-      .stat-label {{
-        font-size: 10.5px;
-      }}
-      .coach-card {{
-        padding: 14px 14px;
-        border-radius: 12px;
-      }}
-      .coach-body {{
-        font-size: 13.5px;
-      }}
       .archive-section {{
         padding: 18px 16px;
         border-radius: 16px;
@@ -972,7 +692,6 @@ def write_report_page(
     </div>
   </header>
   <main>
-    {hero_html}
     {archive_html}
   </main>
   <footer>
