@@ -5216,15 +5216,15 @@
               "is_self": true
             },
             {
-              "name": "Ej lee",
+              "name": "Hena Choi",
               "rank": 10,
-              "distance_km": 45.09,
+              "distance_km": 53.41,
               "is_self": false
             },
             {
-              "name": "Hena Choi",
+              "name": "Ej lee",
               "rank": 11,
-              "distance_km": 42.62,
+              "distance_km": 45.09,
               "is_self": false
             },
             {
@@ -5282,15 +5282,15 @@
               "is_self": false
             },
             {
-              "name": "이경순",
+              "name": "김상종",
               "rank": 21,
-              "distance_km": 16.48,
+              "distance_km": 18.64,
               "is_self": false
             },
             {
-              "name": "김상종",
+              "name": "이경순",
               "rank": 22,
-              "distance_km": 14.23,
+              "distance_km": 16.48,
               "is_self": false
             },
             {
