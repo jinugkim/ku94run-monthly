@@ -5198,22 +5198,22 @@
               "is_self": false
             },
             {
-              "name": "김혜원",
+              "name": "김진욱",
               "rank": 7,
+              "distance_km": 58.85,
+              "is_self": true
+            },
+            {
+              "name": "김혜원",
+              "rank": 8,
               "distance_km": 55.12,
               "is_self": false
             },
             {
               "name": "정지은",
-              "rank": 8,
+              "rank": 9,
               "distance_km": 53.86,
               "is_self": false
-            },
-            {
-              "name": "김진욱",
-              "rank": 9,
-              "distance_km": 50.55,
-              "is_self": true
             },
             {
               "name": "Ej lee",
