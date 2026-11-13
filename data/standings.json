@@ -5198,16 +5198,16 @@
               "is_self": false
             },
             {
-              "name": "김진욱",
+              "name": "김혜원",
               "rank": 7,
-              "distance_km": 58.85,
-              "is_self": true
+              "distance_km": 60.53,
+              "is_self": false
             },
             {
-              "name": "김혜원",
+              "name": "김진욱",
               "rank": 8,
-              "distance_km": 55.12,
-              "is_self": false
+              "distance_km": 58.85,
+              "is_self": true
             },
             {
               "name": "정지은",
