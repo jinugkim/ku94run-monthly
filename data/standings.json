@@ -5192,28 +5192,28 @@
               "is_self": false
             },
             {
-              "name": "이재상",
+              "name": "정지은",
               "rank": 6,
+              "distance_km": 65.42,
+              "is_self": false
+            },
+            {
+              "name": "이재상",
+              "rank": 7,
               "distance_km": 61.16,
               "is_self": false
             },
             {
               "name": "김혜원",
-              "rank": 7,
+              "rank": 8,
               "distance_km": 60.53,
               "is_self": false
             },
             {
               "name": "김진욱",
-              "rank": 8,
+              "rank": 9,
               "distance_km": 58.85,
               "is_self": true
-            },
-            {
-              "name": "정지은",
-              "rank": 9,
-              "distance_km": 53.86,
-              "is_self": false
             },
             {
               "name": "Ej lee",
@@ -5270,15 +5270,15 @@
               "is_self": false
             },
             {
-              "name": "박혜연",
+              "name": "홍석헌",
               "rank": 19,
-              "distance_km": 24.64,
+              "distance_km": 26.22,
               "is_self": false
             },
             {
-              "name": "홍석헌",
+              "name": "박혜연",
               "rank": 20,
-              "distance_km": 20.66,
+              "distance_km": 24.64,
               "is_self": false
             },
             {
