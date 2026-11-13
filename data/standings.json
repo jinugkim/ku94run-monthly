@@ -5571,7 +5571,7 @@
             {
               "name": "Cool Cucumber",
               "rank": 1,
-              "distance_km": 128.2,
+              "distance_km": 139.13,
               "is_self": false
             },
             {
@@ -5593,15 +5593,15 @@
               "is_self": false
             },
             {
-              "name": "박민수",
+              "name": "이재상",
               "rank": 5,
-              "distance_km": 69.33,
+              "distance_km": 73.21,
               "is_self": false
             },
             {
-              "name": "이재상",
+              "name": "박민수",
               "rank": 6,
-              "distance_km": 68.16,
+              "distance_km": 69.33,
               "is_self": false
             },
             {
