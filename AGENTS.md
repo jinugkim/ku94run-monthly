@@ -53,7 +53,7 @@ flowchart TD
 
 | 작업명 | 실행 주기 (KST) | 대상 URL (workflow_dispatch) | 역할 |
 | :--- | :--- | :--- | :--- |
-| `ku94run-1-collect` | `50 6-23 * * *` (06:50~23:50 매시간) | `.../actions/workflows/runteller_cron.yml/dispatches` | **가민 1시간 간격 수집 & Pages 최신화** |
+| `ku94run-1-collect` | `50 6-23 * * *`, `5 0 * * *` (00:05 자정직후 & 06:50~23:50 매시간) | `.../actions/workflows/runteller_cron.yml/dispatches` | **가민 수집 & Pages 최신화 & 연말/월초 즉시 왕중왕 확정** |
 | `ku94run-2-send` | `0 8 * * *` (08:00) | `.../actions/workflows/kakao_coaching_message.yml/dispatches` | **아침 8시 카톡 코칭 발송 (일 1회)** |
 
 ---

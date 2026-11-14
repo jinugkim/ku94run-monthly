@@ -2,7 +2,8 @@ name: Run-teller Daily Challenge Strategy Cron
 
 on:
   schedule:
-    - cron: '50 0-14,21-23 * * *' # KST 06:50 ~ 23:50 매시간 50분 (UTC 00-14, 21-23)
+    - cron: '50 0-14,21-23 * * *' # KST 06:50 ~ 23:50 매시간 50분 (활동시간대)
+    - cron: '5 15 * * *'          # KST 00:05 (UTC 15:05) 자정 직후 즉시 집계 & 연말/월초 확정 배포
   workflow_dispatch:
     inputs:
       backfill_month:

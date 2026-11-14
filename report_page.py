@@ -175,8 +175,19 @@ def write_kakao_delivery_payload(
     return output_path
 
 
-def _crew_summary_banner_html(result: ChallengeAnalysisResult) -> str:
+def _crew_summary_banner_html(result: ChallengeAnalysisResult | None) -> str:
     """Render a privacy-first crew summary banner showing group distance, participant count, and days left."""
+    if result is None:
+        today = datetime.now(ZoneInfo("Asia/Seoul"))
+        return f"""<section class="crew-summary-banner" aria-labelledby="crew-summary-title">
+  <div class="crew-meta-row">
+    <span class="crew-live-pill">시즌 준비 중</span>
+    <span class="crew-days-left">{today.year}년 {today.month}월</span>
+  </div>
+  <h2 id="crew-summary-title" class="crew-challenge-title">{today.year}년 {today.month}월 챌린지 오픈 준비 중</h2>
+  <p class="muted" style="margin: 4px 0 0; font-size: 13.5px;">가민 앱에서 새 챌린지가 시작되면 실시간 크루 현황이 집계됩니다. 아래에서 연간 왕중왕 및 지난 챌린지 기록을 확인하세요.</p>
+</section>"""
+
     participants = result.participants or []
     total_distance = sum(float(p.distance_km) for p in participants)
     participant_count = len(participants) or result.total_participants
@@ -226,8 +237,8 @@ def _crew_summary_banner_html(result: ChallengeAnalysisResult) -> str:
 
 
 def write_report_page(
-    result: ChallengeAnalysisResult,
-    report: str,
+    result: ChallengeAnalysisResult | None,
+    report: str = "",
     output_dir: Path = Path("site"),
     history: dict | None = None,
     public_board_enabled: bool = True,

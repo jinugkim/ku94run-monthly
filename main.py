@@ -94,7 +94,7 @@ def main() -> None:
             else config.challenge_target_distance_km
         )
 
-    # If still no challenge found, log a friendly message and return cleanly
+    # If still no challenge found, archive completed past months and publish the latest archives/podium
     if not challenge_uuid:
         logging.warning(
             "⚠️ 활성 94 러닝 챌린지 UUID를 찾을 수 없습니다. (년-월: %d-%02d)\n"
@@ -102,6 +102,11 @@ def main() -> None:
             today.year,
             today.month,
         )
+        board_enabled = public_board_enabled()
+        if board_enabled:
+            archive_completed_snapshots()
+        render_archive_pages()
+        write_report_page(None, "", history=None, public_board_enabled=board_enabled)
         return
 
     raw = client.get_challenge_detail(challenge_uuid)
