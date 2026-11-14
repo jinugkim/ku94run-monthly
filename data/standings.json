@@ -5635,21 +5635,21 @@
               "is_self": false
             },
             {
-              "name": "JR Oh",
+              "name": "HS Kim, SEB",
               "rank": 12,
+              "distance_km": 41.7,
+              "is_self": false
+            },
+            {
+              "name": "JR Oh",
+              "rank": 13,
               "distance_km": 38.27,
               "is_self": false
             },
             {
               "name": "김성은",
-              "rank": 13,
-              "distance_km": 36.9,
-              "is_self": false
-            },
-            {
-              "name": "HS Kim, SEB",
               "rank": 14,
-              "distance_km": 36.44,
+              "distance_km": 36.9,
               "is_self": false
             },
             {
