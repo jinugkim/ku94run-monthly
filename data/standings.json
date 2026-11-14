@@ -5605,28 +5605,28 @@
               "is_self": false
             },
             {
-              "name": "정지은",
+              "name": "Hena Choi",
               "rank": 7,
+              "distance_km": 68.2,
+              "is_self": false
+            },
+            {
+              "name": "정지은",
+              "rank": 8,
               "distance_km": 65.42,
               "is_self": false
             },
             {
               "name": "김혜원",
-              "rank": 8,
+              "rank": 9,
               "distance_km": 60.53,
               "is_self": false
             },
             {
               "name": "김진욱",
-              "rank": 9,
+              "rank": 10,
               "distance_km": 58.85,
               "is_self": true
-            },
-            {
-              "name": "Hena Choi",
-              "rank": 10,
-              "distance_km": 53.41,
-              "is_self": false
             },
             {
               "name": "Ej lee",
