@@ -1,5 +1,7 @@
 """Render public pages for archived monthly challenge results."""
 
+from __future__ import annotations
+
 from html import escape
 import json
 from datetime import datetime
@@ -174,9 +176,80 @@ def _consistency_champion_html(
     )
     if forecast and datetime.now(ZoneInfo("Asia/Seoul")).month > latest_month:
         note += f" 진행 중인 {datetime.now(ZoneInfo('Asia/Seoul')).month}월은 마감 후 반영됩니다."
+
+    # Calculate yearly aggregated statistics
+    year_total_km = sum(float(p.get("distance_km", 0)) for a in completed for p in a.get("participants", []))
+    year_finishers = sum(
+        1 for a in completed for p in a.get("participants", [])
+        if float(p.get("distance_km", 0)) >= float(a.get("target_distance_km", 100))
+    )
+    year_active_runners = len({
+        str(p.get("name")) for a in completed for p in a.get("participants", [])
+        if float(p.get("distance_km", 0)) > 0
+    })
+    round_trips = round(year_total_km / 800) if year_total_km >= 800 else 0
+    trip_desc = f" (서울-부산 약 {round_trips}회 왕복)" if round_trips > 0 else ""
+
+    sorted_all = sorted(
+        month_totals,
+        key=lambda name: (-estimates[name], -month_totals[name], name.casefold()),
+    )
+    first = sorted_all[0] if len(sorted_all) > 0 else None
+    second = sorted_all[1] if len(sorted_all) > 1 else None
+    third = sorted_all[2] if len(sorted_all) > 2 else None
+
+    podium_badge = f"🏆 {year} 시즌 챔피언 레이스 (현재 TOP 3)" if forecast else f"👑 {year} 연간 왕중왕 명예의 전당"
+    podium_sub = f"1~{latest_month}월 누적 포인트 기준 상위 3인입니다." if forecast else "1~12월 최종 누적 포인트 기준 확정 챔피언 포디움입니다."
+
+    def _podium_slot(name: str | None, rank_num: int, rank_class: str, icon: str, label: str) -> str:
+        if not name:
+            return f'<div class="podium-card {rank_class}"><div class="podium-rank-tag">{label}</div><strong class="podium-name">—</strong></div>'
+        pts = month_totals.get(name, 0)
+        est = estimates.get(name, pts)
+        est_str = f' <small>(예상 {est}점)</small>' if forecast else ''
+        return (
+            f'<div class="podium-card {rank_class}">'
+            f'<div class="podium-icon" aria-hidden="true">{icon}</div>'
+            f'<div class="podium-rank-tag">{label}</div>'
+            f'<strong class="podium-name">{escape(name)}</strong>'
+            f'<span class="podium-score">{pts}점{est_str}</span>'
+            f'</div>'
+        )
+
+    podium_cards = "".join([
+        _podium_slot(second, 2, "podium-second", "🥈", "2위"),
+        _podium_slot(first, 1, "podium-first", "👑", "1위 · 챔피언" if not forecast else "1위"),
+        _podium_slot(third, 3, "podium-third", "🥉", "3위"),
+    ])
+
+    podium_html = f"""<div class="podium-section">
+  <div class="podium-header">
+    <span class="podium-badge">{podium_badge}</span>
+    <span class="podium-sub">{podium_sub}</span>
+  </div>
+  <div class="podium-grid">
+    {podium_cards}
+  </div>
+  <div class="annual-milestone-bar">
+    <div class="milestone-item">
+      <span>🏃 {year}년 함께 달린 누적 거리</span>
+      <strong>{year_total_km:,.1f} km<small>{trip_desc}</small></strong>
+    </div>
+    <div class="milestone-item">
+      <span>👥 함께 땀흘린 러너</span>
+      <strong>{year_active_runners}명</strong>
+    </div>
+    <div class="milestone-item">
+      <span>🎉 연간 월별 완주 누적</span>
+      <strong>{year_finishers}회</strong>
+    </div>
+  </div>
+</div>"""
+
     return (
         f'<section class="consistency-panel" data-year="{year}"{"" if selected else " hidden"}><h2>Consistency Champion</h2>'
         f'<p class="archive-intro">{note}</p>'
+        f'{podium_html}'
         '<p class="points-key">배점: 1위 10점 · 2위 8점 · 3위 6점 · 4위 5점 · 5위 4점 · 6~10위 2점 · 그 외 참가 1점</p>'
         f'<div class="consistency-chart-wrap">{"".join(svg)}<div class="consistency-tooltip" role="tooltip" hidden></div></div>'
         f'<div class="consistency-legend">{"".join(legends)}</div>'

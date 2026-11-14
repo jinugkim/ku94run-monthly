@@ -1,5 +1,7 @@
 """Render and publish-ready package the latest coaching report as a static page."""
 
+from __future__ import annotations
+
 from datetime import datetime
 from html import escape
 import json
@@ -173,6 +175,56 @@ def write_kakao_delivery_payload(
     return output_path
 
 
+def _crew_summary_banner_html(result: ChallengeAnalysisResult) -> str:
+    """Render a privacy-first crew summary banner showing group distance, participant count, and days left."""
+    participants = result.participants or []
+    total_distance = sum(float(p.distance_km) for p in participants)
+    participant_count = len(participants) or result.total_participants
+    finishers = sum(1 for p in participants if float(p.distance_km) >= result.target_distance_km)
+    active_runners = [p for p in participants if float(p.distance_km) > 0]
+    avg_distance = total_distance / max(1, len(active_runners)) if active_runners else 0.0
+
+    challenge_name = result.challenge_name.strip()
+    return f"""<section class="crew-summary-banner" aria-labelledby="crew-summary-title">
+  <div class="crew-meta-row">
+    <span class="crew-live-pill"><span class="pulse-dot" aria-hidden="true"></span>진행 중</span>
+    <span class="crew-days-left">남은 기간 <strong>{result.remaining_days}일</strong> <small>(D-{result.remaining_days})</small></span>
+  </div>
+  <h2 id="crew-summary-title" class="crew-challenge-title">{escape(challenge_name)}</h2>
+
+  <div class="crew-stat-grid">
+    <div class="crew-stat-card">
+      <div class="crew-stat-icon" aria-hidden="true">🏃</div>
+      <div class="crew-stat-body">
+        <span class="crew-stat-label">함께 달린 거리</span>
+        <span class="crew-stat-value"><strong>{total_distance:.1f}</strong> <small>km</small></span>
+      </div>
+    </div>
+    <div class="crew-stat-card">
+      <div class="crew-stat-icon" aria-hidden="true">👥</div>
+      <div class="crew-stat-body">
+        <span class="crew-stat-label">참여 러너</span>
+        <span class="crew-stat-value"><strong>{participant_count}</strong> <small>명</small></span>
+      </div>
+    </div>
+    <div class="crew-stat-card">
+      <div class="crew-stat-icon" aria-hidden="true">🎯</div>
+      <div class="crew-stat-body">
+        <span class="crew-stat-label">공통 목표 달성</span>
+        <span class="crew-stat-value"><strong>{finishers}</strong> <small>명 완주 🎉</small></span>
+      </div>
+    </div>
+    <div class="crew-stat-card">
+      <div class="crew-stat-icon" aria-hidden="true">⚡</div>
+      <div class="crew-stat-body">
+        <span class="crew-stat-label">1인 평균 거리</span>
+        <span class="crew-stat-value"><strong>{avg_distance:.1f}</strong> <small>km/인</small></span>
+      </div>
+    </div>
+  </div>
+</section>"""
+
+
 def write_report_page(
     result: ChallengeAnalysisResult,
     report: str,
@@ -183,6 +235,7 @@ def write_report_page(
     """Write the mobile-optimized, dark-mode ready challenge report as the home page."""
     output_dir.mkdir(parents=True, exist_ok=True)
     generated_at = datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M KST")
+    crew_banner_html = _crew_summary_banner_html(result)
     archive_html = archive_section_html(current_result=result)
 
     html = f"""<!doctype html>
@@ -345,6 +398,112 @@ def write_report_page(
       display: flex;
       flex-direction: column;
       gap: 24px;
+    }}
+
+    /* Crew Summary Banner */
+    .crew-summary-banner {{
+      padding: 24px 26px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--paper);
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }}
+    .crew-meta-row {{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }}
+    .crew-live-pill {{
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--crimson-light);
+      color: var(--crimson-dark);
+      border: 1px solid var(--crimson-border);
+      font-size: 12px;
+      font-weight: 700;
+    }}
+    .pulse-dot {{
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--crimson);
+      animation: pulse-ring 1.8s infinite;
+    }}
+    @keyframes pulse-ring {{
+      0% {{ transform: scale(0.9); opacity: 0.8; }}
+      50% {{ transform: scale(1.3); opacity: 1; }}
+      100% {{ transform: scale(0.9); opacity: 0.8; }}
+    }}
+    .crew-days-left {{
+      font-size: 13px;
+      color: var(--muted);
+    }}
+    .crew-days-left strong {{
+      color: var(--crimson);
+      font-weight: 800;
+    }}
+    .crew-days-left small {{
+      color: var(--muted);
+      font-size: 12px;
+    }}
+    .crew-challenge-title {{
+      margin: 0;
+      font-size: clamp(18px, 4vw, 24px);
+      font-weight: 800;
+      letter-spacing: -.03em;
+      color: var(--ink);
+      line-height: 1.35;
+    }}
+    .crew-stat-grid {{
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }}
+    .crew-stat-card {{
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: var(--paper-subtle);
+      border: 1px solid var(--line);
+    }}
+    .crew-stat-icon {{
+      font-size: 22px;
+      flex-shrink: 0;
+    }}
+    .crew-stat-body {{
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }}
+    .crew-stat-label {{
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 600;
+      white-space: nowrap;
+    }}
+    .crew-stat-value {{
+      font-size: 15px;
+      color: var(--ink);
+      font-weight: 500;
+      white-space: nowrap;
+    }}
+    .crew-stat-value strong {{
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--crimson-dark);
+    }}
+    .crew-stat-value small {{
+      font-size: 12px;
+      color: var(--muted);
     }}
 
     /* Archive Section */
@@ -594,6 +753,159 @@ def write_report_page(
       border-radius: 50%;
     }}
 
+    /* Podium & Hall of Fame */
+    .podium-section {{
+      margin: 16px 0 20px;
+      padding: 20px 22px;
+      background: var(--paper-subtle);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }}
+    .podium-header {{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }}
+    .podium-badge {{
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--crimson-dark);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }}
+    .podium-sub {{
+      font-size: 12px;
+      color: var(--muted);
+    }}
+    .podium-grid {{
+      display: grid;
+      grid-template-columns: 1fr 1.15fr 1fr;
+      align-items: end;
+      gap: 12px;
+    }}
+    .podium-card {{
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px 12px 14px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+      box-shadow: var(--card-shadow);
+      transition: transform .2s ease;
+    }}
+    .podium-first {{
+      border-color: #b08a42;
+      background: linear-gradient(180deg, rgba(176, 138, 66, 0.08) 0%, var(--paper) 100%);
+      padding-top: 22px;
+      padding-bottom: 18px;
+      transform: translateY(-6px);
+    }}
+    [data-theme="dark"] .podium-first {{
+      background: linear-gradient(180deg, rgba(229, 184, 66, 0.12) 0%, var(--paper) 100%);
+      border-color: #d4af37;
+    }}
+    .podium-second {{
+      border-color: #94a3b8;
+    }}
+    .podium-third {{
+      border-color: #c07a50;
+    }}
+    .podium-icon {{
+      font-size: 26px;
+      line-height: 1;
+      margin-bottom: 2px;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.12));
+    }}
+    .podium-first .podium-icon {{
+      font-size: 30px;
+    }}
+    .podium-rank-tag {{
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .04em;
+      color: var(--muted);
+    }}
+    .podium-first .podium-rank-tag {{
+      color: #b08a42;
+    }}
+    [data-theme="dark"] .podium-first .podium-rank-tag {{
+      color: #e5b842;
+    }}
+    .podium-second .podium-rank-tag {{
+      color: #64748b;
+    }}
+    [data-theme="dark"] .podium-second .podium-rank-tag {{
+      color: #94a3b8;
+    }}
+    .podium-third .podium-rank-tag {{
+      color: #9c5a32;
+    }}
+    [data-theme="dark"] .podium-third .podium-rank-tag {{
+      color: #c07a50;
+    }}
+    .podium-name {{
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }}
+    .podium-first .podium-name {{
+      font-size: 17px;
+      color: var(--crimson-dark);
+    }}
+    .podium-score {{
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink-secondary);
+    }}
+    .podium-score small {{
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 500;
+    }}
+    .annual-milestone-bar {{
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      padding-top: 14px;
+      border-top: 1px dashed var(--line);
+    }}
+    .milestone-item {{
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      text-align: center;
+    }}
+    .milestone-item span {{
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 600;
+    }}
+    .milestone-item strong {{
+      font-size: 14px;
+      color: var(--ink);
+      font-weight: 800;
+    }}
+    .milestone-item strong small {{
+      display: block;
+      font-size: 10px;
+      color: var(--muted);
+      font-weight: 500;
+    }}
+
     /* Tables */
     table {{
       width: 100%;
@@ -658,6 +970,61 @@ def write_report_page(
       .brand-divider {{
         display: none;
       }}
+      .crew-summary-banner {{
+        padding: 18px 16px;
+        border-radius: 16px;
+        gap: 14px;
+      }}
+      .crew-challenge-title {{
+        font-size: 18px;
+      }}
+      .crew-stat-grid {{
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }}
+      .crew-stat-card {{
+        padding: 10px 12px;
+        gap: 10px;
+        border-radius: 12px;
+      }}
+      .crew-stat-icon {{
+        font-size: 20px;
+      }}
+      .crew-stat-value strong {{
+        font-size: 16px;
+      }}
+      .crew-stat-label {{
+        font-size: 10.5px;
+      }}
+      .podium-section {{
+        padding: 16px 14px;
+        border-radius: 14px;
+        gap: 12px;
+      }}
+      .podium-grid {{
+        gap: 8px;
+      }}
+      .podium-card {{
+        padding: 12px 6px 10px;
+      }}
+      .podium-name {{
+        font-size: 13.5px;
+      }}
+      .podium-first .podium-name {{
+        font-size: 15px;
+      }}
+      .podium-score {{
+        font-size: 11.5px;
+      }}
+      .annual-milestone-bar {{
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }}
+      .milestone-item {{
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }}
       .archive-section {{
         padding: 18px 16px;
         border-radius: 16px;
@@ -692,6 +1059,7 @@ def write_report_page(
     </div>
   </header>
   <main>
+    {crew_banner_html}
     {archive_html}
   </main>
   <footer>
