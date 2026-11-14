@@ -5641,39 +5641,39 @@
               "is_self": false
             },
             {
-              "name": "JR Oh",
+              "name": "Elika Lee",
               "rank": 13,
+              "distance_km": 40.07,
+              "is_self": false
+            },
+            {
+              "name": "JR Oh",
+              "rank": 14,
               "distance_km": 38.27,
               "is_self": false
             },
             {
               "name": "김성은",
-              "rank": 14,
+              "rank": 15,
               "distance_km": 36.9,
               "is_self": false
             },
             {
               "name": "김남연",
-              "rank": 15,
+              "rank": 16,
               "distance_km": 34.95,
               "is_self": false
             },
             {
               "name": "Hong, Yong-Jin",
-              "rank": 16,
+              "rank": 17,
               "distance_km": 31.17,
               "is_self": false
             },
             {
               "name": "권동철",
-              "rank": 17,
-              "distance_km": 30.74,
-              "is_self": false
-            },
-            {
-              "name": "Elika Lee",
               "rank": 18,
-              "distance_km": 30.05,
+              "distance_km": 30.74,
               "is_self": false
             },
             {
