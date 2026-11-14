@@ -14,8 +14,8 @@
 
 ```mermaid
 flowchart TD
-    subgraph 1단계["[1단계] 최신 가민 기록 수집 & 웹 리포트 배포 (06:50 ~ 23:50 KST 매시간 50분)"]
-        A1["Cloud Scheduler / Actions (50 6-23 * * *)"] -->|활동시간 1시간 간격| A2["runteller_cron.yml"]
+    subgraph 1단계["[1단계] 최신 가민 기록 수집 & 웹 리포트 배포 (00:05, 06:50 ~ 23:50 KST 매시간 50분)"]
+        A1["Google Cloud Scheduler (50 6-23 * * *, 5 0 * * *)"] -->|정밀 정시 호출| A2["runteller_cron.yml (workflow_dispatch)"]
         A2 --> A3["garmin_client.py: Garmin Connect API 챌린지 수집"]
         A3 --> A4["gemini_coach.py: Gemini 3.8 Flash 코칭 생성"]
         A4 --> A5["report_page.py: HTML 및 site/kakao_delivery.json 생성"]
@@ -23,7 +23,7 @@ flowchart TD
     end
 
     subgraph 2단계["[2단계] 멤버 카카오톡 코칭 메시지 발송 (매일 08:00 KST)"]
-        B1["Cloud Scheduler (0 8 * * *)"] -->|정시 호출| B2["kakao_coaching_message.yml"]
+        B1["Google Cloud Scheduler (0 8 * * *)"] -->|정밀 정시 호출| B2["kakao_coaching_message.yml (workflow_dispatch)"]
         B2 --> B3["Pages에서 최신 kakao_delivery.json 다운로드"]
         B3 --> B4["Cloudflare Worker (run-teller-kakao-auth)에서 멤버 토큰 조회"]
         B4 --> B5["send_kakao_message.py: 멤버별 카카오톡 띵동! 발송"]
@@ -31,8 +31,9 @@ flowchart TD
     end
 ```
 
-### 왜 2단계로 나뉘어 있는가?
-- **1단계 (가민 수집 & 리포트 최신화)**: 활동 시간대인 **06:50 ~ 23:50 매시간 50분**(`50 6-23 * * *`)마다 가민 서버에서 최신 순위를 수집하여 웹 대시보드(GitHub Pages)를 항상 최신 상태로 유지합니다. (수면 시간인 00:00~06:40 제외)
+### 왜 2단계로 나뉘어 있는가? (트리거: Google Cloud Scheduler 전용)
+- **GitHub 자체 Cron 완전 배제**: GitHub Actions의 `schedule:`은 트래픽에 따라 10~40분씩 심각한 지연(Jitter)이 발생하므로 완전히 제거하고, **Google Cloud Scheduler의 `workflow_dispatch` 단독 호출 체제**로 일원화함.
+- **1단계 (가민 수집 & 리포트 최신화)**: 활동 시간대인 **06:50 ~ 23:50 매시간 50분** 및 **자정 00:05**에 가민 서버에서 최신 순위를 수집하여 웹 대시보드(GitHub Pages)를 항상 최신 상태로 유지합니다.
 - **2단계 (카카오톡 발송)**: 매시간 카톡을 보내면 스팸이 되므로, 카톡 메시지는 **매일 아침 08:00 정각(`0 8 * * *`)에 단 1회** 최신 리포트를 발송합니다.
 - 07:50에 수집된 따끈따끈한 최신 데이터가 08:00 카톡 발송 시 사용되므로 타이밍이 완벽하게 맞물립니다.
 
