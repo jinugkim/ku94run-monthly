@@ -6042,15 +6042,15 @@
               "is_self": false
             },
             {
-              "name": "Ej lee",
+              "name": "HS Kim, SEB",
               "rank": 12,
-              "distance_km": 45.09,
+              "distance_km": 45.11,
               "is_self": false
             },
             {
-              "name": "HS Kim, SEB",
+              "name": "Ej lee",
               "rank": 13,
-              "distance_km": 41.7,
+              "distance_km": 45.09,
               "is_self": false
             },
             {
@@ -6066,57 +6066,57 @@
               "is_self": false
             },
             {
-              "name": "장용민",
+              "name": "이경순",
               "rank": 16,
+              "distance_km": 37.9,
+              "is_self": false
+            },
+            {
+              "name": "장용민",
+              "rank": 17,
               "distance_km": 35.58,
               "is_self": false
             },
             {
               "name": "김남연",
-              "rank": 17,
+              "rank": 18,
               "distance_km": 34.95,
               "is_self": false
             },
             {
               "name": "Hong, Yong-Jin",
-              "rank": 18,
+              "rank": 19,
               "distance_km": 31.17,
               "is_self": false
             },
             {
               "name": "권동철",
-              "rank": 19,
+              "rank": 20,
               "distance_km": 30.74,
               "is_self": false
             },
             {
               "name": "홍석헌",
-              "rank": 20,
+              "rank": 21,
               "distance_km": 26.22,
               "is_self": false
             },
             {
               "name": "박혜연",
-              "rank": 21,
+              "rank": 22,
               "distance_km": 24.64,
               "is_self": false
             },
             {
               "name": "김민정",
-              "rank": 22,
+              "rank": 23,
               "distance_km": 20.71,
               "is_self": false
             },
             {
               "name": "김상종",
-              "rank": 23,
-              "distance_km": 18.64,
-              "is_self": false
-            },
-            {
-              "name": "이경순",
               "rank": 24,
-              "distance_km": 16.48,
+              "distance_km": 18.64,
               "is_self": false
             },
             {
