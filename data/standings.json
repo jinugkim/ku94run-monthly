@@ -5978,13 +5978,13 @@
             {
               "name": "Cool Cucumber",
               "rank": 1,
-              "distance_km": 139.13,
+              "distance_km": 153.18,
               "is_self": false
             },
             {
               "name": "승학",
               "rank": 2,
-              "distance_km": 126.24,
+              "distance_km": 136.42,
               "is_self": false
             },
             {
@@ -5994,15 +5994,15 @@
               "is_self": false
             },
             {
-              "name": "Greg HONG",
+              "name": "이재상",
               "rank": 4,
-              "distance_km": 90.59,
+              "distance_km": 94.44,
               "is_self": false
             },
             {
-              "name": "이재상",
+              "name": "Greg HONG",
               "rank": 5,
-              "distance_km": 73.21,
+              "distance_km": 90.59,
               "is_self": false
             },
             {
@@ -6096,39 +6096,39 @@
               "is_self": false
             },
             {
-              "name": "김상종",
+              "name": "김민정",
               "rank": 21,
+              "distance_km": 20.71,
+              "is_self": false
+            },
+            {
+              "name": "김상종",
+              "rank": 22,
               "distance_km": 18.64,
               "is_self": false
             },
             {
               "name": "이경순",
-              "rank": 22,
+              "rank": 23,
               "distance_km": 16.48,
               "is_self": false
             },
             {
               "name": "장용민",
-              "rank": 23,
+              "rank": 24,
               "distance_km": 14.21,
               "is_self": false
             },
             {
               "name": "Jeongsang Lee",
-              "rank": 24,
+              "rank": 25,
               "distance_km": 12.36,
               "is_self": false
             },
             {
               "name": "김보현",
-              "rank": 25,
-              "distance_km": 10.14,
-              "is_self": false
-            },
-            {
-              "name": "김민정",
               "rank": 26,
-              "distance_km": 10.11,
+              "distance_km": 10.14,
               "is_self": false
             },
             {
