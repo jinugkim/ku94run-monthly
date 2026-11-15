@@ -6108,27 +6108,27 @@
               "is_self": false
             },
             {
-              "name": "김민정",
+              "name": "Jeongsang Lee",
               "rank": 23,
+              "distance_km": 23.87,
+              "is_self": false
+            },
+            {
+              "name": "김민정",
+              "rank": 24,
               "distance_km": 20.71,
               "is_self": false
             },
             {
               "name": "김상종",
-              "rank": 24,
+              "rank": 25,
               "distance_km": 18.64,
               "is_self": false
             },
             {
               "name": "김보현",
-              "rank": 25,
-              "distance_km": 15.55,
-              "is_self": false
-            },
-            {
-              "name": "Jeongsang Lee",
               "rank": 26,
-              "distance_km": 12.36,
+              "distance_km": 15.55,
               "is_self": false
             },
             {
