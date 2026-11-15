@@ -6042,21 +6042,21 @@
               "is_self": false
             },
             {
-              "name": "HS Kim, SEB",
+              "name": "JR Oh",
               "rank": 12,
+              "distance_km": 47.67,
+              "is_self": false
+            },
+            {
+              "name": "HS Kim, SEB",
+              "rank": 13,
               "distance_km": 45.11,
               "is_self": false
             },
             {
               "name": "Ej lee",
-              "rank": 13,
-              "distance_km": 45.09,
-              "is_self": false
-            },
-            {
-              "name": "JR Oh",
               "rank": 14,
-              "distance_km": 41.33,
+              "distance_km": 45.09,
               "is_self": false
             },
             {
