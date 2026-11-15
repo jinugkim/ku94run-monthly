@@ -6024,39 +6024,39 @@
               "is_self": false
             },
             {
-              "name": "정지은",
+              "name": "Ej lee",
               "rank": 9,
+              "distance_km": 66.21,
+              "is_self": false
+            },
+            {
+              "name": "정지은",
+              "rank": 10,
               "distance_km": 65.42,
               "is_self": false
             },
             {
               "name": "김진욱",
-              "rank": 10,
+              "rank": 11,
               "distance_km": 61.44,
               "is_self": true
             },
             {
               "name": "김성은",
-              "rank": 11,
+              "rank": 12,
               "distance_km": 57.84,
               "is_self": false
             },
             {
               "name": "JR Oh",
-              "rank": 12,
+              "rank": 13,
               "distance_km": 47.67,
               "is_self": false
             },
             {
               "name": "HS Kim, SEB",
-              "rank": 13,
-              "distance_km": 45.11,
-              "is_self": false
-            },
-            {
-              "name": "Ej lee",
               "rank": 14,
-              "distance_km": 45.09,
+              "distance_km": 45.11,
               "is_self": false
             },
             {
