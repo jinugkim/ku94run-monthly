@@ -5978,7 +5978,7 @@
             {
               "name": "Cool Cucumber",
               "rank": 1,
-              "distance_km": 153.18,
+              "distance_km": 156.19,
               "is_self": false
             },
             {
@@ -6060,45 +6060,45 @@
               "is_self": false
             },
             {
-              "name": "Elika Lee",
+              "name": "홍석헌",
               "rank": 15,
+              "distance_km": 41.22,
+              "is_self": false
+            },
+            {
+              "name": "Elika Lee",
+              "rank": 16,
               "distance_km": 40.07,
               "is_self": false
             },
             {
               "name": "이경순",
-              "rank": 16,
+              "rank": 17,
               "distance_km": 37.9,
               "is_self": false
             },
             {
               "name": "장용민",
-              "rank": 17,
+              "rank": 18,
               "distance_km": 35.58,
               "is_self": false
             },
             {
               "name": "김남연",
-              "rank": 18,
+              "rank": 19,
               "distance_km": 34.95,
               "is_self": false
             },
             {
               "name": "Hong, Yong-Jin",
-              "rank": 19,
+              "rank": 20,
               "distance_km": 31.17,
               "is_self": false
             },
             {
               "name": "권동철",
-              "rank": 20,
-              "distance_km": 30.74,
-              "is_self": false
-            },
-            {
-              "name": "홍석헌",
               "rank": 21,
-              "distance_km": 26.22,
+              "distance_km": 30.74,
               "is_self": false
             },
             {
