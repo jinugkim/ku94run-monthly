@@ -6419,28 +6419,28 @@
               "is_self": false
             },
             {
-              "name": "박민수",
+              "name": "김진욱",
               "rank": 7,
+              "distance_km": 71.45,
+              "is_self": true
+            },
+            {
+              "name": "박민수",
+              "rank": 8,
               "distance_km": 69.33,
               "is_self": false
             },
             {
               "name": "Hena Choi",
-              "rank": 8,
+              "rank": 9,
               "distance_km": 68.2,
               "is_self": false
             },
             {
               "name": "김혜원",
-              "rank": 9,
+              "rank": 10,
               "distance_km": 67.79,
               "is_self": false
-            },
-            {
-              "name": "김진욱",
-              "rank": 10,
-              "distance_km": 66.45,
-              "is_self": true
             },
             {
               "name": "Ej lee",
