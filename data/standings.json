@@ -6473,27 +6473,27 @@
               "is_self": false
             },
             {
-              "name": "Elika Lee",
+              "name": "김남연",
               "rank": 16,
+              "distance_km": 40.31,
+              "is_self": false
+            },
+            {
+              "name": "Elika Lee",
+              "rank": 17,
               "distance_km": 40.07,
               "is_self": false
             },
             {
               "name": "이경순",
-              "rank": 17,
+              "rank": 18,
               "distance_km": 37.9,
               "is_self": false
             },
             {
               "name": "장용민",
-              "rank": 18,
-              "distance_km": 35.58,
-              "is_self": false
-            },
-            {
-              "name": "김남연",
               "rank": 19,
-              "distance_km": 34.95,
+              "distance_km": 35.58,
               "is_self": false
             },
             {
