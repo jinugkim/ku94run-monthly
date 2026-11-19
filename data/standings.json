@@ -6834,7 +6834,7 @@
             {
               "name": "김혜원",
               "rank": 8,
-              "distance_km": 72.84,
+              "distance_km": 78.04,
               "is_self": false
             },
             {
@@ -6868,15 +6868,15 @@
               "is_self": false
             },
             {
-              "name": "김남연",
+              "name": "Elika Lee",
               "rank": 14,
-              "distance_km": 57.47,
+              "distance_km": 60.09,
               "is_self": false
             },
             {
-              "name": "Elika Lee",
+              "name": "김남연",
               "rank": 15,
-              "distance_km": 50.08,
+              "distance_km": 57.47,
               "is_self": false
             },
             {
@@ -6922,21 +6922,21 @@
               "is_self": false
             },
             {
-              "name": "김상종",
+              "name": "박혜연",
               "rank": 23,
+              "distance_km": 29.08,
+              "is_self": false
+            },
+            {
+              "name": "김상종",
+              "rank": 24,
               "distance_km": 26.54,
               "is_self": false
             },
             {
               "name": "최정(피식)",
-              "rank": 24,
-              "distance_km": 25.14,
-              "is_self": false
-            },
-            {
-              "name": "박혜연",
               "rank": 25,
-              "distance_km": 24.64,
+              "distance_km": 25.14,
               "is_self": false
             },
             {
