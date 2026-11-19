@@ -25,6 +25,7 @@ from prompt_builder import PromptBuilder
 from report_page import report_page_url, write_kakao_delivery_payload, write_report_page
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+logger = logging.getLogger(__name__)
 KST = ZoneInfo("Asia/Seoul")
 
 
