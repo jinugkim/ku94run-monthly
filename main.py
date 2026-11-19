@@ -1,7 +1,6 @@
 """Run the end-to-end Garmin challenge strategy pipeline."""
 
 from datetime import datetime
-import hashlib
 import json
 import logging
 import os
@@ -17,11 +16,9 @@ from challenge_registry import (
 from config import Config
 from courier import ConsoleCourier, Courier, SlackCourier
 from garmin_client import GarminSessionManager
-from gemini_coach import GeminiCoach
 from history_store import public_board_enabled, record_snapshot
 from kakao_messenger import KakaoMemoSender
 from models import ChallengeAnalysisResult
-from prompt_builder import PromptBuilder
 from report_page import report_page_url, write_kakao_delivery_payload, write_report_page
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -29,13 +26,19 @@ logger = logging.getLogger(__name__)
 KST = ZoneInfo("Asia/Seoul")
 
 
-def _standings_fingerprint(result: ChallengeAnalysisResult) -> str:
-    """Compute a deterministic hash of participant standings to detect mileage changes."""
-    data = [
-        (p.display_name, round(p.distance_km, 2), p.rank, p.is_self)
-        for p in result.participants
-    ]
-    return hashlib.sha256(json.dumps(data, sort_keys=True).encode("utf-8")).hexdigest()
+def build_coaching_report(result: ChallengeAnalysisResult) -> str:
+    """Build a deterministic, rule-based coaching advice for Kakao delivery."""
+    remaining = max(0.0, result.target_distance_km - result.my_distance_km)
+    if remaining <= 0:
+        return f"축하합니다! 이번 달 목표({result.target_distance_km:.0f}km)를 완주하셨습니다! 계속해서 멋진 러닝 이어가세요! 🎉"
+
+    if result.gap_to_target_km and 0 < result.gap_to_target_km <= 3.0:
+        return f"앞 순위와 단 {result.gap_to_target_km:.1f}km 차이! 오늘 권장 {result.daily_req_for_goal:.1f}km 페이스로 달려보세요! 🔥"
+
+    if result.remaining_days <= 3:
+        return f"챌린지 마감 D-{result.remaining_days}! 남은 {remaining:.1f}km를 위해 마지막 스퍼트를 시작해보세요! 🏃"
+
+    return f"목표까지 {remaining:.1f}km 남았습니다. 오늘 권장 {result.daily_req_for_goal:.1f}km 페이스를 유지해보세요! 🏃"
 
 
 def main() -> None:
@@ -112,26 +115,7 @@ def main() -> None:
 
     raw = client.get_challenge_detail(challenge_uuid)
     result = ChallengeAnalyzer().analyze(raw, target_distance_km=target_distance_km)
-    prompt = PromptBuilder().build(result)
-    fingerprint = _standings_fingerprint(result)
-    now_kst = datetime.now(KST)
-    is_morning_report = (now_kst.hour == 7 and now_kst.minute >= 40) or (now_kst.hour == 8 and now_kst.minute <= 10)
-    force_refresh = is_morning_report or (os.getenv("FORCE_AI_REFRESH", "false").lower() in ("true", "1", "yes"))
-
-    report = ""
-    try:
-        report = GeminiCoach(config.gemini_api_key, config.gemini_model).generate_with_cache(
-            prompt,
-            fingerprint=fingerprint,
-            force_refresh=force_refresh,
-        )
-    except Exception as exc:
-        logger.warning("Gemini coaching generation skipped/failed: %s; using fallback advice", exc)
-        remaining = max(0.0, result.target_distance_km - result.my_distance_km)
-        if remaining <= 0:
-            report = f"축하합니다! 이번 달 목표({result.target_distance_km:.0f}km)를 완주하셨습니다! 계속해서 멋진 러닝 이어가세요! 🎉"
-        else:
-            report = f"목표까지 {remaining:.1f}km 남았습니다. 오늘 권장 거리 {result.daily_req_for_goal:.1f}km 페이스를 유지해보세요! 🏃"
+    report = build_coaching_report(result)
     board_enabled = public_board_enabled()
     history = record_snapshot(result) if board_enabled else None
     if board_enabled:

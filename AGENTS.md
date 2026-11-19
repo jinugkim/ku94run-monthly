@@ -5,7 +5,7 @@
 ---
 
 ## 1. 프로젝트 개요 & 목적
-- **목적**: 고려대학교 94학번 러닝 크루(KU94Run)의 월간 Garmin 러닝 챌린지 기록을 수집하고, Google Gemini API로 개인별 맞춤 러닝 코칭과 순위 분석을 생성하여 웹 리포트 및 카카오톡 메시지로 발송.
+- **목적**: 고려대학교 94학번 러닝 크루(KU94Run)의 월간 Garmin 러닝 챌린지 기록을 수집하고, 룰 기반 맞춤 러닝 코칭과 순위 분석을 생성하여 웹 리포트 및 카카오톡 메시지로 발송.
 - **최종 메시지 수신 목표**: **매일 아침 08:00 정각 (한국 표준시 KST)**
 
 ---
@@ -17,7 +17,7 @@ flowchart TD
     subgraph 1단계["[1단계] 최신 가민 기록 수집 & 웹 리포트 배포 (00:05, 06:50 ~ 23:50 KST 매시간 50분)"]
         A1["Google Cloud Scheduler (50 6-23 * * *, 5 0 * * *)"] -->|정밀 정시 호출| A2["runteller_cron.yml (workflow_dispatch)"]
         A2 --> A3["garmin_client.py: Garmin Connect API 챌린지 수집"]
-        A3 --> A4["gemini_coach.py: Gemini 3.8 Flash 코칭 생성"]
+        A3 --> A4["main.py: 룰 기반 전략 코칭 생성 (외부 의존성 없음)"]
         A4 --> A5["report_page.py: HTML 및 site/kakao_delivery.json 생성"]
         A5 --> A6["GitHub Pages 자동 배포 완료"]
     end
@@ -70,23 +70,17 @@ flowchart TD
 
 ---
 
-## 6. 성능 및 토큰 최적화 (Smart Fingerprint Caching)
-- **배경**: 1시간 간격 수집 시 하루 18회 실행되나, 대부분의 시간대에는 러너들의 누적 거리가 변동되지 않음.
-- **최적화 기법**:
-  1. **지문 기반 스마트 캐싱 (`data/coaching_cache.json`)**:
-     - 전체 참가자의 순위·거리 데이터를 SHA-256 해시로 지문(`fingerprint`)화.
-     - 당일 아침 카톡 전송 직전(07:50)이거나 실제 누군가 뛰어 순위/거리가 변경되었을 때만 Gemini API 호출.
-     - 기록 변동이 없는 시간대에는 직전 코칭 리포트를 즉시 재사용하여 **Gemini API 호출 및 토큰을 80% 이상 절감(0 tokens)**.
-  2. **Gemini 생성 파라미터 제약**:
-     - `max_output_tokens=300`, `temperature=0.7`로 고정하여 비용 상한 보장 및 응답 속도 최적화.
-  3. **가민 OAuth 세션 즉시 덤프**:
-     - 세션 복원 성공 시에도 최신 토큰을 `client.garth.dump()`하여 Actions 캐시 만료 및 SSO 재인증 방지.
+## 6. 성능 및 무의존성 최적화 (Zero-Dependency Optimization)
+- **외부 AI API 의존성 완전 제거**:
+  - 외부 Gemini API 호출을 제거하고, 순수 수식/규칙 기반 코칭 엔진으로 전환하여 비용 0원, 외부 장애율 0%, 수집 속도 극대화 달성.
+- **가민 OAuth 세션 즉시 덤프**:
+  - 세션 복원 성공 시에도 최신 토큰을 `client.garth.dump()`하여 Actions 캐시 만료 및 SSO 재인증 방지.
 
 ---
 
 ## 7. 개인 정보 분리 및 모바일 다크 모드 (Privacy & Mobile Dark Mode UX)
-- **개인 맞춤 지표 및 AI 코칭 (카카오톡 전용)**:
-  - 개인별 현재 순위, 누적 거리, 일일 권장 거리, 남은 거리 및 Gemini AI 전략 코칭은 크루 공개 웹 리포트에서 제거하고 **개인 카카오톡 메시지("나와의 채팅")로만 프라이빗하게 발송**.
+- **개인 맞춤 지표 및 전략 코칭 (카카오톡 전용)**:
+  - 개인별 현재 순위, 누적 거리, 일일 권장 거리, 남은 거리 및 룰 기반 전략 코칭은 크루 공개 웹 리포트에서 제거하고 **개인 카카오톡 메시지("나와의 채팅")로만 프라이빗하게 발송**.
 - **크루 전체 현황 배너 (Crew Summary Banner)**:
   - 공개 웹 상단에 개인 정보 없이 크루 전체 지표 [함께 달린 거리, 참여 러너, 공통 목표 완주자, 1인 평균 거리, 남은 기간(D-day)]를 모바일 2x2 반응형 카드로 렌더링.
 - **연간 왕중왕 명예의 전당 포디움 & 마일스톤 (Hall of Fame Podium)**:
@@ -136,11 +130,10 @@ flowchart TD
 ---
 
 ## 9. 핵심 파일 및 역할
-- `main.py`: 1단계 가민 데이터 수집, 챌린지 자동 탐색, 스마트 캐싱 기반 AI 코칭 생성, Pages 빌드 진입점
+- `main.py`: 1단계 가민 데이터 수집, 챌린지 자동 탐색, 룰 기반 전략 코칭 생성, Pages 빌드 진입점
 - `send_kakao_message.py`: 2단계 Cloudflare Worker 연동 및 카카오톡 템플릿 메시지 발송
 - `garmin_client.py`: Garmin Connect OAuth 세션 복원(토큰 즉시 덤프), 활성 챌린지 자동 탐색, 리더보드 수집
 - `challenge_registry.py`: 연간 챌린지 목록 관리, 챌린지 자동 업서트 및 아카이빙
-- `gemini_coach.py`: Gemini 3.8 Flash 기반 러너별 동기부여 및 스마트 캐싱 코칭 생성 (`generate_with_cache`)
 - `report_page.py`: 모바일 최적화 및 다크 모드가 내장된 반응형 웹 리포트 및 `kakao_delivery.json` 빌드
 - `archive_pages.py`: 연도별/월별 아카이브 및 Consistency Champion 차트 생성
 - `cloudflare/kakao-worker/`: 토큰 동기화 및 발송 이력 Cloudflare Worker 소스 (향후 GCP 이전 대상)

@@ -1,22 +1,20 @@
 # KU94RUN Monthly Garmin Challenge Strategy Engine
 
-가민 커스텀 챌린지 진행 상황을 불러와 목표 거리 달성량을 계산하고, Gemini로 Run-teller 코칭 리포트를 생성합니다. 워치 생체 데이터는 사용하지 않습니다.
+가민 커스텀 챌린지 진행 상황을 불러와 목표 거리 달성량을 계산하고, 룰 기반 전략 코칭 리포트를 생성합니다. 워치 생체 데이터는 사용하지 않습니다.
 
 ## 실행
 
 Python 3.12 이상에서 의존성을 설치하고 환경 변수를 설정한 뒤 `python main.py`를 실행합니다.
 
-필수 환경 변수: `GARMIN_EMAIL`, `GARMIN_PASSWORD`, `GEMINI_API_KEY`. 로컬 실행에서 연도별 YAML이 없을 때는 `GARMIN_CHALLENGE_UUID`도 필요합니다. GitHub Actions는 `data/challenges/<연도>.yaml`의 활성 항목을 읽고 해당 `garmin_uuid_secret`에 해당하는 secret으로 Garmin 챌린지를 조회합니다.
+필수 환경 변수: `GARMIN_EMAIL`, `GARMIN_PASSWORD`. 로컬 실행에서 연도별 YAML이 없을 때는 `GARMIN_CHALLENGE_UUID`도 필요합니다. GitHub Actions는 `data/challenges/<연도>.yaml`의 활성 항목을 읽고 해당 `garmin_uuid_secret`에 해당하는 secret으로 Garmin 챌린지를 조회합니다.
 
-선택 환경 변수: `TOKEN_STORE_PATH` (기본 `~/.garminconnect`), `SLACK_WEBHOOK_URL`, `GARMIN_CHALLENGE_TARGET_KM`, `GEMINI_MODEL` (기본 `gemini-3.8-flash`)
+선택 환경 변수: `TOKEN_STORE_PATH` (기본 `~/.garminconnect`), `SLACK_WEBHOOK_URL`, `GARMIN_CHALLENGE_TARGET_KM`
 
 참가자 그룹을 구분할 수 없으므로 거리 달성 인원과 개인 코칭은 모든 그룹에 공통으로 적용되는 거리 기준을 씁니다. YAML 최상위 `target_distance_km`를 우선 사용하고, 없으면 그룹별 목표 중 가장 큰 거리를 씁니다. YAML에 목표가 없으면 `GARMIN_CHALLENGE_TARGET_KM`, 그다음 챌린지명에서 목표를 찾습니다.
 
 GitHub Actions는 `.github/workflows/runteller_cron.yml`에서 매일 KST 02:10에 리포트 페이지를 갱신하고, `.github/workflows/kakao_coaching_message.yml`에서 KST 04:10에 카카오 코칭 메시지를 발송합니다. 두 워크플로는 UTC 기준으로 각각 17:10, 19:10에 예약되어 있습니다. GitHub Actions 스케줄은 시스템 부하에 따라 지연될 수 있습니다. 저장소의 Actions secrets에 필수 Garmin 값과 선택 Slack 웹훅을 등록하세요. Garmin 토큰 캐시는 해당 저장소의 Actions 캐시에 저장되므로 저장소 접근 권한을 제한하세요.
 
-Gemini가 코칭 리포트를 생성하고, `Courier` 모듈이 결과를 전송합니다. 현재 Slack 및 콘솔을 지원하며, 카카오톡이나 앱 연동은 같은 인터페이스를 구현하는 courier로 추가할 수 있습니다. GitHub Actions는 최신 코칭 리포트와 오늘의 러닝 보드를 GitHub Pages에 배포하고, 날짜별 참가자 거리·순위 스냅샷을 `data/standings.json`에 저장합니다. 스냅샷은 180일간 유지됩니다.
-
-GitHub Actions 사용 시 `GEMINI_API_KEY`를 저장소 Actions secret으로 등록하세요. Gemini API 키는 Google AI Studio에서 만들 수 있습니다. `GEMINI_MODEL`은 필요하면 Repository variable로 지정할 수 있습니다.
+`Courier` 모듈이 결과를 전송합니다. 현재 Slack 및 콘솔을 지원하며, 카카오톡이나 앱 연동은 같은 인터페이스를 구현하는 courier로 추가할 수 있습니다. GitHub Actions는 최신 코칭 리포트와 오늘의 러닝 보드를 GitHub Pages에 배포하고, 날짜별 참가자 거리·순위 스냅샷을 `data/standings.json`에 저장합니다. 스냅샷은 180일간 유지됩니다.
 
 ### 카카오톡으로 리포트 공유
 
@@ -32,7 +30,7 @@ GitHub Actions 사용 시 `GEMINI_API_KEY`를 저장소 Actions secret으로 등
 
 #### 운영 체크리스트
 
-- 저장소 Actions secrets: `GARMIN_EMAIL`, `GARMIN_PASSWORD`, 연도·월별 `GARMIN_CHALLENGE_<YYYY>_<MM>_UUID`, `GEMINI_API_KEY`, `KAKAO_REST_API_KEY`, `KAKAO_CLIENT_SECRET`, `KAKAO_SYNC_TOKEN`, `KAKAO_JS_KEY`
+- 저장소 Actions secrets: `GARMIN_EMAIL`, `GARMIN_PASSWORD`, 연도·월별 `GARMIN_CHALLENGE_<YYYY>_<MM>_UUID`, `KAKAO_REST_API_KEY`, `KAKAO_CLIENT_SECRET`, `KAKAO_SYNC_TOKEN`, `KAKAO_JS_KEY`
 - 저장소 Actions variable: `KAKAO_SYNC_URL` (Cloudflare Worker의 `workers.dev` 주소)
 - Cloudflare Worker secrets: `KAKAO_REST_API_KEY`, `KAKAO_CLIENT_SECRET`, `ADMIN_TOKEN`, `SYNC_TOKEN`. `SYNC_TOKEN`은 GitHub의 `KAKAO_SYNC_TOKEN`과 같은 값이어야 합니다.
 - 토큰 원본은 Cloudflare D1입니다. `KAKAO_REFRESH_TOKENS_JSON` secret은 이전 로컬/환경변수 방식의 잔여 항목으로, 현재 Actions 발송 워크플로에서는 사용하지 않습니다.
