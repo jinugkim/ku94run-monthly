@@ -43,5 +43,5 @@ class Config:
             slack_webhook_url=os.getenv("SLACK_WEBHOOK_URL") or None,
             challenge_target_distance_km=target_distance,
             gemini_api_key=gemini_api_key,
-            gemini_model=os.getenv("GEMINI_MODEL") or "gemini-3.8-flash",
+            gemini_model=os.getenv("GEMINI_MODEL") or "gemini-2.5-flash",
         )

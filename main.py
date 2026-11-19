@@ -117,11 +117,20 @@ def main() -> None:
     is_morning_report = (now_kst.hour == 7 and now_kst.minute >= 40) or (now_kst.hour == 8 and now_kst.minute <= 10)
     force_refresh = is_morning_report or (os.getenv("FORCE_AI_REFRESH", "false").lower() in ("true", "1", "yes"))
 
-    report = GeminiCoach(config.gemini_api_key, config.gemini_model).generate_with_cache(
-        prompt,
-        fingerprint=fingerprint,
-        force_refresh=force_refresh,
-    )
+    report = ""
+    try:
+        report = GeminiCoach(config.gemini_api_key, config.gemini_model).generate_with_cache(
+            prompt,
+            fingerprint=fingerprint,
+            force_refresh=force_refresh,
+        )
+    except Exception as exc:
+        logger.warning("Gemini coaching generation skipped/failed: %s; using fallback advice", exc)
+        remaining = max(0.0, result.target_distance_km - result.my_distance_km)
+        if remaining <= 0:
+            report = f"축하합니다! 이번 달 목표({result.target_distance_km:.0f}km)를 완주하셨습니다! 계속해서 멋진 러닝 이어가세요! 🎉"
+        else:
+            report = f"목표까지 {remaining:.1f}km 남았습니다. 오늘 권장 거리 {result.daily_req_for_goal:.1f}km 페이스를 유지해보세요! 🏃"
     board_enabled = public_board_enabled()
     history = record_snapshot(result) if board_enabled else None
     if board_enabled:
