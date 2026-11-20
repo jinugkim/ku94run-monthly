@@ -7604,15 +7604,15 @@
           "date": "2026-11-21",
           "participants": [
             {
-              "name": "승학",
+              "name": "Cool Cucumber",
               "rank": 1,
-              "distance_km": 178.89,
+              "distance_km": 180.23,
               "is_self": false
             },
             {
-              "name": "Cool Cucumber",
+              "name": "승학",
               "rank": 2,
-              "distance_km": 176.45,
+              "distance_km": 178.89,
               "is_self": false
             },
             {
@@ -7652,33 +7652,33 @@
               "is_self": false
             },
             {
-              "name": "박민수",
+              "name": "김성은",
               "rank": 9,
+              "distance_km": 74.03,
+              "is_self": false
+            },
+            {
+              "name": "박민수",
+              "rank": 10,
               "distance_km": 69.33,
               "is_self": false
             },
             {
               "name": "Hena Choi",
-              "rank": 10,
+              "rank": 11,
               "distance_km": 68.2,
               "is_self": false
             },
             {
               "name": "JR Oh",
-              "rank": 11,
+              "rank": 12,
               "distance_km": 67.13,
               "is_self": false
             },
             {
               "name": "Ej lee",
-              "rank": 12,
-              "distance_km": 66.21,
-              "is_self": false
-            },
-            {
-              "name": "김성은",
               "rank": 13,
-              "distance_km": 63.86,
+              "distance_km": 66.21,
               "is_self": false
             },
             {
