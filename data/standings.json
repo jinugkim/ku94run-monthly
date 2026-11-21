@@ -7646,21 +7646,21 @@
               "is_self": true
             },
             {
-              "name": "김혜원",
+              "name": "JR Oh",
               "rank": 8,
+              "distance_km": 81.14,
+              "is_self": false
+            },
+            {
+              "name": "김혜원",
+              "rank": 9,
               "distance_km": 78.04,
               "is_self": false
             },
             {
               "name": "김성은",
-              "rank": 9,
-              "distance_km": 74.03,
-              "is_self": false
-            },
-            {
-              "name": "JR Oh",
               "rank": 10,
-              "distance_km": 71.15,
+              "distance_km": 74.03,
               "is_self": false
             },
             {
