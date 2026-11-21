@@ -7658,21 +7658,21 @@
               "is_self": false
             },
             {
-              "name": "박민수",
+              "name": "JR Oh",
               "rank": 10,
+              "distance_km": 71.15,
+              "is_self": false
+            },
+            {
+              "name": "박민수",
+              "rank": 11,
               "distance_km": 69.33,
               "is_self": false
             },
             {
               "name": "Hena Choi",
-              "rank": 11,
-              "distance_km": 68.2,
-              "is_self": false
-            },
-            {
-              "name": "JR Oh",
               "rank": 12,
-              "distance_km": 67.13,
+              "distance_km": 68.2,
               "is_self": false
             },
             {
