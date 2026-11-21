@@ -7694,205 +7694,205 @@
               "is_self": false
             },
             {
-              "name": "홍석헌",
+              "name": "문주영",
               "rank": 16,
+              "distance_km": 54.64,
+              "is_self": false
+            },
+            {
+              "name": "홍석헌",
+              "rank": 17,
               "distance_km": 48.84,
               "is_self": false
             },
             {
               "name": "HS Kim, SEB",
-              "rank": 17,
+              "rank": 18,
               "distance_km": 48.55,
               "is_self": false
             },
             {
               "name": "이경순",
-              "rank": 18,
+              "rank": 19,
               "distance_km": 47.94,
               "is_self": false
             },
             {
               "name": "권동철",
-              "rank": 19,
+              "rank": 20,
               "distance_km": 40.99,
               "is_self": false
             },
             {
               "name": "장용민",
-              "rank": 20,
+              "rank": 21,
               "distance_km": 39.96,
               "is_self": false
             },
             {
               "name": "김상종",
-              "rank": 21,
+              "rank": 22,
               "distance_km": 36.53,
               "is_self": false
             },
             {
               "name": "Jeongsang Lee",
-              "rank": 22,
+              "rank": 23,
               "distance_km": 34.89,
               "is_self": false
             },
             {
               "name": "김민정",
-              "rank": 23,
+              "rank": 24,
               "distance_km": 34.18,
               "is_self": false
             },
             {
               "name": "Hong, Yong-Jin",
-              "rank": 24,
+              "rank": 25,
               "distance_km": 31.17,
               "is_self": false
             },
             {
               "name": "김보현",
-              "rank": 25,
+              "rank": 26,
               "distance_km": 30.88,
               "is_self": false
             },
             {
               "name": "박혜연",
-              "rank": 26,
+              "rank": 27,
               "distance_km": 29.08,
               "is_self": false
             },
             {
               "name": "최정(피식)",
-              "rank": 27,
+              "rank": 28,
               "distance_km": 25.14,
               "is_self": false
             },
             {
               "name": "윤영곤 & 윤희상",
-              "rank": 28,
+              "rank": 29,
               "distance_km": 20.97,
               "is_self": false
             },
             {
               "name": "박승한",
-              "rank": 29,
+              "rank": 30,
               "distance_km": 13.41,
               "is_self": false
             },
             {
+              "name": "한성훈",
+              "rank": 31,
+              "distance_km": 10.01,
+              "is_self": false
+            },
+            {
               "name": "Han jiyeon",
-              "rank": 30,
+              "rank": 31,
               "distance_km": 10.01,
               "is_self": false
             },
             {
               "name": "Kim Bo Youn",
-              "rank": 31,
+              "rank": 33,
               "distance_km": 5.21,
               "is_self": false
             },
             {
               "name": "임채령",
-              "rank": 32,
+              "rank": 34,
               "distance_km": 0.0,
               "is_self": false
             },
             {
               "name": "Inbyoung K",
-              "rank": 32,
+              "rank": 34,
               "distance_km": 0.0,
               "is_self": false
             },
             {
               "name": "제영수",
-              "rank": 32,
+              "rank": 34,
               "distance_km": 0.0,
               "is_self": false
             },
             {
               "name": "쪼아(이승환)",
-              "rank": 35,
-              "distance_km": 0.0,
-              "is_self": false
-            },
-            {
-              "name": "안상욱",
-              "rank": 36,
-              "distance_km": 0.0,
-              "is_self": false
-            },
-            {
-              "name": "두잇나우 규백",
               "rank": 37,
               "distance_km": 0.0,
               "is_self": false
             },
             {
-              "name": "자연",
+              "name": "안상욱",
               "rank": 38,
               "distance_km": 0.0,
               "is_self": false
             },
             {
-              "name": "마라톤 양",
+              "name": "두잇나우 규백",
               "rank": 39,
               "distance_km": 0.0,
               "is_self": false
             },
             {
-              "name": "제홍주",
+              "name": "자연",
               "rank": 40,
               "distance_km": 0.0,
               "is_self": false
             },
             {
-              "name": "이소현",
+              "name": "마라톤 양",
               "rank": 41,
               "distance_km": 0.0,
               "is_self": false
             },
             {
-              "name": "Thomas R. Jung",
+              "name": "제홍주",
               "rank": 42,
               "distance_km": 0.0,
               "is_self": false
             },
             {
-              "name": "김지영",
+              "name": "이소현",
               "rank": 43,
               "distance_km": 0.0,
               "is_self": false
             },
             {
-              "name": "이선정",
+              "name": "Thomas R. Jung",
               "rank": 44,
               "distance_km": 0.0,
               "is_self": false
             },
             {
-              "name": "SH K",
+              "name": "김지영",
               "rank": 45,
               "distance_km": 0.0,
               "is_self": false
             },
             {
-              "name": "윤훈",
+              "name": "이선정",
               "rank": 46,
               "distance_km": 0.0,
               "is_self": false
             },
             {
-              "name": "Jungmin Park",
+              "name": "SH K",
               "rank": 47,
               "distance_km": 0.0,
               "is_self": false
             },
             {
-              "name": "문주영",
+              "name": "윤훈",
               "rank": 48,
               "distance_km": 0.0,
               "is_self": false
             },
             {
-              "name": "한성훈",
+              "name": "Jungmin Park",
               "rank": 49,
               "distance_km": 0.0,
               "is_self": false
