@@ -7618,7 +7618,7 @@
             {
               "name": "제진아",
               "rank": 3,
-              "distance_km": 135.1,
+              "distance_km": 145.11,
               "is_self": false
             },
             {
@@ -7706,45 +7706,45 @@
               "is_self": false
             },
             {
-              "name": "권동철",
+              "name": "이경순",
               "rank": 18,
+              "distance_km": 47.94,
+              "is_self": false
+            },
+            {
+              "name": "권동철",
+              "rank": 19,
               "distance_km": 40.99,
               "is_self": false
             },
             {
               "name": "장용민",
-              "rank": 19,
+              "rank": 20,
               "distance_km": 39.96,
               "is_self": false
             },
             {
-              "name": "이경순",
-              "rank": 20,
-              "distance_km": 37.9,
+              "name": "김상종",
+              "rank": 21,
+              "distance_km": 36.53,
               "is_self": false
             },
             {
               "name": "Hong, Yong-Jin",
-              "rank": 21,
+              "rank": 22,
               "distance_km": 31.17,
               "is_self": false
             },
             {
               "name": "김보현",
-              "rank": 22,
+              "rank": 23,
               "distance_km": 30.88,
               "is_self": false
             },
             {
               "name": "박혜연",
-              "rank": 23,
-              "distance_km": 29.08,
-              "is_self": false
-            },
-            {
-              "name": "김상종",
               "rank": 24,
-              "distance_km": 26.54,
+              "distance_km": 29.08,
               "is_self": false
             },
             {
