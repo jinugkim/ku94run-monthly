@@ -8131,45 +8131,45 @@
               "is_self": false
             },
             {
-              "name": "권동철",
+              "name": "김보현",
               "rank": 21,
+              "distance_km": 41.12,
+              "is_self": false
+            },
+            {
+              "name": "권동철",
+              "rank": 22,
               "distance_km": 40.99,
               "is_self": false
             },
             {
               "name": "장용민",
-              "rank": 22,
+              "rank": 23,
               "distance_km": 39.96,
               "is_self": false
             },
             {
               "name": "김상종",
-              "rank": 23,
+              "rank": 24,
               "distance_km": 36.53,
               "is_self": false
             },
             {
               "name": "Jeongsang Lee",
-              "rank": 24,
+              "rank": 25,
               "distance_km": 34.89,
               "is_self": false
             },
             {
               "name": "김민정",
-              "rank": 25,
+              "rank": 26,
               "distance_km": 34.18,
               "is_self": false
             },
             {
               "name": "Hong, Yong-Jin",
-              "rank": 26,
-              "distance_km": 31.17,
-              "is_self": false
-            },
-            {
-              "name": "김보현",
               "rank": 27,
-              "distance_km": 30.88,
+              "distance_km": 31.17,
               "is_self": false
             },
             {
