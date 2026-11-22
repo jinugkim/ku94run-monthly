@@ -8191,20 +8191,20 @@
               "is_self": false
             },
             {
-              "name": "박승한",
+              "name": "Han jiyeon",
               "rank": 31,
+              "distance_km": 16.7,
+              "is_self": false
+            },
+            {
+              "name": "박승한",
+              "rank": 32,
               "distance_km": 13.41,
               "is_self": false
             },
             {
               "name": "한성훈",
-              "rank": 32,
-              "distance_km": 10.01,
-              "is_self": false
-            },
-            {
-              "name": "Han jiyeon",
-              "rank": 32,
+              "rank": 33,
               "distance_km": 10.01,
               "is_self": false
             },
