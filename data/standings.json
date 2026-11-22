@@ -8155,27 +8155,27 @@
               "is_self": false
             },
             {
-              "name": "Jeongsang Lee",
+              "name": "박혜연",
               "rank": 25,
+              "distance_km": 35.86,
+              "is_self": false
+            },
+            {
+              "name": "Jeongsang Lee",
+              "rank": 26,
               "distance_km": 34.89,
               "is_self": false
             },
             {
               "name": "김민정",
-              "rank": 26,
+              "rank": 27,
               "distance_km": 34.18,
               "is_self": false
             },
             {
               "name": "Hong, Yong-Jin",
-              "rank": 27,
-              "distance_km": 31.17,
-              "is_self": false
-            },
-            {
-              "name": "박혜연",
               "rank": 28,
-              "distance_km": 29.08,
+              "distance_km": 31.17,
               "is_self": false
             },
             {
