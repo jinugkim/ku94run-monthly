@@ -8550,33 +8550,33 @@
               "is_self": false
             },
             {
-              "name": "김보현",
+              "name": "박혜연",
               "rank": 23,
+              "distance_km": 42.89,
+              "is_self": false
+            },
+            {
+              "name": "김보현",
+              "rank": 24,
               "distance_km": 41.12,
               "is_self": false
             },
             {
               "name": "권동철",
-              "rank": 24,
+              "rank": 25,
               "distance_km": 40.99,
               "is_self": false
             },
             {
               "name": "장용민",
-              "rank": 25,
+              "rank": 26,
               "distance_km": 39.96,
               "is_self": false
             },
             {
               "name": "김상종",
-              "rank": 26,
-              "distance_km": 36.53,
-              "is_self": false
-            },
-            {
-              "name": "박혜연",
               "rank": 27,
-              "distance_km": 35.86,
+              "distance_km": 36.53,
               "is_self": false
             },
             {
