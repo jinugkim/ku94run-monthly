@@ -8430,15 +8430,15 @@
               "is_self": false
             },
             {
-              "name": "Greg HONG",
+              "name": "마라톤 양",
               "rank": 3,
-              "distance_km": 156.22,
+              "distance_km": 174.53,
               "is_self": false
             },
             {
-              "name": "마라톤 양",
+              "name": "Greg HONG",
               "rank": 4,
-              "distance_km": 155.59,
+              "distance_km": 156.22,
               "is_self": false
             },
             {
@@ -8466,21 +8466,21 @@
               "is_self": true
             },
             {
-              "name": "김혜원",
+              "name": "박민수",
               "rank": 9,
+              "distance_km": 88.79,
+              "is_self": false
+            },
+            {
+              "name": "김혜원",
+              "rank": 10,
               "distance_km": 84.62,
               "is_self": false
             },
             {
               "name": "JR Oh",
-              "rank": 10,
-              "distance_km": 81.14,
-              "is_self": false
-            },
-            {
-              "name": "박민수",
               "rank": 11,
-              "distance_km": 80.68,
+              "distance_km": 81.14,
               "is_self": false
             },
             {
