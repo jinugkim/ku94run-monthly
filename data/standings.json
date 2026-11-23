@@ -8508,21 +8508,21 @@
               "is_self": false
             },
             {
-              "name": "이소현",
+              "name": "홍석헌",
               "rank": 16,
+              "distance_km": 65.31,
+              "is_self": false
+            },
+            {
+              "name": "이소현",
+              "rank": 17,
               "distance_km": 62.06,
               "is_self": false
             },
             {
               "name": "Elika Lee",
-              "rank": 17,
-              "distance_km": 60.09,
-              "is_self": false
-            },
-            {
-              "name": "홍석헌",
               "rank": 18,
-              "distance_km": 58.85,
+              "distance_km": 60.09,
               "is_self": false
             },
             {
