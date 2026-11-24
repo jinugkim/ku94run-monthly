@@ -8945,27 +8945,27 @@
               "is_self": false
             },
             {
-              "name": "이경순",
+              "name": "박혜연",
               "rank": 21,
+              "distance_km": 50.0,
+              "is_self": false
+            },
+            {
+              "name": "이경순",
+              "rank": 22,
               "distance_km": 47.94,
               "is_self": false
             },
             {
               "name": "최정(피식)",
-              "rank": 22,
+              "rank": 23,
               "distance_km": 46.08,
               "is_self": false
             },
             {
               "name": "장용민",
-              "rank": 23,
-              "distance_km": 44.98,
-              "is_self": false
-            },
-            {
-              "name": "박혜연",
               "rank": 24,
-              "distance_km": 42.89,
+              "distance_km": 44.98,
               "is_self": false
             },
             {
