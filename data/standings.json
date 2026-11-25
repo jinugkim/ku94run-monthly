@@ -9264,13 +9264,13 @@
             {
               "name": "정지은",
               "rank": 6,
-              "distance_km": 132.26,
+              "distance_km": 152.58,
               "is_self": false
             },
             {
               "name": "이재상",
               "rank": 7,
-              "distance_km": 118.22,
+              "distance_km": 123.23,
               "is_self": false
             },
             {
@@ -9304,39 +9304,39 @@
               "is_self": false
             },
             {
-              "name": "이소현",
+              "name": "홍석헌",
               "rank": 13,
+              "distance_km": 72.95,
+              "is_self": false
+            },
+            {
+              "name": "이소현",
+              "rank": 14,
               "distance_km": 72.82,
               "is_self": false
             },
             {
               "name": "Elika Lee",
-              "rank": 14,
+              "rank": 15,
               "distance_km": 72.1,
               "is_self": false
             },
             {
               "name": "Hena Choi",
-              "rank": 15,
+              "rank": 16,
               "distance_km": 68.2,
               "is_self": false
             },
             {
               "name": "Ej lee",
-              "rank": 16,
+              "rank": 17,
               "distance_km": 66.21,
               "is_self": false
             },
             {
               "name": "김남연",
-              "rank": 17,
-              "distance_km": 66.1,
-              "is_self": false
-            },
-            {
-              "name": "홍석헌",
               "rank": 18,
-              "distance_km": 65.31,
+              "distance_km": 66.1,
               "is_self": false
             },
             {
