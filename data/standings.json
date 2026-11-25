@@ -9388,21 +9388,21 @@
               "is_self": false
             },
             {
-              "name": "김상종",
+              "name": "김민정",
               "rank": 27,
+              "distance_km": 40.39,
+              "is_self": false
+            },
+            {
+              "name": "김상종",
+              "rank": 28,
               "distance_km": 36.53,
               "is_self": false
             },
             {
               "name": "Jeongsang Lee",
-              "rank": 28,
-              "distance_km": 34.89,
-              "is_self": false
-            },
-            {
-              "name": "김민정",
               "rank": 29,
-              "distance_km": 34.18,
+              "distance_km": 34.89,
               "is_self": false
             },
             {
