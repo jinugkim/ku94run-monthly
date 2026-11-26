@@ -9641,7 +9641,7 @@
             {
               "name": "Cool Cucumber",
               "rank": 1,
-              "distance_km": 229.64,
+              "distance_km": 237.27,
               "is_self": false
             },
             {
@@ -9677,7 +9677,7 @@
             {
               "name": "이재상",
               "rank": 7,
-              "distance_km": 123.23,
+              "distance_km": 128.23,
               "is_self": false
             },
             {
@@ -9705,27 +9705,27 @@
               "is_self": false
             },
             {
-              "name": "김성은",
+              "name": "Elika Lee",
               "rank": 12,
+              "distance_km": 77.3,
+              "is_self": false
+            },
+            {
+              "name": "김성은",
+              "rank": 13,
               "distance_km": 74.03,
               "is_self": false
             },
             {
               "name": "홍석헌",
-              "rank": 13,
+              "rank": 14,
               "distance_km": 72.95,
               "is_self": false
             },
             {
               "name": "이소현",
-              "rank": 14,
-              "distance_km": 72.82,
-              "is_self": false
-            },
-            {
-              "name": "Elika Lee",
               "rank": 15,
-              "distance_km": 72.1,
+              "distance_km": 72.82,
               "is_self": false
             },
             {
@@ -9735,15 +9735,15 @@
               "is_self": false
             },
             {
-              "name": "Hena Choi",
+              "name": "Ej lee",
               "rank": 17,
-              "distance_km": 68.2,
+              "distance_km": 68.22,
               "is_self": false
             },
             {
-              "name": "Ej lee",
+              "name": "Hena Choi",
               "rank": 18,
-              "distance_km": 66.21,
+              "distance_km": 68.2,
               "is_self": false
             },
             {
@@ -9759,21 +9759,21 @@
               "is_self": false
             },
             {
-              "name": "박혜연",
+              "name": "최정(피식)",
               "rank": 21,
+              "distance_km": 52.17,
+              "is_self": false
+            },
+            {
+              "name": "박혜연",
+              "rank": 22,
               "distance_km": 50.0,
               "is_self": false
             },
             {
               "name": "이경순",
-              "rank": 22,
-              "distance_km": 47.94,
-              "is_self": false
-            },
-            {
-              "name": "최정(피식)",
               "rank": 23,
-              "distance_km": 47.67,
+              "distance_km": 47.94,
               "is_self": false
             },
             {
