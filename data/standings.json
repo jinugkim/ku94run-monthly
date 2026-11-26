@@ -10178,21 +10178,21 @@
               "is_self": false
             },
             {
-              "name": "이경순",
+              "name": "장용민",
               "rank": 23,
+              "distance_km": 49.5,
+              "is_self": false
+            },
+            {
+              "name": "이경순",
+              "rank": 24,
               "distance_km": 47.94,
               "is_self": false
             },
             {
               "name": "김보현",
-              "rank": 24,
-              "distance_km": 47.36,
-              "is_self": false
-            },
-            {
-              "name": "장용민",
               "rank": 25,
-              "distance_km": 44.98,
+              "distance_km": 47.36,
               "is_self": false
             },
             {
