@@ -9729,21 +9729,21 @@
               "is_self": false
             },
             {
-              "name": "Hena Choi",
+              "name": "김남연",
               "rank": 16,
+              "distance_km": 71.34,
+              "is_self": false
+            },
+            {
+              "name": "Hena Choi",
+              "rank": 17,
               "distance_km": 68.2,
               "is_self": false
             },
             {
               "name": "Ej lee",
-              "rank": 17,
-              "distance_km": 66.21,
-              "is_self": false
-            },
-            {
-              "name": "김남연",
               "rank": 18,
-              "distance_km": 66.1,
+              "distance_km": 66.21,
               "is_self": false
             },
             {
