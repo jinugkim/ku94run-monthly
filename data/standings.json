@@ -10058,27 +10058,27 @@
               "is_self": false
             },
             {
-              "name": "Greg HONG",
+              "name": "정지은",
               "rank": 3,
+              "distance_km": 177.49,
+              "is_self": false
+            },
+            {
+              "name": "Greg HONG",
+              "rank": 4,
               "distance_km": 177.48,
               "is_self": false
             },
             {
               "name": "마라톤 양",
-              "rank": 4,
+              "rank": 5,
               "distance_km": 174.53,
               "is_self": false
             },
             {
               "name": "제진아",
-              "rank": 5,
-              "distance_km": 168.02,
-              "is_self": false
-            },
-            {
-              "name": "정지은",
               "rank": 6,
-              "distance_km": 163.4,
+              "distance_km": 168.02,
               "is_self": false
             },
             {
