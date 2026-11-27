@@ -10112,21 +10112,21 @@
               "is_self": false
             },
             {
-              "name": "Elika Lee",
+              "name": "홍석헌",
               "rank": 12,
+              "distance_km": 77.38,
+              "is_self": false
+            },
+            {
+              "name": "Elika Lee",
+              "rank": 13,
               "distance_km": 77.3,
               "is_self": false
             },
             {
               "name": "김성은",
-              "rank": 13,
-              "distance_km": 74.03,
-              "is_self": false
-            },
-            {
-              "name": "홍석헌",
               "rank": 14,
-              "distance_km": 72.95,
+              "distance_km": 74.03,
               "is_self": false
             },
             {
