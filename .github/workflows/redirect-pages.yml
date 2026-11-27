@@ -1,0 +1,49 @@
+name: Deploy Legacy Monthly Pages Redirect
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Prepare redirect HTML
+        run: |
+          mkdir -p _site
+          cat <<'EOF' > _site/index.html
+          <!doctype html>
+          <html lang="ko">
+          <head>
+            <meta charset="utf-8">
+            <meta http-equiv="refresh" content="0; url=https://ku94run-challenge.web.app/monthly/">
+            <link rel="canonical" href="https://ku94run-challenge.web.app/monthly/">
+            <title>KU94 RUN 월간 챌린지 이동 중...</title>
+            <script>window.location.replace("https://ku94run-challenge.web.app/monthly/");</script>
+          </head>
+          <body style="font-family:-apple-system,sans-serif;text-align:center;padding:48px;">
+            <p>KU94 RUN 통합 월간 챌린지 페이지로 이동 중입니다...</p>
+            <p><a href="https://ku94run-challenge.web.app/monthly/">바로 이동하기</a></p>
+          </body>
+          </html>
+          EOF
+          cp _site/index.html _site/404.html
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
